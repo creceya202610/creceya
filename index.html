@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
@@ -16,21 +15,21 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
+  <!-- ================= PANTALLA DE REGISTRO / LOGIN (FORZADA DIRECTA) ================= -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-5 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
-        <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
+        <img src="./logo.png" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
         <h2 class="text-lg font-extrabold tracking-wider pt-0.5">CRECE YA</h2>
         <p class="text-[11px] text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
       </div>
 
-      <form id="auth-form" class="space-y-2.5">
+      <div class="space-y-2.5">
         <div>
           <label class="text-[10px] text-slate-400 block mb-0.5">NÚMERO DE TELÉFONO / WHATSAPP</label>
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
             <i class="fa-solid fa-phone text-sky-400 mr-2"></i>
-            <input id="auth-phone" type="tel" required placeholder="+54 9 11 1234-5678" class="bg-transparent text-white w-full outline-none font-mono">
+            <input id="auth-phone" type="tel" placeholder="+54 9 11 1234-5678" class="bg-transparent text-white w-full outline-none font-mono">
           </div>
         </div>
 
@@ -38,7 +37,7 @@
           <label class="text-[10px] text-slate-400 block mb-0.5">CONTRASEÑA</label>
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
             <i class="fa-solid fa-lock text-sky-400 mr-2"></i>
-            <input id="auth-pass" type="password" required placeholder="Ingresa tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
+            <input id="auth-pass" type="password" placeholder="Ingresa tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
           </div>
         </div>
 
@@ -46,7 +45,7 @@
           <label class="text-[10px] text-slate-400 block mb-0.5">CONFIRMAR CONTRASEÑA</label>
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
             <i class="fa-solid fa-lock-open text-sky-400 mr-2"></i>
-            <input id="auth-pass-confirm" type="password" required placeholder="Repite tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
+            <input id="auth-pass-confirm" type="password" placeholder="Repite tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
           </div>
         </div>
 
@@ -59,14 +58,14 @@
                 <i class="fa-solid fa-rotate-right"></i>
               </button>
             </div>
-            <input id="auth-captcha-input" type="text" maxlength="4" required placeholder="Código" class="bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-1.5 text-center text-xs font-mono font-bold text-white outline-none">
+            <input id="auth-captcha-input" type="text" maxlength="4" placeholder="Código" class="bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-1.5 text-center text-xs font-mono font-bold text-white outline-none">
           </div>
         </div>
 
-        <button type="submit" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg mt-2">
+        <button type="button" onclick="handleLoginDirecto()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg mt-2">
           Ingresar al Mercado
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -74,10 +73,10 @@
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER CON ACCESO ADMIN (4 TOQUES EN EL LOGO) -->
+      <!-- HEADER CON DETECTOR ADMIN (4 TOQUES EN EL LOGO) -->
       <header class="p-3 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger">
-          <img src="./logo.png" onerror="this.src='./meli.png'" alt="Crece YA" class="h-9 w-auto object-contain">
+          <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
           <div>
             <span class="font-extrabold tracking-wider text-slate-900 text-xs block leading-none">CRECE YA</span>
             <span id="user-display-phone" class="text-[9px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
@@ -458,17 +457,6 @@
 
   <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
-    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
-    let supabase = null;
-    try {
-      if (window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-    } catch(err) {
-      console.warn("Supabase bypassed:", err);
-    }
-
     const plans = [
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 12, slotsLeft: 7, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
@@ -511,9 +499,7 @@
       appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
       appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
-    } catch(e) {
-      console.warn("Storage restricted:", e);
-    }
+    } catch(e) {}
 
     function saveLocal() {
       try {
@@ -546,31 +532,31 @@
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
-        authScreen.style.setProperty('display', 'none', 'important');
-        authScreen.classList.add('hidden');
+        authScreen.style.display = 'none';
         document.getElementById('user-display-phone').innerText = appState.phone;
         renderUI();
       } else {
         generateCaptcha();
         authScreen.style.display = 'flex';
-        authScreen.classList.remove('hidden');
       }
     }
 
-    document.getElementById('auth-form').addEventListener('submit', (e) => {
-      e.preventDefault();
+    // ACCESO DIRECTO SIN CONFLICTOS DE FORMULARIO
+    window.handleLoginDirecto = function() {
       const phone = document.getElementById('auth-phone').value.trim();
       const pass = document.getElementById('auth-pass').value;
       const passConf = document.getElementById('auth-pass-confirm').value;
-      const captchaInput = document.getElementById('auth-captcha-input').value.trim();
 
-      if (pass !== passConf) {
-        alert("Las contraseñas no coinciden.");
+      if (!phone) {
+        alert("Por favor ingresa tu número de teléfono.");
         return;
       }
-      if (captchaInput !== currentCaptcha) {
-        alert("El código de seguridad es incorrecto.");
-        generateCaptcha();
+      if (!pass) {
+        alert("Por favor ingresa tu contraseña.");
+        return;
+      }
+      if (pass !== passConf) {
+        alert("Las contraseñas no coinciden.");
         return;
       }
 
@@ -578,20 +564,11 @@
       appState.pass = pass;
       saveLocal();
 
-      const authScreen = document.getElementById('auth-screen');
-      authScreen.style.setProperty('display', 'none', 'important');
-      authScreen.classList.add('hidden');
+      // Cerrar la pantalla de login inmediatamente
+      document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
-
-      if (supabase) {
-        supabase.from('usuarios').upsert({
-          phone: appState.phone,
-          pass: appState.pass,
-          balance: appState.balance
-        }, { onConflict: 'phone' }).then(() => {}).catch(() => {});
-      }
-    });
+    };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (confirm("¿Cerrar sesión en este dispositivo?")) {
@@ -640,7 +617,7 @@
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
-                <img src="${p.logo}" onerror="this.src='./meli.png'" alt="${p.name}" class="w-full h-full object-contain">
+                <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain">
               </div>
               <div>
                 <h3 class="font-bold text-slate-900 text-xs leading-none">${p.name}</h3>
@@ -744,7 +721,7 @@
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <img src="${plan.logo}" onerror="this.src='./meli.png'" class="w-5 h-5 object-contain">
+              <img src="${plan.logo}" class="w-5 h-5 object-contain">
               <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
             </div>
             <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
@@ -804,7 +781,7 @@
         btnRet.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.classList.add('hidden');
       }
     };
 
