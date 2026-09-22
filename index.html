@@ -16,21 +16,12 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= SPLASH SCREEN INICIAL ================= -->
-  <div id="splash-screen" onclick="this.remove()" class="fixed inset-0 z-[60] bg-[#e0f2fe] flex flex-col items-center justify-center transition-opacity duration-500 select-none cursor-pointer">
-    <div class="text-center space-y-3">
-      <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-28 w-auto mx-auto object-contain drop-shadow-md animate-pulse">
-      <p class="text-xs font-mono font-bold text-sky-800 tracking-wider">CARGANDO MERCADO...</p>
-      <span class="text-[10px] text-sky-600 block">(Toca la pantalla si no avanza)</span>
-    </div>
-  </div>
-
   <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
-  <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/90 backdrop-blur-md flex items-center justify-center p-4">
+  <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-5 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
         <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
-        <h2 class="text-base font-extrabold tracking-wider pt-0.5">CRECE YA</h2>
+        <h2 class="text-lg font-extrabold tracking-wider pt-0.5">CRECE YA</h2>
         <p class="text-[11px] text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
       </div>
 
@@ -83,10 +74,10 @@
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER CON DETECTOR ADMIN (4 TOQUES) -->
+      <!-- HEADER CON ACCESO ADMIN (4 TOQUES EN EL LOGO) -->
       <header class="p-3 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger">
-          <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-9 w-auto object-contain">
+          <img src="./logo.png" onerror="this.src='./meli.png'" alt="Crece YA" class="h-9 w-auto object-contain">
           <div>
             <span class="font-extrabold tracking-wider text-slate-900 text-xs block leading-none">CRECE YA</span>
             <span id="user-display-phone" class="text-[9px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
@@ -202,16 +193,6 @@
             <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
           </div>
         </div>
-
-        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <div class="flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800">Personas Invitadas</h3>
-            <span id="invites-count-badge" class="text-[10px] font-mono bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md font-bold">0 registrados</span>
-          </div>
-          <div id="invites-list-container" class="space-y-1.5 text-xs font-mono">
-            <p class="text-slate-400 text-center py-2 text-[11px]">Aún no tienes invitados en tu red.</p>
-          </div>
-        </div>
       </div>
 
       <!-- ================= VISTA 4: MI PERFIL ================= -->
@@ -264,7 +245,7 @@
           <div class="space-y-2 text-[11px]">
             <div>
               <label class="text-slate-400 block text-[10px]">NOMBRE Y APELLIDO DEL TITULAR</label>
-              <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-medium text-slate-900 outline-none" placeholder="Tu Nombre Completo (debe coincidir con la cuenta)">
+              <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-medium text-slate-900 outline-none" placeholder="Tu Nombre Completo">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
@@ -292,13 +273,6 @@
           </div>
           <i class="fa-solid fa-chevron-right text-xs"></i>
         </a>
-
-        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2">
-          <h3 class="text-xs font-bold text-slate-800">Historial de Movimientos</h3>
-          <div id="tx-history-container" class="space-y-1.5 text-[11px] font-mono">
-            <p class="text-slate-400 text-center py-2">Sin movimientos registrados aún.</p>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -378,7 +352,6 @@
 
           <div>
             <input id="deposit-custom-input" type="number" min="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 text-xs font-mono font-bold text-white outline-none">
-            <span class="text-[10px] text-slate-500 block mt-1">Debe ser un número entero entre 2.000,00 y 5.000.000,00</span>
           </div>
 
           <button onclick="notifyDepositTelegram()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
@@ -483,9 +456,8 @@
 
   </main>
 
-  <!-- ================= LÓGICA SUPABASE & APP ================= -->
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
-    // Supabase
     const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
     let supabase = null;
@@ -494,17 +466,8 @@
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
     } catch(err) {
-      console.warn("Supabase initialization bypassed:", err);
+      console.warn("Supabase bypassed:", err);
     }
-
-    // RETIRO FORZADO DEL SPLASH SCREEN
-    setTimeout(() => {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => splash.remove(), 400);
-      }
-    }, 1200);
 
     const plans = [
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
@@ -523,82 +486,49 @@
     ];
 
     let appState = {
-      phone: localStorage.getItem('cy_phone') || '',
-      pass: localStorage.getItem('cy_pass') || '',
-      name: localStorage.getItem('cy_name') || '',
-      cvu: localStorage.getItem('cy_cvu') || '',
-      alias: localStorage.getItem('cy_alias') || '',
-      balance: parseFloat(localStorage.getItem('cy_bal')) || 0,
-      pending: parseFloat(localStorage.getItem('cy_pending')) || 0,
-      withdrawn: parseFloat(localStorage.getItem('cy_withdrawn')) || 0,
-      lastClaim: parseInt(localStorage.getItem('cy_claim')) || 0,
-      lastWithdraw: parseInt(localStorage.getItem('cy_last_withdraw')) || 0,
-      activePlans: JSON.parse(localStorage.getItem('cy_active_plans')) || [],
-      invites: JSON.parse(localStorage.getItem('cy_invites')) || [],
-      txs: JSON.parse(localStorage.getItem('cy_txs')) || []
+      phone: '',
+      pass: '',
+      name: '',
+      cvu: '',
+      alias: '',
+      balance: 0,
+      pending: 0,
+      withdrawn: 0,
+      lastClaim: 0,
+      lastWithdraw: 0,
+      activePlans: []
     };
 
-    function saveLocal() {
-      localStorage.setItem('cy_phone', appState.phone);
-      localStorage.setItem('cy_pass', appState.pass);
-      localStorage.setItem('cy_name', appState.name);
-      localStorage.setItem('cy_cvu', appState.cvu);
-      localStorage.setItem('cy_alias', appState.alias);
-      localStorage.setItem('cy_bal', appState.balance);
-      localStorage.setItem('cy_pending', appState.pending);
-      localStorage.setItem('cy_withdrawn', appState.withdrawn);
-      localStorage.setItem('cy_claim', appState.lastClaim);
-      localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
-      localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
-      localStorage.setItem('cy_invites', JSON.stringify(appState.invites));
-      localStorage.setItem('cy_txs', JSON.stringify(appState.txs));
-      renderUI();
+    try {
+      appState.phone = localStorage.getItem('cy_phone') || '';
+      appState.pass = localStorage.getItem('cy_pass') || '';
+      appState.name = localStorage.getItem('cy_name') || '';
+      appState.cvu = localStorage.getItem('cy_cvu') || '';
+      appState.alias = localStorage.getItem('cy_alias') || '';
+      appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
+      appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
+      appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
+      appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
+      appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
+      appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
+    } catch(e) {
+      console.warn("Storage restricted:", e);
     }
 
-    async function syncWithSupabase(fetchOnly = false) {
-      if (!appState.phone || !supabase) return;
+    function saveLocal() {
       try {
-        if (!fetchOnly) {
-          await supabase.from('usuarios').upsert({
-            phone: appState.phone,
-            pass: appState.pass,
-            name: appState.name,
-            cvu: appState.cvu,
-            alias: appState.alias,
-            balance: appState.balance,
-            pending: appState.pending,
-            withdrawn: appState.withdrawn,
-            last_claim: appState.lastClaim,
-            last_withdraw: appState.lastWithdraw
-          }, { onConflict: 'phone' });
-        } else {
-          const { data } = await supabase.from('usuarios').select('*').eq('phone', appState.phone).single();
-          if (data) {
-            appState.name = data.name || appState.name;
-            appState.cvu = data.cvu || appState.cvu;
-            appState.alias = data.alias || appState.alias;
-            appState.balance = parseFloat(data.balance) || appState.balance;
-            appState.pending = parseFloat(data.pending) || appState.pending;
-            appState.withdrawn = parseFloat(data.withdrawn) || appState.withdrawn;
-            appState.lastClaim = parseInt(data.last_claim) || appState.lastClaim;
-            appState.lastWithdraw = parseInt(data.last_withdraw) || appState.lastWithdraw;
-          }
-
-          const { data: cData } = await supabase.from('contratos').select('*').eq('user_phone', appState.phone).eq('status', 'activo');
-          if (cData && cData.length > 0) {
-            appState.activePlans = cData.map(c => ({
-              id: c.id,
-              name: c.name,
-              cost: parseFloat(c.cost),
-              total: parseFloat(c.total),
-              days: c.days,
-              endTime: parseInt(c.end_time)
-            }));
-          }
-        }
-      } catch(e) {
-        console.warn("Supabase network sync issue:", e);
-      }
+        localStorage.setItem('cy_phone', appState.phone);
+        localStorage.setItem('cy_pass', appState.pass);
+        localStorage.setItem('cy_name', appState.name);
+        localStorage.setItem('cy_cvu', appState.cvu);
+        localStorage.setItem('cy_alias', appState.alias);
+        localStorage.setItem('cy_bal', appState.balance);
+        localStorage.setItem('cy_pending', appState.pending);
+        localStorage.setItem('cy_withdrawn', appState.withdrawn);
+        localStorage.setItem('cy_claim', appState.lastClaim);
+        localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
+        localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
+      } catch(e) {}
       renderUI();
     }
 
@@ -613,19 +543,21 @@
       if (el) el.innerText = currentCaptcha;
     }
 
-    async function checkAuth() {
+    function checkAuth() {
+      const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
-        document.getElementById('auth-screen').classList.add('hidden');
+        authScreen.style.setProperty('display', 'none', 'important');
+        authScreen.classList.add('hidden');
         document.getElementById('user-display-phone').innerText = appState.phone;
         renderUI();
-        await syncWithSupabase(true);
       } else {
         generateCaptcha();
-        document.getElementById('auth-screen').classList.remove('hidden');
+        authScreen.style.display = 'flex';
+        authScreen.classList.remove('hidden');
       }
     }
 
-    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    document.getElementById('auth-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const phone = document.getElementById('auth-phone').value.trim();
       const pass = document.getElementById('auth-pass').value;
@@ -645,13 +577,25 @@
       appState.phone = phone;
       appState.pass = pass;
       saveLocal();
-      checkAuth();
-      await syncWithSupabase(false);
+
+      const authScreen = document.getElementById('auth-screen');
+      authScreen.style.setProperty('display', 'none', 'important');
+      authScreen.classList.add('hidden');
+      document.getElementById('user-display-phone').innerText = appState.phone;
+      renderUI();
+
+      if (supabase) {
+        supabase.from('usuarios').upsert({
+          phone: appState.phone,
+          pass: appState.pass,
+          balance: appState.balance
+        }, { onConflict: 'phone' }).then(() => {}).catch(() => {});
+      }
     });
 
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (confirm("¿Cerrar sesión en este dispositivo?")) {
-        localStorage.clear();
+        try { localStorage.clear(); } catch(e) {}
         location.reload();
       }
     });
@@ -696,7 +640,7 @@
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
-                <img src="${p.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2152/2152539.png'" alt="${p.name}" class="w-full h-full object-contain">
+                <img src="${p.logo}" onerror="this.src='./meli.png'" alt="${p.name}" class="w-full h-full object-contain">
               </div>
               <div>
                 <h3 class="font-bold text-slate-900 text-xs leading-none">${p.name}</h3>
@@ -732,7 +676,7 @@
       });
     }
 
-    window.handlePlanClick = async function(planId) {
+    window.handlePlanClick = function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
 
@@ -748,36 +692,11 @@
             cost: p.cost,
             total: p.total,
             days: p.days,
+            logo: p.logo,
             endTime: endTimeVal
           });
 
           saveLocal();
-
-          if (supabase) {
-            try {
-              await supabase.from('contratos').insert({
-                id: contractId,
-                user_phone: appState.phone,
-                plan_id: p.id,
-                name: p.name,
-                cost: p.cost,
-                daily: p.daily,
-                total: p.total,
-                days: p.days,
-                end_time: endTimeVal,
-                status: 'activo'
-              });
-            } catch(e) { console.warn(e); }
-          }
-
-          appState.txs.unshift({
-            desc: `Activación ${p.name}`,
-            amount: -p.cost,
-            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-          });
-
-          saveLocal();
-          syncWithSupabase(false);
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -805,19 +724,13 @@
       }
 
       const now = Date.now();
-      appState.activePlans.forEach(async (plan, index) => {
+      appState.activePlans.forEach((plan, index) => {
         const remaining = plan.endTime - now;
 
         if (remaining <= 0) {
           appState.balance += plan.total;
           appState.activePlans.splice(index, 1);
           saveLocal();
-          if (supabase) {
-            try {
-              await supabase.from('contratos').update({ status: 'finalizado' }).eq('id', plan.id);
-            } catch(e) { console.warn(e); }
-          }
-          syncWithSupabase(false);
           alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
           return;
         }
@@ -830,7 +743,10 @@
         card.className = "p-3.5 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2";
         card.innerHTML = `
           <div class="flex justify-between items-center">
-            <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
+            <div class="flex items-center gap-2">
+              <img src="${plan.logo}" onerror="this.src='./meli.png'" class="w-5 h-5 object-contain">
+              <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
+            </div>
             <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
               En Operación
             </span>
@@ -855,7 +771,7 @@
     }
     setInterval(renderProducts, 1000);
 
-    document.getElementById('btn-claim-daily').addEventListener('click', async () => {
+    document.getElementById('btn-claim-daily').addEventListener('click', () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
         alert("Ya cobraste tu bono de hoy.");
@@ -864,30 +780,8 @@
       appState.balance += 500;
       appState.lastClaim = now;
       saveLocal();
-      syncWithSupabase(false);
       alert("¡+$500 ARS acreditados!");
     });
-
-    function updateCheckinCooldown() {
-      const now = Date.now();
-      const diff = 24 * 60 * 60 * 1000 - (now - appState.lastClaim);
-      const btn = document.getElementById('btn-claim-daily');
-      const text = document.getElementById('checkin-status-text');
-
-      if (diff > 0) {
-        const h = Math.floor(diff / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-        btn.innerText = "✓ Cobrado";
-        btn.className = "px-3 py-1 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl cursor-not-allowed";
-        text.innerText = `Próximo reclamo en: ${h}h ${m}m ${s}s`;
-      } else {
-        btn.innerText = "Cobrar";
-        btn.className = "px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow";
-        text.innerText = "+$500 ARS listos para reclamar";
-      }
-    }
-    setInterval(updateCheckinCooldown, 1000);
 
     window.openWalletModal = function(mode) {
       document.getElementById('wallet-modal').classList.remove('hidden');
@@ -910,7 +804,7 @@
         btnRet.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRec.classList.add('hidden');
+        boxRet.classList.add('hidden');
       }
     };
 
@@ -918,17 +812,13 @@
       navigator.clipboard.writeText("0000168300000008340656").then(() => {
         const btn = document.getElementById('btn-copy-cvu');
         btn.innerText = "¡Copiado! ✓";
-        btn.className = "px-2.5 py-1 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-lg transition shrink-0";
-        setTimeout(() => {
-          btn.innerText = "Copiar";
-          btn.className = "px-2.5 py-1 bg-sky-600 text-white text-[10px] font-black rounded-lg transition shrink-0";
-        }, 1500);
+        setTimeout(() => { btn.innerText = "Copiar"; }, 1500);
       });
     };
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    window.notifyDepositTelegram = async function() {
+    window.notifyDepositTelegram = function() {
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
         alert("El monto mínimo de recarga es de $2.000 ARS.");
@@ -936,20 +826,6 @@
       }
       appState.pending += val;
       saveLocal();
-
-      if (supabase) {
-        try {
-          await supabase.from('solicitudes').insert({
-            user_phone: appState.phone,
-            type: 'recarga',
-            amount: val,
-            net_amount: val,
-            status: 'pendiente'
-          });
-        } catch(e) { console.warn(e); }
-      }
-
-      syncWithSupabase(false);
       window.open('https://t.me/+7obUJU1X2sg0NGEx', '_blank');
       closeWalletModal();
     };
@@ -968,7 +844,7 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    window.confirmWithdrawAction = async function() {
+    window.confirmWithdrawAction = function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
         alert("Límite diario alcanzado: Solo 1 solicitud de retiro cada 24 hs.");
@@ -992,20 +868,6 @@
       appState.balance -= amt;
       appState.lastWithdraw = now;
       saveLocal();
-
-      if (supabase) {
-        try {
-          await supabase.from('solicitudes').insert({
-            user_phone: appState.phone,
-            type: 'retiro',
-            amount: amt,
-            net_amount: amt * 0.9,
-            status: 'pendiente'
-          });
-        } catch(e) { console.warn(e); }
-      }
-
-      syncWithSupabase(false);
       alert("Solicitud de retiro registrada. Procesando en horario bancario.");
       closeWalletModal();
     };
@@ -1026,12 +888,11 @@
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
 
-    document.getElementById('btn-save-profile').addEventListener('click', async () => {
+    document.getElementById('btn-save-profile').addEventListener('click', () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
-      syncWithSupabase(false);
       alert("Datos bancarios guardados.");
     });
 
@@ -1055,38 +916,33 @@
       }
     });
 
-    document.getElementById('btn-admin-credit').addEventListener('click', async () => {
+    document.getElementById('btn-admin-credit').addEventListener('click', () => {
       const amt = parseFloat(document.getElementById('admin-credit-amount').value) || 0;
       if (amt <= 0) return;
       appState.balance += amt;
       if (appState.pending >= amt) appState.pending -= amt;
       saveLocal();
-      syncWithSupabase(false);
       alert(`$${fmt(amt)} ARS acreditados.`);
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-validate-guest').addEventListener('click', async () => {
+    document.getElementById('btn-admin-validate-guest').addEventListener('click', () => {
       appState.balance += 1000;
-      appState.invites.push({ phone: "+54 9 11 ... 402", status: "Validado ✓" });
       saveLocal();
-      syncWithSupabase(false);
       alert("Invitado validado (+ $1.000 ARS).");
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-liquidate-w').addEventListener('click', async () => {
+    document.getElementById('btn-admin-liquidate-w').addEventListener('click', () => {
       appState.withdrawn += 5000;
       saveLocal();
-      syncWithSupabase(false);
       alert("Retiro liquidado.");
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-reject-w').addEventListener('click', async () => {
+    document.getElementById('btn-admin-reject-w').addEventListener('click', () => {
       appState.balance += 5000;
       saveLocal();
-      syncWithSupabase(false);
       alert("Retiro rechazado. Fondos reintegrados.");
       closeAdminModal();
     });
