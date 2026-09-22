@@ -469,20 +469,23 @@
 
   <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
+    // 100 CUPOS INICIALES / 50 CUPOS VIP
     const plans = [
-      { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
-      { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 12, slotsLeft: 7, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
-      { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 12, slotsLeft: 6, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
-      { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 4000, total: 36000, slotsTotal: 10, slotsLeft: 5, color: '#22c55e', btnBg: 'bg-green-500 hover:bg-green-400 text-white', border: 'border-green-300', logo: './spotify.png' },
-      { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 10, slotsLeft: 5, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
-      { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 10, slotsLeft: 4, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
+      // CATEGORÍA INICIAL (100 cupos totales)
+      { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
+      { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
+      { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 100, slotsLeft: 47, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
+      { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 4000, total: 36000, slotsTotal: 100, slotsLeft: 39, color: '#22c55e', btnBg: 'bg-green-500 hover:bg-green-400 text-white', border: 'border-green-300', logo: './spotify.png' },
+      { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 100, slotsLeft: 31, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
+      { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 3, slotsLeft: 3, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
-      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 8, slotsLeft: 4, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
-      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 8, slotsLeft: 4, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
-      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 20, daily: 18000, total: 410000, slotsTotal: 6, slotsLeft: 3, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
-      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 25, daily: 26000, total: 730000, slotsTotal: 5, slotsLeft: 2, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
-      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 3, slotsLeft: 1, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
+      // CATEGORÍA VIP (50 cupos totales)
+      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
+      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
+      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
+      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 20, daily: 18000, total: 410000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
+      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 25, daily: 26000, total: 730000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
+      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
     ];
 
     let appState = {
