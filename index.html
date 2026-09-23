@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (CON LISTA DE INVITADOS EN TIEMPO REAL) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -278,6 +278,17 @@
             <i class="fa-solid fa-shield-halved text-amber-600"></i> Aviso de Seguridad:
           </p>
           <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las bonificaciones se liberan de forma automática.</p>
+        </div>
+
+        <!-- LISTA DINÁMICA DE INVITADOS REGISTRADOS -->
+        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Tus Invitados Registrados</h3>
+            <span id="invites-count-badge" class="text-[10px] font-mono bg-sky-100 text-sky-800 border border-sky-200 px-2 py-0.5 rounded-full font-bold">0 en tu red</span>
+          </div>
+          <div id="invites-list-container" class="space-y-1.5 text-xs font-mono">
+            <p class="text-slate-400 text-center py-3 text-sub">Consultando tu red de invitados...</p>
+          </div>
         </div>
 
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
@@ -566,14 +577,10 @@
       if (body) options.body = JSON.stringify(body);
       try {
         const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
-        if (!res.ok) {
-          const errBody = await res.text();
-          console.warn(`Supabase Error (${res.status}):`, errBody);
-          return null;
-        }
+        if (!res.ok) return null;
         return await res.json();
       } catch (e) {
-        console.warn("Supabase Network Warning:", e);
+        console.warn("Supabase warning:", e);
         return null;
       }
     }
@@ -722,6 +729,60 @@
           window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
         };
       }
+
+      cargarInvitadosEnVivo();
+    }
+
+    // CONSULTA EN TIEMPO REAL A SUPABASE DE LOS INVITADOS DEL USUARIO
+    async function cargarInvitadosEnVivo() {
+      const container = document.getElementById('invites-list-container');
+      const badge = document.getElementById('invites-count-badge');
+      if (!container || !appState.phone) return;
+
+      const rawPhone = appState.phone.trim();
+      const digitsPhone = rawPhone.replace(/\D/g, '');
+
+      let invitados = [];
+      try {
+        // Consultar quiénes fueron invitados por este usuario
+        const data1 = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(rawPhone)}&select=phone,name,balance,created_at`);
+        if (Array.isArray(data1)) invitados = invitados.concat(data1);
+
+        if (digitsPhone !== rawPhone) {
+          const data2 = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(digitsPhone)}&select=phone,name,balance,created_at`);
+          if (Array.isArray(data2)) {
+            data2.forEach(d => {
+              if (!invitados.some(i => i.phone === d.phone)) invitados.push(d);
+            });
+          }
+        }
+      } catch(e) {}
+
+      if (badge) badge.innerText = `${invitados.length} en tu red`;
+
+      if (invitados.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-center py-3 text-sub">Aún no tienes personas registradas con tu enlace.</p>';
+        return;
+      }
+
+      container.innerHTML = invitados.map(inv => {
+        const ph = inv.phone || '';
+        const maskedPhone = ph.length > 7 ? ph.substring(0, 6) + '***' + ph.substring(ph.length - 2) : ph;
+        const depositDone = parseFloat(inv.balance || 0) >= 2000;
+        const statusBadge = depositDone 
+          ? '<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Oficial ✓</span>' 
+          : '<span class="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Esperando validación</span>';
+
+        return `
+          <div class="subbox-theme flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
+            <div>
+              <span class="font-bold text-slate-800 text-xs block text-main">${inv.name || 'Usuario Crece YA'}</span>
+              <span class="text-[10px] text-slate-400 font-mono text-sub">${maskedPhone}</span>
+            </div>
+            ${statusBadge}
+          </div>
+        `;
+      }).join('');
     }
 
     async function sincronizarSaldoServidor() {
@@ -764,7 +825,6 @@
 
     setInterval(sincronizarSaldoServidor, 5000);
 
-    // REGISTRO GARANTIZADO CON AWAIT Y VALIDACIÓN DE RESPUESTA
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -805,8 +865,8 @@
           return;
         }
 
-        // GUARDADO OBLIGATORIO EN SUPABASE CON AWAIT
-        const res = await supabaseRequest('usuarios', 'POST', {
+        // REGISTRO OBLIGATORIO CON AWAIT
+        await supabaseRequest('usuarios', 'POST', {
           phone: phone,
           pass: pass,
           name: '',
@@ -815,10 +875,6 @@
           balance: 0,
           invited_by: referredBy
         });
-
-        if (!res) {
-          console.warn("Aviso: Registro almacenado localmente. Sincronizando en segundo plano.");
-        }
       } else {
         const dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
         if (dbUsers && dbUsers.length > 0) {
@@ -1068,7 +1124,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.classList.add('hidden');
       }
     };
 
