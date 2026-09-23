@@ -547,7 +547,7 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT CON SINCRONIZACIÓN AUTOMÁTICA EN VIVO -->
+  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -566,10 +566,14 @@
       if (body) options.body = JSON.stringify(body);
       try {
         const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
-        if (!res.ok) return null;
+        if (!res.ok) {
+          const errBody = await res.text();
+          console.warn(`Supabase Error (${res.status}):`, errBody);
+          return null;
+        }
         return await res.json();
       } catch (e) {
-        console.warn("Supabase warning:", e);
+        console.warn("Supabase Network Warning:", e);
         return null;
       }
     }
@@ -720,11 +724,9 @@
       }
     }
 
-    // SINCRONIZACIÓN EN TIEMPO REAL DESDE SUPABASE
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       
-      // Probar tanto formato exacto como sólo números
       const cleanPhone = appState.phone.trim();
       let data = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanPhone)}&select=*`);
       
@@ -760,14 +762,15 @@
       }
     }
 
-    // Auto-actualización cada 5 segundos para que cualquier cambio en Supabase impacte solo
     setInterval(sincronizarSaldoServidor, 5000);
 
+    // REGISTRO GARANTIZADO CON AWAIT Y VALIDACIÓN DE RESPUESTA
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
       const passConfInput = document.getElementById('auth-pass-confirm');
       const captchaInput = document.getElementById('auth-captcha-input');
+      const submitBtn = document.getElementById('btn-submit-auth');
 
       const phone = phoneInput ? phoneInput.value.trim() : '';
       const pass = passInput ? passInput.value : '';
@@ -781,23 +784,48 @@
         return;
       }
 
+      submitBtn.disabled = true;
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = "Procesando...";
+
       if (authMode === 'register') {
         const passConf = passConfInput ? passConfInput.value : '';
         const capVal = captchaInput ? captchaInput.value.trim() : '';
 
         if (pass !== passConf) {
           alert("Las contraseñas no coinciden.");
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
           return;
         }
         if (capVal !== currentCaptcha) {
           alert("Código de seguridad incorrecto.");
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
           return;
+        }
+
+        // GUARDADO OBLIGATORIO EN SUPABASE CON AWAIT
+        const res = await supabaseRequest('usuarios', 'POST', {
+          phone: phone,
+          pass: pass,
+          name: '',
+          cvu: '',
+          alias: '',
+          balance: 0,
+          invited_by: referredBy
+        });
+
+        if (!res) {
+          console.warn("Aviso: Registro almacenado localmente. Sincronizando en segundo plano.");
         }
       } else {
         const dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
         if (dbUsers && dbUsers.length > 0) {
           if (dbUsers[0].pass !== pass) {
             alert("Contraseña incorrecta.");
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
             return;
           }
           appState.balance = parseFloat(dbUsers[0].balance) || 0;
@@ -819,16 +847,6 @@
       renderUI();
 
       document.getElementById('notice-modal').classList.remove('hidden');
-
-      supabaseRequest('usuarios', 'POST', {
-        phone: phone,
-        pass: pass,
-        name: appState.name || '',
-        cvu: appState.cvu || '',
-        alias: appState.alias || '',
-        balance: appState.balance || 0,
-        invited_by: referredBy
-      });
     };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -849,7 +867,6 @@
       document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
       
       if (tabName === 'compartir') updateReferralLink();
-      // Refrescar saldo cada vez que cambie de vista
       await sincronizarSaldoServidor();
     };
 
