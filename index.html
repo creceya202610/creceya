@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (DINÁMICO CON EL TELÉFONO DE CADA UNO) -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -547,12 +547,11 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT DINÁMICA -->
+  <!-- LÓGICA JAVASCRIPT CON SINCRONIZACIÓN AUTOMÁTICA EN VIVO -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
 
-    // Captura automática del referente desde la URL (?ref=...)
     const urlParams = new URLSearchParams(window.location.search);
     const referredBy = urlParams.get('ref') || null;
 
@@ -695,7 +694,6 @@
       document.getElementById('notice-modal').classList.add('hidden');
     };
 
-    // ACTUALIZACIÓN DINÁMICA DEL ENLACE DE CADA USUARIO
     function updateReferralLink() {
       const userRefCode = appState.phone ? appState.phone.replace(/[^0-9]/g, '') : '11482019';
       const myPersonalRefUrl = `${window.location.origin}${window.location.pathname}?ref=${userRefCode}`;
@@ -703,7 +701,6 @@
       const inputEl = document.getElementById('ref-link-input');
       if (inputEl) inputEl.value = myPersonalRefUrl;
 
-      // Evento de Copiar Link
       const btnCopy = document.getElementById('btn-copy-ref');
       if (btnCopy) {
         btnCopy.onclick = () => {
@@ -714,7 +711,6 @@
         };
       }
 
-      // Evento de Compartir en WhatsApp con link individual
       const btnWs = document.getElementById('btn-share-whatsapp');
       if (btnWs) {
         btnWs.onclick = () => {
@@ -724,13 +720,38 @@
       }
     }
 
-    function checkAuth() {
+    // SINCRONIZACIÓN EN TIEMPO REAL DESDE SUPABASE
+    async function sincronizarSaldoServidor() {
+      if (!appState.phone) return;
+      
+      // Probar tanto formato exacto como sólo números
+      const cleanPhone = appState.phone.trim();
+      let data = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanPhone)}&select=*`);
+      
+      if (!data || data.length === 0) {
+        const rawDigits = cleanPhone.replace(/\D/g, '');
+        data = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rawDigits)}&select=*`);
+      }
+
+      if (data && data.length > 0) {
+        const nuevoBalance = parseFloat(data[0].balance);
+        if (!isNaN(nuevoBalance) && appState.balance !== nuevoBalance) {
+          appState.balance = nuevoBalance;
+        }
+        if (data[0].name) appState.name = data[0].name;
+        if (data[0].cvu) appState.cvu = data[0].cvu;
+        if (data[0].alias) appState.alias = data[0].alias;
+        saveLocal();
+      }
+    }
+
+    async function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
         if (authScreen) authScreen.remove();
         document.getElementById('user-display-phone').innerText = appState.phone;
         updateReferralLink();
-        sincronizarSaldoServidor();
+        await sincronizarSaldoServidor();
         renderUI();
         document.getElementById('notice-modal').classList.remove('hidden');
       } else {
@@ -739,17 +760,8 @@
       }
     }
 
-    async function sincronizarSaldoServidor() {
-      if (!appState.phone) return;
-      const data = await supabaseRequest(`usuarios?phone=eq.${appState.phone}&select=*`);
-      if (data && data.length > 0) {
-        appState.balance = parseFloat(data[0].balance) || 0;
-        appState.name = data[0].name || appState.name;
-        appState.cvu = data[0].cvu || appState.cvu;
-        appState.alias = data[0].alias || appState.alias;
-        saveLocal();
-      }
-    }
+    // Auto-actualización cada 5 segundos para que cualquier cambio en Supabase impacte solo
+    setInterval(sincronizarSaldoServidor, 5000);
 
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
@@ -782,7 +794,7 @@
           return;
         }
       } else {
-        const dbUsers = await supabaseRequest(`usuarios?phone=eq.${phone}&select=*`);
+        const dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
         if (dbUsers && dbUsers.length > 0) {
           if (dbUsers[0].pass !== pass) {
             alert("Contraseña incorrecta.");
@@ -803,11 +815,11 @@
       if (authScreen) authScreen.remove();
       document.getElementById('user-display-phone').innerText = appState.phone;
       updateReferralLink();
+      await sincronizarSaldoServidor();
       renderUI();
 
       document.getElementById('notice-modal').classList.remove('hidden');
 
-      // Guardar usuario en Supabase con su patrocinador si ingresó por link
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
@@ -827,7 +839,7 @@
     });
 
     let currentCategory = 'inicial';
-    window.switchTab = function(tabName) {
+    window.switchTab = async function(tabName) {
       const tabs = ['planes', 'productos', 'compartir', 'perfil'];
       tabs.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
@@ -835,7 +847,10 @@
       });
       document.getElementById(`view-${tabName}`).classList.remove('hidden');
       document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
+      
       if (tabName === 'compartir') updateReferralLink();
+      // Refrescar saldo cada vez que cambie de vista
+      await sincronizarSaldoServidor();
     };
 
     document.getElementById('btn-tab-iniciales').addEventListener('click', () => {
@@ -895,7 +910,7 @@
             <span class="text-sky-600 font-bold">Ronda 1</span>
           </div>
 
-          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1">
+          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
             ${btnLabel}
           </button>
         `;
@@ -903,9 +918,11 @@
       });
     }
 
-    window.handlePlanClick = function(planId) {
+    window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
+
+      await sincronizarSaldoServidor();
 
       if (appState.balance >= p.cost) {
         if (confirm(`¿Confirmas activar ${p.name} por $${fmt(p.cost)} ARS de tu saldo?`)) {
@@ -924,7 +941,7 @@
           });
 
           saveLocal();
-          supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -943,7 +960,7 @@
           <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
             <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
             <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
-            <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow">
+            <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer">
               Explorar Mercado
             </button>
           </div>
@@ -959,7 +976,7 @@
           appState.balance += plan.total;
           appState.activePlans.splice(index, 1);
           saveLocal();
-          supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
+          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
           alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
           return;
         }
@@ -1000,7 +1017,7 @@
     }
     setInterval(renderProducts, 1000);
 
-    document.getElementById('btn-claim-daily').addEventListener('click', () => {
+    document.getElementById('btn-claim-daily').addEventListener('click', async () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
         alert("Ya cobraste tu bono de hoy.");
@@ -1009,7 +1026,7 @@
       appState.balance += 500;
       appState.lastClaim = now;
       saveLocal();
-      supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
       alert("¡+$500 ARS acreditados!");
     });
 
@@ -1099,7 +1116,7 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    window.confirmWithdrawAction = function() {
+    window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
         alert("Límite diario alcanzado: Solo 1 solicitud de retiro cada 24 hs.");
@@ -1123,7 +1140,7 @@
       appState.balance -= amt;
       appState.lastWithdraw = now;
       saveLocal();
-      supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
       alert("Solicitud de retiro registrada. Procesando en horario bancario.");
       closeWalletModal();
     };
@@ -1132,14 +1149,14 @@
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
 
-    document.getElementById('btn-save-profile').addEventListener('click', () => {
+    document.getElementById('btn-save-profile').addEventListener('click', async () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
 
       if (appState.phone) {
-        supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', {
+        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', {
           name: appState.name,
           cvu: appState.cvu,
           alias: appState.alias
@@ -1219,12 +1236,12 @@
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
-      const users = await supabaseRequest(`usuarios?phone=eq.${phone}&select=balance`);
+      const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=balance`);
       let saldoActual = 0;
       if (users && users.length > 0) saldoActual = parseFloat(users[0].balance) || 0;
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      await supabaseRequest(`usuarios?phone=eq.${phone}`, 'PATCH', { balance: nuevoSaldo });
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { balance: nuevoSaldo });
 
       if (String(solicitudId).startsWith('LOC-')) {
         try {
