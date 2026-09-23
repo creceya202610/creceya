@@ -62,10 +62,9 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= ANUNCIO EMERGENTE OFICIAL (POPUP) ================= -->
+  <!-- AVISO OFICIAL CRECE YA -->
   <div id="notice-modal" class="fixed inset-0 z-50 bg-[#020813]/85 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="card-theme bg-white border border-sky-300 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-slate-850 relative">
-      
       <div class="text-center space-y-2">
         <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-100 border border-sky-200 text-sky-600 text-2xl shadow-xs">
           <i class="fa-solid fa-bullhorn"></i>
@@ -249,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (DINÁMICO CON EL TELÉFONO DE CADA UNO) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -511,10 +510,9 @@
       </div>
     </div>
 
-    <!-- ================= MODAL ADMIN CENTRAL (DISEÑO AZUL NOCHE CRECE YA) ================= -->
+    <!-- MODAL ADMIN CENTRAL -->
     <div id="admin-modal" class="fixed inset-0 z-50 bg-[#020813]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
       <div class="bg-[#0b1b2d] border border-sky-800/80 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-        
         <div class="flex items-center justify-between border-b border-sky-900/60 pb-2.5">
           <h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
             <i class="fa-solid fa-user-shield"></i> Consola Central Crece YA
@@ -549,10 +547,14 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
+  <!-- LÓGICA JAVASCRIPT DINÁMICA -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
+
+    // Captura automática del referente desde la URL (?ref=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const referredBy = urlParams.get('ref') || null;
 
     async function supabaseRequest(endpoint, method = 'GET', body = null) {
       const headers = {
@@ -568,7 +570,7 @@
         if (!res.ok) return null;
         return await res.json();
       } catch (e) {
-        console.warn("Supabase fetch warning:", e);
+        console.warn("Supabase warning:", e);
         return null;
       }
     }
@@ -689,20 +691,47 @@
       if (el) el.innerText = currentCaptcha;
     }
 
-    // MODAL DE AVISO OFICIAL
     window.closeNoticeModal = function() {
       document.getElementById('notice-modal').classList.add('hidden');
     };
+
+    // ACTUALIZACIÓN DINÁMICA DEL ENLACE DE CADA USUARIO
+    function updateReferralLink() {
+      const userRefCode = appState.phone ? appState.phone.replace(/[^0-9]/g, '') : '11482019';
+      const myPersonalRefUrl = `${window.location.origin}${window.location.pathname}?ref=${userRefCode}`;
+      
+      const inputEl = document.getElementById('ref-link-input');
+      if (inputEl) inputEl.value = myPersonalRefUrl;
+
+      // Evento de Copiar Link
+      const btnCopy = document.getElementById('btn-copy-ref');
+      if (btnCopy) {
+        btnCopy.onclick = () => {
+          navigator.clipboard.writeText(myPersonalRefUrl).then(() => {
+            btnCopy.innerText = "¡Copiado!";
+            setTimeout(() => { btnCopy.innerText = "Copiar"; }, 1500);
+          });
+        };
+      }
+
+      // Evento de Compartir en WhatsApp con link individual
+      const btnWs = document.getElementById('btn-share-whatsapp');
+      if (btnWs) {
+        btnWs.onclick = () => {
+          const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myPersonalRefUrl}`);
+          window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+        };
+      }
+    }
 
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
         if (authScreen) authScreen.remove();
         document.getElementById('user-display-phone').innerText = appState.phone;
+        updateReferralLink();
         sincronizarSaldoServidor();
         renderUI();
-        
-        // Mostrar aviso oficial si ya ingresó
         document.getElementById('notice-modal').classList.remove('hidden');
       } else {
         generateCaptcha();
@@ -773,18 +802,20 @@
       const authScreen = document.getElementById('auth-screen');
       if (authScreen) authScreen.remove();
       document.getElementById('user-display-phone').innerText = appState.phone;
+      updateReferralLink();
       renderUI();
 
-      // Abrir aviso popup oficial al ingresar
       document.getElementById('notice-modal').classList.remove('hidden');
 
+      // Guardar usuario en Supabase con su patrocinador si ingresó por link
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
         name: appState.name || '',
         cvu: appState.cvu || '',
         alias: appState.alias || '',
-        balance: appState.balance || 0
+        balance: appState.balance || 0,
+        invited_by: referredBy
       });
     };
 
@@ -804,6 +835,7 @@
       });
       document.getElementById(`view-${tabName}`).classList.remove('hidden');
       document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
+      if (tabName === 'compartir') updateReferralLink();
     };
 
     document.getElementById('btn-tab-iniciales').addEventListener('click', () => {
@@ -1002,7 +1034,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRec.classList.add('hidden');
+        boxRet.classList.add('hidden');
       }
     };
 
@@ -1096,18 +1128,6 @@
       closeWalletModal();
     };
 
-    const myRefUrl = `${window.location.origin}${window.location.pathname}?ref=11482019`;
-    document.getElementById('ref-link-input').value = myRefUrl;
-
-    document.getElementById('btn-copy-ref').addEventListener('click', () => {
-      navigator.clipboard.writeText(myRefUrl).then(() => alert("¡Enlace copiado!"));
-    });
-
-    document.getElementById('btn-share-whatsapp').addEventListener('click', () => {
-      const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myRefUrl}`);
-      window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
-    });
-
     document.getElementById('prof-name-input').value = appState.name;
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
@@ -1128,7 +1148,6 @@
       alert("Datos bancarios guardados.");
     });
 
-    // DETECTOR 4 TOQUES EN EL LOGO
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
@@ -1150,7 +1169,6 @@
       }
     });
 
-    // LECTURA DE SOLICITUDES EN AZUL NOCHE Y APROBACIÓN INMEDIATA
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
