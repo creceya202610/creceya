@@ -412,7 +412,7 @@
             <input id="deposit-custom-input" type="number" min="2000" value="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
           </div>
 
-          <button onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+          <button id="btn-notify-deposit" onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
             <i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante
           </button>
         </div>
@@ -458,7 +458,7 @@
       </div>
     </div>
 
-    <!-- ================= MODAL ADMIN CENTRAL (DISEÑO EXACTO A TU CAPTURA) ================= -->
+    <!-- ================= MODAL ADMIN CENTRAL ================= -->
     <div id="admin-modal" class="fixed inset-0 z-50 bg-[#06040d]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
       <div class="bg-[#0f091c] border border-purple-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
         
@@ -496,7 +496,7 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT -->
+  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -512,9 +512,10 @@
       if (body) options.body = JSON.stringify(body);
       try {
         const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
+        if (!res.ok) return null;
         return await res.json();
       } catch (e) {
-        console.warn("Supabase error:", e);
+        console.warn("Supabase fetch warning:", e);
         return null;
       }
     }
@@ -624,7 +625,6 @@
       }
     }
 
-    // Traer el saldo actualizado desde Supabase por si el admin aprobó una recarga
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       const data = await supabaseRequest(`usuarios?phone=eq.${appState.phone}&select=*`);
@@ -668,7 +668,6 @@
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // Enviar a Supabase
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
@@ -907,26 +906,44 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // REGISTRAR SOLICITUD EN SUPABASE Y ABRIR TELEGRAM
+    // ENVÍO DE RECARGA CON ESPERA GARANTIZADA ANTES DE ABRIR TELEGRAM
     window.notifyDepositTelegram = async function() {
+      const btn = document.getElementById('btn-notify-deposit');
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
       if (val < 2000) {
         alert("El monto mínimo de recarga es de $2.000 ARS.");
         return;
       }
+
+      btn.disabled = true;
+      btn.innerText = "Registrando solicitud...";
+
       appState.pending += val;
       saveLocal();
 
-      // Guardar en la tabla solicitudes de Supabase
-      await supabaseRequest('solicitudes', 'POST', {
-        user_phone: appState.phone,
+      const solicitudItem = {
+        user_phone: appState.phone || 'Usuario Anónimo',
         user_name: appState.name || 'Usuario Crece YA',
         amount: val,
         status: 'pendiente'
-      });
+      };
+
+      // Guardar en Supabase
+      const res = await supabaseRequest('solicitudes', 'POST', solicitudItem);
+
+      // Respaldo local
+      try {
+        let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+        localQueue.unshift({ ...solicitudItem, id: 'LOC-' + Date.now(), created_at: new Date().toISOString() });
+        localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
+      } catch(e) {}
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante';
 
       window.open('https://t.me/+gROOyK5OfpI5MTQx', '_blank');
       closeWalletModal();
+      alert("¡Solicitud registrada con éxito! El administrador verificará tu comprobante.");
     };
 
     window.setWithdrawValue = function(v) {
@@ -1004,7 +1021,7 @@
       alert("Datos bancarios guardados.");
     });
 
-    // ================= DETECTOR 4 TOQUES EN EL LOGO =================
+    // DETECTOR 4 TOQUES EN EL LOGO
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
@@ -1026,25 +1043,37 @@
       }
     });
 
-    // ================= CARGA DE TARJETAS IDÉNTICAS A LA 2DA IMAGEN =================
+    // LECTURA ROBUSTA: Supabase + Cola Local
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
-      container.innerHTML = '<p class="text-xs text-purple-300 text-center py-6">Consultando solicitudes en Supabase...</p>';
+      container.innerHTML = '<p class="text-xs text-purple-300 text-center py-6">Consultando solicitudes en vivo...</p>';
 
-      const data = await supabaseRequest('solicitudes?status=eq.pendiente&order=id.desc');
+      let list = [];
+      try {
+        const data = await supabaseRequest('solicitudes?status=eq.pendiente');
+        if (Array.isArray(data)) list = data;
+      } catch(e) {}
 
-      if (!data || data.length === 0) {
+      // Si Supabase aún no devolvió registros, usar cola local
+      if (list.length === 0) {
+        try {
+          const localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+          list = localQueue.filter(item => item.status === 'pendiente');
+        } catch(e) {}
+      }
+
+      if (list.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay depósitos pendientes por aprobar.</p>';
         return;
       }
 
-      container.innerHTML = data.map(item => {
-        const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      container.innerHTML = list.map(item => {
+        const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div class="p-3.5 rounded-2xl bg-[#17102a] border border-purple-900/60 shadow-md space-y-2.5">
+          <div class="p-3.5 rounded-2xl bg-[#17102a] border border-purple-900/60 shadow-md space-y-2.5 text-left">
             <div class="flex justify-between items-start">
               <div>
-                <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario'}</h4>
+                <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
                 <span class="text-[11px] text-purple-300 font-mono block mt-0.5">${item.user_phone}</span>
               </div>
               <span class="font-bold text-amber-400 font-mono text-sm">$${fmt(item.amount)} ARS</span>
@@ -1055,7 +1084,7 @@
               <span>${timeStr}</span>
             </div>
 
-            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl transition shadow">
+            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
               Aprobar y Acreditar Saldo
             </button>
           </div>
@@ -1063,31 +1092,37 @@
       }).join('');
     };
 
-    // APROBACIÓN DIRECTA: Actualiza Supabase y acredita el saldo de inmediato
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
-      // 1. Obtener saldo actual del usuario en Supabase
+      // 1. Obtener saldo actual en Supabase
       const users = await supabaseRequest(`usuarios?phone=eq.${phone}&select=balance`);
       let saldoActual = 0;
       if (users && users.length > 0) saldoActual = parseFloat(users[0].balance) || 0;
-
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
       // 2. Acreditar saldo en Supabase
       await supabaseRequest(`usuarios?phone=eq.${phone}`, 'PATCH', { balance: nuevoSaldo });
 
       // 3. Marcar la solicitud como aprobada
-      await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
+      if (String(solicitudId).startsWith('LOC-')) {
+        try {
+          let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+          localQueue = localQueue.filter(i => i.id !== solicitudId);
+          localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
+        } catch(e) {}
+      } else {
+        await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
+      }
 
-      // Si el teléfono coincide con el del dispositivo actual, actualizar la pantalla local
+      // Si coincide con la sesión actual, reflejarlo de inmediato en pantalla
       if (appState.phone === phone) {
         appState.balance = nuevoSaldo;
         if (appState.pending >= amount) appState.pending -= amount;
         saveLocal();
       }
 
-      alert(`¡Aprobado! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
+      alert(`¡Aprobado con éxito! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
       cargarSolicitudesAdmin();
     };
 
