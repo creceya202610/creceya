@@ -280,7 +280,6 @@
           <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las bonificaciones se liberan de forma automática.</p>
         </div>
 
-        <!-- LISTA DINÁMICA DE INVITADOS -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <div class="flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Tus Invitados Registrados</h3>
@@ -558,7 +557,7 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
+  <!-- LÓGICA JAVASCRIPT BLINDADA -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -788,7 +787,6 @@
       }).join('');
     }
 
-    // SINCRONIZACIÓN DE SALDO Y PLANES ACTIVOS DESDE SUPABASE
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       
@@ -809,7 +807,6 @@
         if (data[0].cvu) appState.cvu = data[0].cvu;
         if (data[0].alias) appState.alias = data[0].alias;
         
-        // Sincronizar planes activos desde Supabase
         if (data[0].active_plans && Array.isArray(data[0].active_plans)) {
           appState.activePlans = data[0].active_plans;
         }
@@ -1007,7 +1004,6 @@
       });
     }
 
-    // ACTIVACIÓN CON GUARDADO DIRECTO EN SUPABASE
     window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
@@ -1027,12 +1023,12 @@
             total: p.total,
             days: p.days,
             logo: p.logo,
-            endTime: endTimeVal
+            endTime: endTimeVal,
+            completed: false
           });
 
           saveLocal();
 
-          // Guardar saldo y contrato en Supabase para que no se pierdan nunca
           await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
             balance: appState.balance,
             active_plans: appState.activePlans
@@ -1046,12 +1042,13 @@
       }
     };
 
+    // RENDERIZADO SEGURO: NUNCA BORRA PLANES ACTIVOS NI COMPLETADOS
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
       container.innerHTML = '';
 
-      if (appState.activePlans.length === 0) {
+      if (!appState.activePlans || appState.activePlans.length === 0) {
         container.innerHTML = `
           <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
             <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
@@ -1065,24 +1062,22 @@
       }
 
       const now = Date.now();
-      appState.activePlans.forEach((plan, index) => {
+      appState.activePlans.forEach((plan) => {
         const remaining = plan.endTime - now;
+        const isEnded = remaining <= 0 || plan.completed;
 
-        if (remaining <= 0) {
-          appState.balance += plan.total;
-          appState.activePlans.splice(index, 1);
-          saveLocal();
-          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
-            balance: appState.balance,
-            active_plans: appState.activePlans
-          });
-          alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
-          return;
+        let statusBadge = '<span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">En Operación</span>';
+        let timeDisplay = '';
+
+        if (isEnded) {
+          statusBadge = '<span class="text-xs font-mono text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md font-bold">Ciclo Completado ✓</span>';
+          timeDisplay = '<span class="font-mono font-bold text-emerald-600 text-xs">Rendimientos acreditados</span>';
+        } else {
+          const h = Math.floor(remaining / (1000 * 60 * 60));
+          const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((remaining % (1000 * 60)) / 1000);
+          timeDisplay = `<span class="font-mono font-bold text-sky-800 text-sm">${h}h ${m}m ${s}s</span>`;
         }
-
-        const h = Math.floor(remaining / (1000 * 60 * 60));
-        const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((remaining % (1000 * 60)) / 1000);
 
         const card = document.createElement('div');
         card.className = "card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2.5";
@@ -1092,9 +1087,7 @@
               <img src="${plan.logo}" class="w-6 h-6 object-contain">
               <h4 class="font-bold text-sm text-slate-900 text-main">${plan.name}</h4>
             </div>
-            <span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
-              En Operación
-            </span>
+            ${statusBadge}
           </div>
           <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
             <div>
@@ -1107,8 +1100,8 @@
             </div>
           </div>
           <div class="flex items-center justify-between text-xs pt-1">
-            <span class="text-slate-400 font-mono text-sub">Conteo en vivo:</span>
-            <span class="font-mono font-bold text-sky-800 text-sm">${h}h ${m}m ${s}s</span>
+            <span class="text-slate-400 font-mono text-sub">Estado:</span>
+            ${timeDisplay}
           </div>
         `;
         container.appendChild(card);
@@ -1150,7 +1143,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRec.classList.add('hidden');
+        boxRet.classList.add('hidden');
       }
     };
 
