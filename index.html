@@ -71,7 +71,6 @@
         <p class="text-xs text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
       </div>
 
-      <!-- Selector de Modo: Registrarse vs Iniciar Sesión -->
       <div class="grid grid-cols-2 p-1 bg-[#13283f] rounded-xl text-xs font-bold">
         <button id="tab-auth-register" type="button" onclick="setAuthMode('register')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition">
           Registrarse
@@ -468,12 +467,12 @@
       </div>
     </div>
 
-    <!-- ================= MODAL ADMIN CENTRAL ================= -->
-    <div id="admin-modal" class="fixed inset-0 z-50 bg-[#06040d]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-      <div class="bg-[#0f091c] border border-purple-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+    <!-- ================= MODAL ADMIN CENTRAL (DISEÑO AZUL NOCHE CRECE YA) ================= -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-[#020813]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+      <div class="bg-[#0b1b2d] border border-sky-800/80 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
         
-        <div class="flex items-center justify-between border-b border-purple-950 pb-2.5">
-          <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+        <div class="flex items-center justify-between border-b border-sky-900/60 pb-2.5">
+          <h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
             <i class="fa-solid fa-user-shield"></i> Consola Central Crece YA
           </h3>
           <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">
@@ -482,9 +481,9 @@
         </div>
 
         <div id="admin-auth-box" class="space-y-3">
-          <label class="text-xs text-purple-300/80 block">INGRESA LA CLAVE MAESTRA</label>
-          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-[#18112b] border border-purple-900/80 rounded-xl p-2.5 text-center text-base font-mono tracking-widest text-amber-400 outline-none">
-          <button id="btn-admin-unlock" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs rounded-xl transition">
+          <label class="text-xs text-sky-300/80 block">INGRESA LA CLAVE MAESTRA</label>
+          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-[#13283f] border border-sky-700/60 rounded-xl p-2.5 text-center text-base font-mono tracking-widest text-sky-300 outline-none">
+          <button id="btn-admin-unlock" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs rounded-xl transition">
             Desbloquear
           </button>
         </div>
@@ -492,13 +491,13 @@
         <div id="admin-dashboard-box" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
           <div class="flex justify-between items-center text-xs">
             <span class="font-bold text-white">Depósitos Pendientes en Vivo</span>
-            <button onclick="cargarSolicitudesAdmin()" class="text-amber-400 hover:underline flex items-center gap-1 font-mono">
+            <button onclick="cargarSolicitudesAdmin()" class="text-sky-400 hover:underline flex items-center gap-1 font-mono">
               <i class="fa-solid fa-rotate-right"></i> Refrescar
             </button>
           </div>
 
           <div id="admin-deposits-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
-            <p class="text-[11px] text-slate-500 text-center py-6">Cargando solicitudes...</p>
+            <p class="text-[11px] text-slate-400 text-center py-6">Cargando solicitudes...</p>
           </div>
         </div>
       </div>
@@ -506,7 +505,7 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT SIN TRABAS Y CON LOGIN/REGISTRO INTELIGENTE -->
+  <!-- LÓGICA JAVASCRIPT GARANTIZADA -->
   <script>
     const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -646,7 +645,6 @@
       if (el) el.innerText = currentCaptcha;
     }
 
-    // PERSISTENCIA DE SESIÓN: SI YA EXISTE, NO VUELVE A MOSTRAR EL ACCESO
     function checkAuth() {
       const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
@@ -672,7 +670,6 @@
       }
     }
 
-    // GESTIÓN DE ACCESO (REGISTRO O LOGIN DIRECTO)
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -704,7 +701,6 @@
           return;
         }
       } else {
-        // Modo Login: Validar contra Supabase
         const dbUsers = await supabaseRequest(`usuarios?phone=eq.${phone}&select=*`);
         if (dbUsers && dbUsers.length > 0) {
           if (dbUsers[0].pass !== pass) {
@@ -727,7 +723,6 @@
       document.getElementById('user-display-phone').innerText = appState.phone;
       renderUI();
 
-      // Guardar / actualizar en Supabase
       supabaseRequest('usuarios', 'POST', {
         phone: phone,
         pass: pass,
@@ -966,7 +961,6 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO GARANTIZADO DE SOLICITUD A SUPABASE CON ESPERA ANTES DE ABRIR TELEGRAM
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
@@ -988,10 +982,8 @@
         status: 'pendiente'
       };
 
-      // Guardar en Supabase esperando confirmación
       await supabaseRequest('solicitudes', 'POST', solicitudItem);
 
-      // Respaldo local
       try {
         let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
         localQueue.unshift({ ...solicitudItem, id: 'LOC-' + Date.now(), created_at: new Date().toISOString() });
@@ -1081,7 +1073,6 @@
       alert("Datos bancarios guardados.");
     });
 
-    // DETECTOR 4 TOQUES EN EL LOGO
     let logoClicks = 0;
     document.getElementById('admin-logo-trigger').addEventListener('click', () => {
       logoClicks++;
@@ -1103,10 +1094,10 @@
       }
     });
 
-    // LECTURA DE SOLICITUDES EN LA CONSOLA
+    // LECTURA DE SOLICITUDES EN AZUL NOCHE Y APROBACIÓN INMEDIATA
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
-      container.innerHTML = '<p class="text-xs text-purple-300 text-center py-6">Consultando solicitudes en vivo...</p>';
+      container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
 
       let list = [];
       try {
@@ -1129,21 +1120,21 @@
       container.innerHTML = list.map(item => {
         const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div class="p-3.5 rounded-2xl bg-[#17102a] border border-purple-900/60 shadow-md space-y-2.5 text-left">
+          <div class="p-3.5 rounded-2xl bg-[#13283f] border border-sky-800/70 shadow-md space-y-2.5 text-left">
             <div class="flex justify-between items-start">
               <div>
                 <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
-                <span class="text-[11px] text-purple-300 font-mono block mt-0.5">${item.user_phone}</span>
+                <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
               </div>
-              <span class="font-bold text-amber-400 font-mono text-sm">$${fmt(item.amount)} ARS</span>
+              <span class="font-bold text-sky-400 font-mono text-sm">$${fmt(item.amount)} ARS</span>
             </div>
 
-            <div class="flex justify-between items-center text-[10px] text-purple-400/80 font-mono">
+            <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono">
               <span>Transferencia Bancaria</span>
               <span>${timeStr}</span>
             </div>
 
-            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
               Aprobar y Acreditar Saldo
             </button>
           </div>
@@ -1154,16 +1145,13 @@
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
-      // 1. Obtener saldo actual en Supabase
       const users = await supabaseRequest(`usuarios?phone=eq.${phone}&select=balance`);
       let saldoActual = 0;
       if (users && users.length > 0) saldoActual = parseFloat(users[0].balance) || 0;
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      // 2. Acreditar saldo en Supabase
       await supabaseRequest(`usuarios?phone=eq.${phone}`, 'PATCH', { balance: nuevoSaldo });
 
-      // 3. Marcar solicitud como aprobada
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
