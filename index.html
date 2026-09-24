@@ -747,15 +747,20 @@
 
       let invitados = [];
       try {
-        const { data: allUsers } = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by');
+        const res = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by');
+        const allUsers = Array.isArray(res) ? res : (res && res.data ? res.data : []);
+
         if (Array.isArray(allUsers)) {
           invitados = allUsers.filter(u => {
             if (!u.invited_by) return false;
-            const refClean = String(u.invited_by).replace(/\D/g, '');
-            return refClean === digitsPhone || u.invited_by === rawPhone;
+            const refRaw = String(u.invited_by).trim();
+            const refClean = refRaw.replace(/\D/g, '');
+            return refClean === digitsPhone || refRaw === rawPhone || (digitsPhone.length >= 8 && refClean.endsWith(digitsPhone.slice(-8)));
           });
         }
-      } catch(e) {}
+      } catch(e) {
+        console.warn("Error cargando invitados:", e);
+      }
 
       if (badge) badge.innerText = `${invitados.length} en tu red`;
 
