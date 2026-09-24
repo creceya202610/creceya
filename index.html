@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (CON LA ESCALA LIMPIA SIN ACLARACIONES) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -290,18 +290,18 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES ACUMULATIVAS -->
+        <!-- ESCALA DE BONIFICACIONES LIMPIA Y DIRECTA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones Acumulativas</h3>
+          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
             <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$1.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $2.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $4.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $8.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$7.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $15.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $30.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $60.000)</span></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$40.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $100.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
           </div>
         </div>
       </div>
@@ -447,7 +447,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO DIFERENCIADOS) -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -476,7 +476,7 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- ================= BOX 1: RECARGA (MÍNIMO $2.000 ARS) ================= -->
+        <!-- BOX RECARGA -->
         <div id="wallet-recarga-box" style="display: block;" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
@@ -512,7 +512,7 @@
           </button>
         </div>
 
-        <!-- ================= BOX 2: RETIRO (MÍNIMO $5.000 ARS - CVU PERSONAL) ================= -->
+        <!-- BOX RETIRO -->
         <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
@@ -1195,7 +1195,7 @@
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
 
-    // CONTROL EXACTO DE PESTAÑAS: FUERZA LA VISIBILIDAD MEDIANTE STYLE.DISPLAY
+    // CONTROL EXACTO DE PESTAÑAS: FUERZA LA VISIBILIDAD DIRECTAMENTE
     window.setWalletMode = function(mode) {
       const btnRec = document.getElementById('wallet-tab-recargar');
       const btnRet = document.getElementById('wallet-tab-retirar');
@@ -1472,7 +1472,7 @@
       }).join('');
     };
 
-    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA
+    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA (POR DIFERENCIA)
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
