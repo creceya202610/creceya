@@ -115,10 +115,10 @@
       </div>
 
       <div class="grid grid-cols-2 p-1 bg-[#13283f] rounded-xl text-xs font-bold">
-        <button id="tab-auth-register" type="button" onclick="setAuthMode('register')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition">
+        <button id="tab-auth-register" type="button" onclick="setAuthMode('register')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer">
           Registrarse
         </button>
-        <button id="tab-auth-login" type="button" onclick="setAuthMode('login')" class="py-2 rounded-lg text-slate-400 hover:text-white transition">
+        <button id="tab-auth-login" type="button" onclick="setAuthMode('login')" class="py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
           Iniciar Sesión
         </button>
       </div>
@@ -153,7 +153,7 @@
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center justify-between bg-[#081320] border border-sky-800/80 rounded-xl px-3 py-2">
               <span id="captcha-code-display" class="font-mono text-lg font-black tracking-widest text-amber-400 select-none">4821</span>
-              <button type="button" onclick="generateCaptcha()" class="text-slate-400 hover:text-white text-sm">
+              <button type="button" onclick="generateCaptcha()" class="text-slate-400 hover:text-white text-sm cursor-pointer">
                 <i class="fa-solid fa-rotate-right"></i>
               </button>
             </div>
@@ -182,14 +182,14 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition" title="Cambiar tema">
+          <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition cursor-pointer" title="Cambiar tema">
             <i id="theme-icon" class="fa-solid fa-moon"></i>
           </button>
 
           <span class="text-xs bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded-full font-bold font-mono">
             EN LÍNEA ✓
           </span>
-          <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-sm px-1">
+          <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-sm px-1 cursor-pointer">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
@@ -344,6 +344,7 @@
           </button>
         </div>
 
+        <!-- DATOS BANCARIOS -->
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex justify-between items-center">
             <span class="font-bold text-slate-800 text-sm text-main">Cuenta Bancaria para Retiros</span>
@@ -369,6 +370,34 @@
             </div>
             <button id="btn-save-profile" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition mt-1 cursor-pointer">
               Guardar Datos de Cobro
+            </button>
+          </div>
+        </div>
+
+        <!-- CAMBIO DE CONTRASEÑA -->
+        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
+          <div class="flex items-center gap-2 border-b border-sky-100 pb-2">
+            <i class="fa-solid fa-key text-sky-600 text-sm"></i>
+            <span class="font-bold text-slate-800 text-sm text-main">Seguridad / Cambiar Contraseña</span>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <div>
+              <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CONTRASEÑA ACTUAL</label>
+              <input id="prof-old-pass" type="password" placeholder="Tu contraseña actual" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">NUEVA CONTRASEÑA</label>
+                <input id="prof-new-pass" type="password" placeholder="Nueva clave" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
+              </div>
+              <div>
+                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">REPETIR NUEVA</label>
+                <input id="prof-new-pass-confirm" type="password" placeholder="Repetir clave" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
+              </div>
+            </div>
+            <button id="btn-change-pass" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl transition mt-1 cursor-pointer">
+              Actualizar Contraseña
             </button>
           </div>
         </div>
@@ -491,7 +520,6 @@
             <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto personalizado (mín. 5.000)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
           </div>
 
-          <!-- CAMPOS DE DESTINO BANCARIO -->
           <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
             <div>
               <label class="text-[11px] text-slate-300 block mb-0.5">TITULAR DE LA CUENTA DE DESTINO</label>
@@ -826,6 +854,7 @@
         if (!isNaN(nuevoBalance) && appState.balance !== nuevoBalance) {
           appState.balance = nuevoBalance;
         }
+        if (data[0].pass) appState.pass = data[0].pass;
         if (data[0].name) appState.name = data[0].name;
         if (data[0].cvu) appState.cvu = data[0].cvu;
         if (data[0].alias) appState.alias = data[0].alias;
@@ -1176,7 +1205,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.classList.add('hidden');
       }
     };
 
@@ -1303,7 +1332,49 @@
           alias: appState.alias
         });
       }
-      alert("Datos bancarios guardados.");
+      alert("Datos bancarios guardados con éxito.");
+    });
+
+    // LÓGICA CAMBIAR CONTRASEÑA EN EL PERFIL
+    document.getElementById('btn-change-pass').addEventListener('click', async () => {
+      const oldPass = document.getElementById('prof-old-pass').value;
+      const newPass = document.getElementById('prof-new-pass').value;
+      const confirmPass = document.getElementById('prof-new-pass-confirm').value;
+
+      if (!oldPass || !newPass || !confirmPass) {
+        alert("Por favor completa todos los campos de contraseña.");
+        return;
+      }
+
+      if (oldPass !== appState.pass) {
+        alert("La contraseña actual es incorrecta.");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        alert("La nueva contraseña y su confirmación no coinciden.");
+        return;
+      }
+
+      if (newPass.length < 4) {
+        alert("La contraseña debe tener al menos 4 caracteres.");
+        return;
+      }
+
+      appState.pass = newPass;
+      saveLocal();
+
+      if (appState.phone) {
+        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', {
+          pass: newPass
+        });
+      }
+
+      document.getElementById('prof-old-pass').value = '';
+      document.getElementById('prof-new-pass').value = '';
+      document.getElementById('prof-new-pass-confirm').value = '';
+
+      alert("¡Contraseña actualizada con éxito en el servidor!");
     });
 
     let logoClicks = 0;
