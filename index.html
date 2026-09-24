@@ -290,17 +290,18 @@
           </div>
         </div>
 
+        <!-- ESCALA DE BONIFICACIONES ACUMULATIVAS -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
+          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones Acumulativas</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
             <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$1.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $2.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $4.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $8.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$7.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $15.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $30.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $60.000)</span></div>
+            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$40.000 ARS</strong> <span class="text-[10px] text-slate-400 block">(Total $100.000)</span></div>
           </div>
         </div>
       </div>
@@ -1457,7 +1458,7 @@
       }).join('');
     };
 
-    // APROBAR / CONFIRMAR CON ESCALA ACUMULATIVA DE BONOS
+    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA (DIFERENCIAL)
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
@@ -1474,13 +1475,13 @@
 
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      // 1. Acreditar saldo en Supabase
+      // 1. Acreditar saldo en Supabase al usuario que depositó
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
         balance: nuevoSaldo,
         has_deposited: true 
       });
 
-      // 2. Liquidación del Bono al Referente con Escala Oficial
+      // 2. Liquidación del Bono al Referente por Hitos Diferenciales
       if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
         const cleanRef = String(invitadoPor).replace(/\D/g, '');
         const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
@@ -1489,25 +1490,30 @@
           const sponsorPhone = sponsors[0].phone;
           const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
 
+          // Contar total de oficiales incluyendo este nuevo
           const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
           let cantOficiales = 1;
           if (Array.isArray(refUsers)) {
             cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
           }
 
-          let bonoPagar = 1000;
-          if (cantOficiales >= 100) bonoPagar = 100000;
-          else if (cantOficiales >= 50) bonoPagar = 60000;
-          else if (cantOficiales >= 40) bonoPagar = 30000;
-          else if (cantOficiales >= 20) bonoPagar = 15000;
-          else if (cantOficiales >= 10) bonoPagar = 8000;
-          else if (cantOficiales >= 5)  bonoPagar = 4000;
-          else if (cantOficiales >= 3)  bonoPagar = 2000;
-          else bonoPagar = 1000;
+          // BONO DIFERENCIAL SEGÚN EL HITO ALCANZADO
+          let bonoPagar = 0;
+          if (cantOficiales === 1) bonoPagar = 1000;        // 1° inv: +1.000 (Acum: 1.000)
+          else if (cantOficiales === 3) bonoPagar = 1000;   // 3° inv: +1.000 (Acum: 2.000)
+          else if (cantOficiales === 5) bonoPagar = 2000;   // 5° inv: +2.000 (Acum: 4.000)
+          else if (cantOficiales === 10) bonoPagar = 4000;  // 10° inv: +4.000 (Acum: 8.000)
+          else if (cantOficiales === 20) bonoPagar = 7000;  // 20° inv: +7.000 (Acum: 15.000)
+          else if (cantOficiales === 40) bonoPagar = 15000; // 40° inv: +15.000 (Acum: 30.000)
+          else if (cantOficiales === 50) bonoPagar = 30000; // 50° inv: +30.000 (Acum: 60.000)
+          else if (cantOficiales === 100) bonoPagar = 40000; // 100° inv: +40.000 (Acum: 100.000)
 
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
-            balance: saldoSponsor + bonoPagar 
-          });
+          if (bonoPagar > 0) {
+            await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
+              balance: saldoSponsor + bonoPagar 
+            });
+            console.log(`Bono diferencial por hito ($${bonoPagar} ARS) acreditado a ${sponsorPhone}`);
+          }
         }
       }
 
