@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -329,7 +329,7 @@
           </div>
         </div>
 
-        <!-- TARJETA DINÁMICA: RETIRO EN CURSO -->
+        <!-- TARJETA DINÁMICA DE RETIRO EN PROCESO -->
         <div id="active-withdraw-box" class="hidden p-3.5 bg-sky-900/40 border border-sky-500/40 rounded-2xl space-y-1 text-xs font-mono">
           <div class="flex justify-between items-center">
             <span class="font-bold text-sky-300">Solicitud de Retiro en Proceso</span>
@@ -354,12 +354,12 @@
           </button>
         </div>
 
-        <!-- DATOS BANCARIOS -->
+        <!-- DATOS BANCARIOS (ESTADO DINÁMICO DE VALIDACIÓN) -->
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex justify-between items-center">
             <span class="font-bold text-slate-800 text-sm text-main">Cuenta Bancaria para Retiros</span>
-            <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono text-amber-600 font-bold">
-              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En proceso de validación
+            <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono font-bold">
+              <!-- Renderizado dinámico -->
             </span>
           </div>
 
@@ -521,7 +521,7 @@
           </button>
         </div>
 
-        <!-- BOX RETIRO (SANITIZACIÓN AUTOMÁTICA DE CBU) -->
+        <!-- BOX RETIRO -->
         <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
@@ -664,6 +664,7 @@
       name: '',
       cvu: '',
       alias: '',
+      bankVerified: false,
       balance: 0,
       pending: 0,
       withdrawn: 0,
@@ -680,6 +681,7 @@
       appState.name = localStorage.getItem('cy_name') || '';
       appState.cvu = localStorage.getItem('cy_cvu') || '';
       appState.alias = localStorage.getItem('cy_alias') || '';
+      appState.bankVerified = localStorage.getItem('cy_bank_verified') === 'true';
       appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
       appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
       appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
@@ -748,6 +750,7 @@
         localStorage.setItem('cy_name', appState.name);
         localStorage.setItem('cy_cvu', appState.cvu);
         localStorage.setItem('cy_alias', appState.alias);
+        localStorage.setItem('cy_bank_verified', appState.bankVerified);
         localStorage.setItem('cy_bal', appState.balance);
         localStorage.setItem('cy_pending', appState.pending);
         localStorage.setItem('cy_withdrawn', appState.withdrawn);
@@ -889,6 +892,9 @@
         if (data[0].name) appState.name = data[0].name;
         if (data[0].cvu) appState.cvu = data[0].cvu;
         if (data[0].alias) appState.alias = data[0].alias;
+        if (data[0].bank_verified !== undefined) {
+          appState.bankVerified = data[0].bank_verified === true;
+        }
         
         if (data[0].active_plans && Array.isArray(data[0].active_plans)) {
           appState.activePlans = data[0].active_plans;
@@ -964,6 +970,7 @@
           alias: '',
           balance: 0,
           invited_by: referredBy,
+          bank_verified: false,
           active_plans: []
         });
       } else {
@@ -984,6 +991,7 @@
           appState.name = dbUsers[0].name || '';
           appState.cvu = dbUsers[0].cvu || '';
           appState.alias = dbUsers[0].alias || '';
+          appState.bankVerified = dbUsers[0].bank_verified === true;
           if (dbUsers[0].active_plans && Array.isArray(dbUsers[0].active_plans)) {
             appState.activePlans = dbUsers[0].active_plans;
           }
@@ -1151,7 +1159,6 @@
       }
     };
 
-    // RENDERIZADO CON LIBERACIÓN AUTOMÁTICA EN SUPABASE
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
@@ -1177,7 +1184,6 @@
         const remaining = plan.endTime - now;
         const isEnded = remaining <= 0 || plan.completed;
 
-        // Liberación autónoma de ganancias
         if (remaining <= 0 && !plan.completed) {
           plan.completed = true;
           appState.balance += plan.total;
@@ -1349,6 +1355,7 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
+    // CONFIRMAR RETIRO Y PONER ESTADO EN VALIDACIÓN
     window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
@@ -1539,7 +1546,6 @@
       }).join('');
     };
 
-    // BOTÓN DE AUDITORÍA DIRECTA DE BONOS DESDE LA CONSOLA ADMIN
     window.auditarBonosAdmin = async function() {
       if (!confirm("¿Deseas auditar y sincronizar los bonos de referidos en toda la base de datos?")) return;
       
@@ -1684,6 +1690,23 @@
       cargarSolicitudesAdmin();
     };
 
+    // RENDERIZADO VISUAL DEL ESTADO DE CUENTA BANCARIA
+    function renderBankStatus() {
+      const badge = document.getElementById('bank-status-badge');
+      if (!badge) return;
+
+      if (appState.bankVerified) {
+        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-emerald-600";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> 🟢 Validado / Aprobado ✓`;
+      } else if (appState.cvu && appState.cvu.length >= 10) {
+        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-amber-600";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En proceso de validación`;
+      } else {
+        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-slate-400";
+        badge.innerHTML = `⚪ Sin vincular`;
+      }
+    }
+
     function renderUI() {
       document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-sm font-normal text-slate-400">ARS</span>`;
       document.getElementById('profile-bal-ars').innerText = `$${fmt(appState.balance)}`;
@@ -1691,7 +1714,7 @@
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
 
-      // Tarjeta de retiro en proceso en Mi Perfil
+      // Tarjeta de retiro en proceso
       const withdrawBox = document.getElementById('active-withdraw-box');
       const withdrawText = document.getElementById('active-withdraw-text');
       const diffWithdraw = Date.now() - (appState.lastWithdraw || 0);
@@ -1703,6 +1726,7 @@
         withdrawBox.classList.add('hidden');
       }
 
+      renderBankStatus();
       renderPlans();
     }
 
