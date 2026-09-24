@@ -417,7 +417,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO CON CVU DESTINO EDITABLE) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -446,6 +446,7 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
+        <!-- BOX RECARGA -->
         <div id="wallet-recarga-box" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
@@ -479,23 +480,30 @@
           </button>
         </div>
 
-        <div id="wallet-retiro-box" class="hidden space-y-3.5 text-xs">
+        <!-- BOX RETIRO CON CVU DESTINO PROPIO -->
+        <div id="wallet-retiro-box" class="hidden space-y-3 text-xs">
           <div>
-            <label class="text-xs text-slate-400 block mb-1">Seleccionar monto de retiro</label>
-            <div class="grid grid-cols-2 gap-2 font-mono">
-              <button onclick="setWithdrawValue(5000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">5,000.00</button>
-              <button onclick="setWithdrawValue(15000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">15,000.00</button>
-              <button onclick="setWithdrawValue(50000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">50,000.00</button>
-              <button onclick="setWithdrawValue(150000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">150,000.00</button>
+            <label class="text-xs text-slate-400 block mb-1">Monto de retiro</label>
+            <div class="grid grid-cols-2 gap-2 font-mono mb-2">
+              <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">5,000.00</button>
+              <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">15,000.00</button>
+            </div>
+            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto personalizado (mín. 5.000)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+          </div>
+
+          <!-- CAMPOS DE DESTINO BANCARIO -->
+          <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
+            <div>
+              <label class="text-[11px] text-slate-300 block mb-0.5">TITULAR DE LA CUENTA DE DESTINO</label>
+              <input id="withdraw-dest-name" type="text" placeholder="Nombre completo" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-300 block mb-0.5">TU CBU O CVU PERSONAL DE COBRO</label>
+              <input id="withdraw-dest-cvu" type="text" placeholder="22 dígitos de tu billetera o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
             </div>
           </div>
 
-          <div>
-            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Ingrese un monto personalizado (mín. 5.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 font-mono font-bold text-white outline-none">
-            <span class="text-[11px] text-slate-500 block mt-1">Límite operativo: 1 retiro cada 24 hs</span>
-          </div>
-
-          <div class="p-3 bg-[#132337] rounded-xl border border-slate-800 font-mono text-xs space-y-1">
+          <div class="p-2.5 bg-[#132337] rounded-xl border border-slate-800 font-mono text-xs space-y-1">
             <div class="flex justify-between text-slate-400">
               <span>Retención administrativa:</span>
               <span class="text-rose-400 font-bold">10%</span>
@@ -507,7 +515,7 @@
           </div>
 
           <div>
-            <div class="flex items-center bg-[#132337] border border-slate-800 rounded-xl px-3 py-2.5 text-xs">
+            <div class="flex items-center bg-[#132337] border border-slate-800 rounded-xl px-3 py-2 text-xs">
               <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
               <input id="withdraw-fund-pass" type="password" placeholder="Contraseña de fondos" class="bg-transparent text-white w-full outline-none font-mono">
             </div>
@@ -1049,7 +1057,6 @@
       }
     };
 
-    // RENDERIZADO SEGURO: NUNCA BORRA PLANES ACTIVOS NI COMPLETADOS
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
@@ -1131,6 +1138,13 @@
 
     window.openWalletModal = function(mode) {
       document.getElementById('wallet-modal').classList.remove('hidden');
+      
+      // Precargar los datos bancarios del usuario si ya los tiene
+      const destNameEl = document.getElementById('withdraw-dest-name');
+      const destCvuEl = document.getElementById('withdraw-dest-cvu');
+      if (destNameEl && appState.name) destNameEl.value = appState.name;
+      if (destCvuEl && appState.cvu) destCvuEl.value = appState.cvu;
+
       setWalletMode(mode);
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
@@ -1150,7 +1164,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.classList.add('hidden');
       }
     };
 
@@ -1236,11 +1250,29 @@
         return;
       }
 
+      // Validar datos de destino
+      const destName = document.getElementById('withdraw-dest-name').value.trim();
+      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim();
+
+      if (!destCvu || destCvu.length < 10) {
+        alert("Por favor ingresa tu CVU o CBU personal de destino.");
+        return;
+      }
+
+      // Guardar datos en el perfil si cambiaron
+      appState.name = destName || appState.name;
+      appState.cvu = destCvu;
       appState.balance -= amt;
       appState.lastWithdraw = now;
       saveLocal();
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
-      alert("Solicitud de retiro registrada. Procesando en horario bancario.");
+
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
+        balance: appState.balance,
+        name: appState.name,
+        cvu: appState.cvu
+      });
+
+      alert("Solicitud de retiro registrada. Procesando en horario bancario hacia tu cuenta.");
       closeWalletModal();
     };
 
@@ -1335,7 +1367,6 @@
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
-      // 1. Obtener datos del usuario que depositó
       const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
       let saldoActual = 0;
       let invitadoPor = null;
@@ -1349,26 +1380,24 @@
 
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      // 2. Acreditar saldo al usuario
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
         balance: nuevoSaldo,
         has_deposited: true 
       });
 
-      // 3. PAGO AUTOMÁTICO DE BONO DE REFERIDO (Si es su 1er depósito >= 2000)
+      // PAGO AUTOMÁTICO DE BONO DE REFERIDO
       if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
         const cleanRef = String(invitadoPor).replace(/\D/g, '');
         const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
         if (sponsors && sponsors.length > 0) {
           const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
-          const nuevoSaldoSponsor = saldoSponsor + 1000; // Bono de +$1.000 ARS
+          const nuevoSaldoSponsor = saldoSponsor + 1000;
           await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsors[0].phone)}`, 'PATCH', { 
             balance: nuevoSaldoSponsor 
           });
         }
       }
 
-      // 4. Marcar solicitud como aprobada
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
