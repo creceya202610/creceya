@@ -290,7 +290,6 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES ACUMULATIVAS -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones Acumulativas</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -447,7 +446,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO DIFERENCIADOS) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -463,10 +462,10 @@
         </div>
 
         <div class="grid grid-cols-2 p-1 bg-[#132337] rounded-xl text-xs font-bold">
-          <button id="wallet-tab-recargar" onclick="setWalletMode('recargar')" class="py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer">
+          <button id="wallet-tab-recargar" type="button" onclick="setWalletMode('recargar')" class="py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer">
             Recargar
           </button>
-          <button id="wallet-tab-retirar" onclick="setWalletMode('retirar')" class="py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
+          <button id="wallet-tab-retirar" type="button" onclick="setWalletMode('retirar')" class="py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
             Retirar
           </button>
         </div>
@@ -476,7 +475,7 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- BOX RECARGA -->
+        <!-- ================= BOX 1: RECARGA (SOLO SE MUESTRA EN RECARGAR) ================= -->
         <div id="wallet-recarga-box" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
@@ -510,7 +509,7 @@
           </button>
         </div>
 
-        <!-- BOX RETIRO -->
+        <!-- ================= BOX 2: RETIRO (SOLO SE MUESTRA EN RETIRAR) ================= -->
         <div id="wallet-retiro-box" class="hidden space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro</label>
@@ -1191,6 +1190,7 @@
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
 
+    // CONTROL EXACTO DE PESTAÑAS: SEPARA RECARGA DE RETIRO
     window.setWalletMode = function(mode) {
       const btnRec = document.getElementById('wallet-tab-recargar');
       const btnRet = document.getElementById('wallet-tab-retirar');
@@ -1198,15 +1198,15 @@
       const boxRet = document.getElementById('wallet-retiro-box');
 
       if (mode === 'recargar') {
-        btnRec.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
-        btnRet.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
+        btnRec.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
+        btnRet.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
         boxRec.classList.remove('hidden');
         boxRet.classList.add('hidden');
       } else {
-        btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
-        btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
+        btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
+        btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
+        boxRec.classList.add('hidden');
         boxRet.classList.remove('hidden');
-        boxRet.classList.add('hidden');
       }
     };
 
@@ -1220,7 +1220,7 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO DE DEPÓSITO GARANTIZADO HACIA SUPABASE
+    // ENVÍO DE DEPÓSITO HACIA SUPABASE
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
@@ -1230,7 +1230,7 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Registrando solicitud en servidor...";
+      btn.innerText = "Registrando solicitud...";
 
       appState.pending += val;
       saveLocal();
@@ -1458,7 +1458,7 @@
       }).join('');
     };
 
-    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA (DIFERENCIAL)
+    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
@@ -1475,13 +1475,11 @@
 
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      // 1. Acreditar saldo en Supabase al usuario que depositó
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
         balance: nuevoSaldo,
         has_deposited: true 
       });
 
-      // 2. Liquidación del Bono al Referente por Hitos Diferenciales
       if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
         const cleanRef = String(invitadoPor).replace(/\D/g, '');
         const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
@@ -1490,34 +1488,30 @@
           const sponsorPhone = sponsors[0].phone;
           const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
 
-          // Contar total de oficiales incluyendo este nuevo
           const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
           let cantOficiales = 1;
           if (Array.isArray(refUsers)) {
             cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
           }
 
-          // BONO DIFERENCIAL SEGÚN EL HITO ALCANZADO
           let bonoPagar = 0;
-          if (cantOficiales === 1) bonoPagar = 1000;        // 1° inv: +1.000 (Acum: 1.000)
-          else if (cantOficiales === 3) bonoPagar = 1000;   // 3° inv: +1.000 (Acum: 2.000)
-          else if (cantOficiales === 5) bonoPagar = 2000;   // 5° inv: +2.000 (Acum: 4.000)
-          else if (cantOficiales === 10) bonoPagar = 4000;  // 10° inv: +4.000 (Acum: 8.000)
-          else if (cantOficiales === 20) bonoPagar = 7000;  // 20° inv: +7.000 (Acum: 15.000)
-          else if (cantOficiales === 40) bonoPagar = 15000; // 40° inv: +15.000 (Acum: 30.000)
-          else if (cantOficiales === 50) bonoPagar = 30000; // 50° inv: +30.000 (Acum: 60.000)
-          else if (cantOficiales === 100) bonoPagar = 40000; // 100° inv: +40.000 (Acum: 100.000)
+          if (cantOficiales === 1) bonoPagar = 1000;
+          else if (cantOficiales === 3) bonoPagar = 1000;
+          else if (cantOficiales === 5) bonoPagar = 2000;
+          else if (cantOficiales === 10) bonoPagar = 4000;
+          else if (cantOficiales === 20) bonoPagar = 7000;
+          else if (cantOficiales === 40) bonoPagar = 15000;
+          else if (cantOficiales === 50) bonoPagar = 30000;
+          else if (cantOficiales === 100) bonoPagar = 40000;
 
           if (bonoPagar > 0) {
             await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
               balance: saldoSponsor + bonoPagar 
             });
-            console.log(`Bono diferencial por hito ($${bonoPagar} ARS) acreditado a ${sponsorPhone}`);
           }
         }
       }
 
-      // 3. Actualizar estado de solicitud
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
@@ -1538,7 +1532,6 @@
       cargarSolicitudesAdmin();
     };
 
-    // CANCELAR / RECHAZAR SOLICITUD
     window.cancelarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Deseas CANCELAR y rechazar la solicitud de $${fmt(amount)} ARS de ${phone}?`)) return;
 
