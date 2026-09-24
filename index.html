@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -290,7 +290,6 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES LIMPIA Y DIRECTA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -622,7 +621,7 @@
 
         <div id="admin-dashboard-box" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
           <div class="flex justify-between items-center text-xs">
-            <span class="font-bold text-white">Depósitos Pendientes en Vivo</span>
+            <span class="font-bold text-white">Solicitudes Pendientes en Vivo</span>
             <button onclick="cargarSolicitudesAdmin()" class="text-sky-400 hover:underline flex items-center gap-1 font-mono cursor-pointer">
               <i class="fa-solid fa-rotate-right"></i> Refrescar
             </button>
@@ -1349,7 +1348,8 @@
         user_phone: appState.phone || 'Usuario Anónimo',
         user_name: appState.name || 'Usuario Crece YA',
         amount: val,
-        status: 'pendiente'
+        status: 'pendiente',
+        type: 'recarga'
       };
 
       try {
@@ -1386,7 +1386,6 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    // PASO 1: REVISAR DATOS DE RETIRO
     window.prepararConfirmacionRetiro = function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
@@ -1420,13 +1419,11 @@
         return;
       }
 
-      // Rellenar ficha de revisión
       const net = amt * 0.90;
       document.getElementById('review-dest-name').innerText = destName;
       document.getElementById('review-dest-cvu').innerText = destCvu;
       document.getElementById('review-dest-net').innerText = `$${fmt(net)} ARS`;
 
-      // Alternar a pantalla de confirmación
       document.getElementById('withdraw-step-input').classList.add('hidden');
       document.getElementById('withdraw-step-confirm').classList.remove('hidden');
       document.getElementById('withdraw-fund-pass').value = '';
@@ -1442,7 +1439,7 @@
       }
     };
 
-    // PASO 2: EJECUTAR RETIRO FINAL TRAS VALIDAR CONTRASEÑA DE ACCESO
+    // REGISTRO DE RETIRO GARANTIZADO EN SUPABASE Y LOCAL
     window.ejecutarRetiroFinal = async function() {
       const pass = document.getElementById('withdraw-fund-pass').value;
 
@@ -1470,12 +1467,36 @@
       appState.lastWithdrawNet = netAmount;
       saveLocal();
 
+      // Guardar en tabla usuarios
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
         balance: appState.balance,
         withdrawn: appState.withdrawn,
         name: appState.name,
         cvu: appState.cvu
       });
+
+      // Crear solicitud formal de retiro en Supabase
+      const retiroItem = {
+        user_phone: appState.phone,
+        user_name: destName,
+        amount: amt,
+        net_amount: netAmount,
+        cvu: destCvu,
+        status: 'pendiente',
+        type: 'retiro'
+      };
+
+      try {
+        await supabaseRequest('solicitudes', 'POST', retiroItem);
+      } catch(err) {
+        console.warn("Fallo al guardar retiro en Supabase:", err);
+      }
+
+      try {
+        let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+        localQueue.unshift({ ...retiroItem, id: 'LOC-W-' + Date.now(), created_at: new Date().toISOString() });
+        localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
+      } catch(e) {}
 
       alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta en horario bancario.`);
       cancelarRevisionRetiro();
@@ -1564,6 +1585,7 @@
       }
     });
 
+    // CARGA DE SOLICITUDES CON DISTINCIÓN DE DEPÓSITO VS RETIRO
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
@@ -1584,33 +1606,47 @@
       } catch(e) {}
 
       if (list.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay depósitos pendientes por revisar.</p>';
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay operaciones pendientes por revisar.</p>';
         return;
       }
 
       container.innerHTML = list.map(item => {
         const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+        const isRetiro = item.type === 'retiro';
+        const tipoBadge = isRetiro 
+          ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">RETIRO A PAGAR</span>' 
+          : '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">RECARGA ENTRANTE</span>';
+
+        const extraInfo = isRetiro 
+          ? `<p class="text-[11px] font-mono text-amber-300 pt-1">CVU: ${item.cvu || 'No provisto'} | Neto a pagar: $${fmt(item.net_amount || item.amount * 0.9)} ARS</p>` 
+          : `<p class="text-[10px] font-mono text-slate-400 pt-0.5">Transferencia Recibida</p>`;
+
         return `
-          <div class="p-3.5 rounded-2xl bg-[#13283f] border border-sky-800/70 shadow-md space-y-2.5 text-left">
+          <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? 'border-rose-500/50' : 'border-sky-800/70'} shadow-md space-y-2 text-left">
             <div class="flex justify-between items-start">
               <div>
-                <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
+                  ${tipoBadge}
+                </div>
                 <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
               </div>
-              <span class="font-bold text-sky-400 font-mono text-sm">$${fmt(item.amount)} ARS</span>
+              <span class="font-bold ${isRetiro ? 'text-rose-400' : 'text-sky-400'} font-mono text-sm">$${fmt(item.amount)} ARS</span>
             </div>
 
-            <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono">
-              <span>Transferencia Bancaria</span>
+            <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono border-t border-slate-800 pt-1.5">
               <span>${timeStr}</span>
+              <span>${item.cvu ? 'CVU Personal' : 'Comprobante CVU'}</span>
             </div>
+
+            ${extraInfo}
 
             <div class="grid grid-cols-2 gap-2 pt-1">
-              <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
-                ✕ Cancelar
+              <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
+                ✕ Rechazar
               </button>
-              <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-                ✓ Confirmar
+              <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+                ✓ ${isRetiro ? 'Liquidar Retiro' : 'Acreditar Saldo'}
               </button>
             </div>
           </div>
@@ -1667,8 +1703,15 @@
       cargarSolicitudesAdmin();
     };
 
-    window.aprobarDeposito = async function(solicitudId, phone, amount) {
-      if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
+    // APROBACIÓN DINÁMICA: DEPÓSITO O LIQUIDACIÓN DE RETIRO
+    window.aprobarDeposito = async function(solicitudId, phone, amount, type = 'recarga') {
+      const isRetiro = type === 'retiro';
+
+      if (isRetiro) {
+        if (!confirm(`¿Confirmas que ya transferiste el retiro de $${fmt(amount * 0.9)} ARS a ${phone}?`)) return;
+      } else {
+        if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
+      }
 
       const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
       let saldoActual = 0;
@@ -1681,42 +1724,59 @@
         yaTeniaDeposito = users[0].has_deposited === true || saldoActual >= 2000;
       }
 
-      const nuevoSaldo = saldoActual + parseFloat(amount);
+      if (!isRetiro) {
+        const nuevoSaldo = saldoActual + parseFloat(amount);
+        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
+          balance: nuevoSaldo,
+          has_deposited: true 
+        });
 
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
-        balance: nuevoSaldo,
-        has_deposited: true 
-      });
+        // Escala acumulativa al referente
+        if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
+          const cleanRef = String(invitadoPor).replace(/\D/g, '');
+          const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
 
-      if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
-        const cleanRef = String(invitadoPor).replace(/\D/g, '');
-        const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
+          if (sponsors && sponsors.length > 0) {
+            const sponsorPhone = sponsors[0].phone;
+            const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
 
-        if (sponsors && sponsors.length > 0) {
-          const sponsorPhone = sponsors[0].phone;
-          const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
+            const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
+            let cantOficiales = 1;
+            if (Array.isArray(refUsers)) {
+              cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
+            }
 
-          const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
-          let cantOficiales = 1;
-          if (Array.isArray(refUsers)) {
-            cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
+            let bonoPagar = 0;
+            if (cantOficiales === 1) bonoPagar = 1000;
+            else if (cantOficiales === 3) bonoPagar = 1000;
+            else if (cantOficiales === 5) bonoPagar = 2000;
+            else if (cantOficiales === 10) bonoPagar = 4000;
+            else if (cantOficiales === 20) bonoPagar = 7000;
+            else if (cantOficiales === 40) bonoPagar = 15000;
+            else if (cantOficiales === 50) bonoPagar = 30000;
+            else if (cantOficiales === 100) bonoPagar = 40000;
+
+            if (bonoPagar > 0) {
+              await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
+                balance: saldoSponsor + bonoPagar 
+              });
+            }
           }
+        }
 
-          let bonoPagar = 0;
-          if (cantOficiales === 1) bonoPagar = 1000;
-          else if (cantOficiales === 3) bonoPagar = 1000;
-          else if (cantOficiales === 5) bonoPagar = 2000;
-          else if (cantOficiales === 10) bonoPagar = 4000;
-          else if (cantOficiales === 20) bonoPagar = 7000;
-          else if (cantOficiales === 40) bonoPagar = 15000;
-          else if (cantOficiales === 50) bonoPagar = 30000;
-          else if (cantOficiales === 100) bonoPagar = 40000;
-
-          if (bonoPagar > 0) {
-            await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
-              balance: saldoSponsor + bonoPagar 
-            });
-          }
+        if (appState.phone === phone) {
+          appState.balance = nuevoSaldo;
+          if (appState.pending >= amount) appState.pending -= amount;
+          saveLocal();
+        }
+      } else {
+        // En caso de retiro, confirmar la cuenta bancaria como verificada
+        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
+          bank_verified: true
+        });
+        if (appState.phone === phone) {
+          appState.bankVerified = true;
+          saveLocal();
         }
       }
 
@@ -1730,18 +1790,38 @@
         await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
       }
 
-      if (appState.phone === phone) {
-        appState.balance = nuevoSaldo;
-        if (appState.pending >= amount) appState.pending -= amount;
-        saveLocal();
-      }
-
-      alert(`¡Confirmado con éxito! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
+      alert(isRetiro ? "Retiro marcado como liquidado con éxito." : `Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
       cargarSolicitudesAdmin();
     };
 
-    window.cancelarDeposito = async function(solicitudId, phone, amount) {
-      if (!confirm(`¿Deseas CANCELAR y rechazar la solicitud de $${fmt(amount)} ARS de ${phone}?`)) return;
+    window.cancelarDeposito = async function(solicitudId, phone, amount, type = 'recarga') {
+      const isRetiro = type === 'retiro';
+
+      if (!confirm(`¿Deseas rechazar la solicitud de ${isRetiro ? 'retiro' : 'recarga'} de $${fmt(amount)} ARS de ${phone}?`)) return;
+
+      // Si se rechaza un retiro, reintegrar el dinero al balance
+      if (isRetiro) {
+        const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=balance,withdrawn`);
+        if (users && users.length > 0) {
+          const reintegroBal = (parseFloat(users[0].balance) || 0) + parseFloat(amount);
+          const ajustadoWithdrawn = Math.max(0, (parseFloat(users[0].withdrawn) || 0) - parseFloat(amount));
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
+            balance: reintegroBal,
+            withdrawn: ajustadoWithdrawn
+          });
+        }
+        if (appState.phone === phone) {
+          appState.balance += parseFloat(amount);
+          appState.withdrawn = Math.max(0, appState.withdrawn - parseFloat(amount));
+          appState.lastWithdrawNet = 0;
+          saveLocal();
+        }
+      } else {
+        if (appState.phone === phone) {
+          if (appState.pending >= amount) appState.pending -= amount;
+          saveLocal();
+        }
+      }
 
       if (String(solicitudId).startsWith('LOC-')) {
         try {
@@ -1753,12 +1833,7 @@
         await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'rechazado' });
       }
 
-      if (appState.phone === phone) {
-        if (appState.pending >= amount) appState.pending -= amount;
-        saveLocal();
-      }
-
-      alert(`Solicitud cancelada y retirada de la lista.`);
+      alert(`Solicitud rechazada y actualizada.`);
       cargarSolicitudesAdmin();
     };
 
