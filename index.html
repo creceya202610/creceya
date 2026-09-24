@@ -290,6 +290,7 @@
           </div>
         </div>
 
+        <!-- ESCALA DE BONIFICACIONES ACUMULATIVAS -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones Acumulativas</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -462,10 +463,10 @@
         </div>
 
         <div class="grid grid-cols-2 p-1 bg-[#132337] rounded-xl text-xs font-bold">
-          <button id="wallet-tab-recargar" type="button" onclick="setWalletMode('recargar')" class="py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer">
+          <button id="wallet-tab-recargar" type="button" onclick="setWalletMode('recargar')" class="py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer">
             Recargar
           </button>
-          <button id="wallet-tab-retirar" type="button" onclick="setWalletMode('retirar')" class="py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
+          <button id="wallet-tab-retirar" type="button" onclick="setWalletMode('retirar')" class="py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer">
             Retirar
           </button>
         </div>
@@ -475,8 +476,8 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- ================= BOX 1: RECARGA (SOLO SE MUESTRA EN RECARGAR) ================= -->
-        <div id="wallet-recarga-box" class="space-y-3.5">
+        <!-- ================= BOX 1: RECARGA (MÍNIMO $2.000 ARS) ================= -->
+        <div id="wallet-recarga-box" style="display: block;" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
               <span>CVU OFICIAL DE DEPÓSITO</span>
@@ -501,7 +502,9 @@
           </div>
 
           <div>
-            <input id="deposit-custom-input" type="number" min="2000" value="2000" placeholder="Ingrese un monto personalizado (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
+            <label class="text-[11px] text-slate-400 block mb-1">O escribe un monto personalizado:</label>
+            <input id="deposit-custom-input" type="number" min="2000" value="2000" placeholder="Monto mínimo $2.000 ARS" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
+            <span class="text-[10px] text-amber-400 block mt-1">El monto mínimo de depósito es de $2.000,00 ARS</span>
           </div>
 
           <button id="btn-notify-deposit" onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
@@ -509,25 +512,26 @@
           </button>
         </div>
 
-        <!-- ================= BOX 2: RETIRO (SOLO SE MUESTRA EN RETIRAR) ================= -->
-        <div id="wallet-retiro-box" class="hidden space-y-3 text-xs">
+        <!-- ================= BOX 2: RETIRO (MÍNIMO $5.000 ARS - CVU PERSONAL) ================= -->
+        <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
           <div>
-            <label class="text-xs text-slate-400 block mb-1">Monto de retiro</label>
+            <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
             <div class="grid grid-cols-2 gap-2 font-mono mb-2">
               <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
               <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
             </div>
-            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto personalizado (mín. 5.000)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar (mínimo $5.000 ARS)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+            <span class="text-[10px] text-amber-400 block mt-1">Mínimo de extracción: $5.000 ARS. Límite: 1 retiro cada 24 hs.</span>
           </div>
 
           <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
             <div>
-              <label class="text-[11px] text-slate-300 block mb-0.5">TITULAR DE LA CUENTA DE DESTINO</label>
-              <input id="withdraw-dest-name" type="text" placeholder="Nombre completo" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
+              <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TITULAR DE LA CUENTA DE DESTINO</label>
+              <input id="withdraw-dest-name" type="text" placeholder="Nombre completo del titular bancario" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
             </div>
             <div>
-              <label class="text-[11px] text-slate-300 block mb-0.5">TU CBU O CVU PERSONAL DE COBRO</label>
-              <input id="withdraw-dest-cvu" type="text" placeholder="22 dígitos de tu billetera o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
+              <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TU CBU O CVU PERSONAL DE COBRO</label>
+              <input id="withdraw-dest-cvu" type="text" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
             </div>
           </div>
 
@@ -537,20 +541,21 @@
               <span class="text-rose-400 font-bold">10%</span>
             </div>
             <div class="flex justify-between text-white font-bold">
-              <span>Neto a recibir:</span>
+              <span>Neto que recibirás:</span>
               <span id="withdraw-net-calc" class="text-sky-400">$0.00 ARS</span>
             </div>
           </div>
 
           <div>
+            <label class="text-[11px] text-slate-400 block mb-1">Ingresa tu contraseña de cuenta para confirmar:</label>
             <div class="flex items-center bg-[#132337] border border-slate-800 rounded-xl px-3 py-2 text-xs">
               <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
-              <input id="withdraw-fund-pass" type="password" placeholder="Contraseña de fondos" class="bg-transparent text-white w-full outline-none font-mono">
+              <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
             </div>
           </div>
 
           <button onclick="confirmWithdrawAction()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-            Confirmar Retiro
+            Confirmar y Solicitar Retiro
           </button>
         </div>
       </div>
@@ -1190,7 +1195,7 @@
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
 
-    // CONTROL EXACTO DE PESTAÑAS: SEPARA RECARGA DE RETIRO
+    // CONTROL EXACTO DE PESTAÑAS: FUERZA LA VISIBILIDAD MEDIANTE STYLE.DISPLAY
     window.setWalletMode = function(mode) {
       const btnRec = document.getElementById('wallet-tab-recargar');
       const btnRet = document.getElementById('wallet-tab-retirar');
@@ -1200,13 +1205,13 @@
       if (mode === 'recargar') {
         btnRec.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
         btnRet.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
-        boxRec.classList.remove('hidden');
-        boxRet.classList.add('hidden');
+        boxRec.style.display = 'block';
+        boxRet.style.display = 'none';
       } else {
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
-        boxRec.classList.add('hidden');
-        boxRet.classList.remove('hidden');
+        boxRec.style.display = 'none';
+        boxRet.style.display = 'block';
       }
     };
 
@@ -1220,12 +1225,15 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // ENVÍO DE DEPÓSITO HACIA SUPABASE
+    // VALIDACIÓN ESTRICTA: NO PERMITE MENOS DE $2.000 ARS EN DEPÓSITO
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
-      const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
-      if (val < 2000) {
-        alert("El monto mínimo de recarga es de $2.000 ARS.");
+      const inputEl = document.getElementById('deposit-custom-input');
+      const val = parseFloat(inputEl.value);
+
+      if (isNaN(val) || val < 2000) {
+        alert("El monto mínimo obligatorio de recarga es de $2.000 ARS. No se permiten valores menores.");
+        inputEl.value = 2000;
         return;
       }
 
@@ -1276,24 +1284,30 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
+    // VALIDACIÓN ESTRICTA: NO PERMITE MENOS DE $5.000 ARS EN RETIRO
     window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
-        alert("Límite diario alcanzado: Solo 1 solicitud de retiro cada 24 hs.");
+        alert("Límite operativo alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
         return;
       }
+
       const amt = parseFloat(withdrawInput.value);
       if (isNaN(amt) || amt < 5000) {
-        alert("El monto mínimo de retiro bancario es de $5.000 ARS.");
+        alert("El monto mínimo de extracción bancaria es de $5.000 ARS. Por favor ingresa $5.000 o más.");
+        withdrawInput.value = 5000;
+        calcWithdrawNet();
         return;
       }
+
       if (amt > appState.balance) {
-        alert("Saldo disponible insuficiente.");
+        alert(`Saldo disponible insuficiente. Tienes $${fmt(appState.balance)} ARS y solicitaste $${fmt(amt)} ARS.`);
         return;
       }
+
       const pass = document.getElementById('withdraw-fund-pass').value;
       if (!pass || pass !== appState.pass) {
-        alert("Contraseña de fondos incorrecta.");
+        alert("La contraseña ingresada es incorrecta.");
         return;
       }
 
@@ -1301,7 +1315,7 @@
       const destCvu = document.getElementById('withdraw-dest-cvu').value.trim();
 
       if (!destCvu || destCvu.length < 10) {
-        alert("Por favor ingresa tu CVU o CBU personal de destino.");
+        alert("Por favor ingresa un CBU o CVU personal válido (mínimo 10 a 22 dígitos).");
         return;
       }
 
@@ -1317,7 +1331,7 @@
         cvu: appState.cvu
       });
 
-      alert("Solicitud de retiro registrada. Procesando en horario bancario hacia tu cuenta.");
+      alert(`¡Solicitud de retiro por $${fmt(amt)} ARS enviada! Se transferirá a tu cuenta en horario bancario.`);
       closeWalletModal();
     };
 
