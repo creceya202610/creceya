@@ -290,6 +290,7 @@
           </div>
         </div>
 
+        <!-- ESCALA DE BONIFICACIONES LIMPIA Y DIRECTA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -521,51 +522,80 @@
           </button>
         </div>
 
-        <!-- BOX RETIRO -->
+        <!-- BOX RETIRO CON REVISIÓN PREVIA DE DATOS -->
         <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
-          <div>
-            <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
-            <div class="grid grid-cols-2 gap-2 font-mono mb-2">
-              <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
-              <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
-            </div>
-            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar (mínimo $5.000 ARS)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
-            <span class="text-[10px] text-amber-400 block mt-1">Mínimo de extracción: $5.000 ARS. Límite: 1 retiro cada 24 hs.</span>
-          </div>
-
-          <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
+          <div id="withdraw-step-input" class="space-y-3">
             <div>
-              <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TITULAR DE LA CUENTA DE DESTINO</label>
-              <input id="withdraw-dest-name" type="text" placeholder="Nombre completo del titular bancario" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
+              <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
+              <div class="grid grid-cols-2 gap-2 font-mono mb-2">
+                <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
+                <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
+              </div>
+              <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar (mínimo $5.000 ARS)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+              <span class="text-[10px] text-amber-400 block mt-1">Mínimo de extracción: $5.000 ARS. Límite: 1 retiro cada 24 hs.</span>
             </div>
-            <div>
-              <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TU CBU O CVU PERSONAL DE COBRO</label>
-              <input id="withdraw-dest-cvu" type="text" maxlength="22" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
+
+            <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
+              <div>
+                <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TITULAR DE LA CUENTA DE DESTINO</label>
+                <input id="withdraw-dest-name" type="text" placeholder="Nombre completo del titular bancario" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TU CBU O CVU PERSONAL DE COBRO</label>
+                <input id="withdraw-dest-cvu" type="text" maxlength="22" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
+              </div>
             </div>
+
+            <div class="p-2.5 bg-[#132337] rounded-xl border border-slate-800 font-mono text-xs space-y-1">
+              <div class="flex justify-between text-slate-400">
+                <span>Retención administrativa:</span>
+                <span class="text-rose-400 font-bold">10%</span>
+              </div>
+              <div class="flex justify-between text-white font-bold">
+                <span>Neto que recibirás:</span>
+                <span id="withdraw-net-calc" class="text-sky-400">$0.00 ARS</span>
+              </div>
+            </div>
+
+            <button onclick="prepararConfirmacionRetiro()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+              Revisar y Confirmar Retiro
+            </button>
           </div>
 
-          <div class="p-2.5 bg-[#132337] rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-            <div class="flex justify-between text-slate-400">
-              <span>Retención administrativa:</span>
-              <span class="text-rose-400 font-bold">10%</span>
+          <!-- PASO DE REVISIÓN Y CONFIRMACIÓN CON CONTRASEÑA -->
+          <div id="withdraw-step-confirm" class="hidden space-y-3 bg-[#081320] p-3.5 rounded-2xl border border-sky-500/50">
+            <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
+              <span class="font-bold text-sky-400 text-xs uppercase tracking-wide">Verifica tus datos bancarios</span>
+              <button onclick="cancelarRevisionRetiro()" class="text-xs text-slate-400 hover:text-white underline cursor-pointer">Modificar</button>
             </div>
-            <div class="flex justify-between text-white font-bold">
-              <span>Neto que recibirás:</span>
-              <span id="withdraw-net-calc" class="text-sky-400">$0.00 ARS</span>
-            </div>
-          </div>
 
-          <div>
-            <label class="text-[11px] text-slate-400 block mb-1">Ingresa tu contraseña de cuenta para confirmar:</label>
-            <div class="flex items-center bg-[#132337] border border-slate-800 rounded-xl px-3 py-2 text-xs">
-              <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
-              <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Titular:</span>
+                <strong id="review-dest-name" class="text-white">...</strong>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">CBU / CVU:</span>
+                <strong id="review-dest-cvu" class="text-amber-400">...</strong>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Neto a transferir:</span>
+                <strong id="review-dest-net" class="text-emerald-400 font-black text-sm">$0 ARS</strong>
+              </div>
             </div>
-          </div>
 
-          <button onclick="confirmWithdrawAction()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-            Confirmar y Solicitar Retiro
-          </button>
+            <div class="pt-2 border-t border-slate-800 space-y-1.5">
+              <label class="text-[11px] text-slate-300 block font-bold">Confirma ingresando tu contraseña de inicio:</label>
+              <div class="flex items-center bg-[#132337] border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
+                <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña de cuenta" class="bg-transparent text-white w-full outline-none font-mono">
+              </div>
+            </div>
+
+            <button onclick="ejecutarRetiroFinal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+              Confirmar Extracción Definitiva
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -692,7 +722,7 @@
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
 
-    // Auto-sanitización de espacios o guiones en CBU/CVU
+    // Auto-sanitización de CBU/CVU
     ['prof-cvu-input', 'withdraw-dest-cvu'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -1264,6 +1294,7 @@
       if (destNameEl && appState.name) destNameEl.value = appState.name;
       if (destCvuEl && appState.cvu) destCvuEl.value = appState.cvu;
 
+      cancelarRevisionRetiro();
       setWalletMode(mode);
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
@@ -1355,8 +1386,8 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    // CONFIRMAR RETIRO Y PONER ESTADO EN VALIDACIÓN
-    window.confirmWithdrawAction = async function() {
+    // PASO 1: REVISAR DATOS DE RETIRO
+    window.prepararConfirmacionRetiro = function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
         alert("Límite operativo alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
@@ -1376,21 +1407,61 @@
         return;
       }
 
-      const pass = document.getElementById('withdraw-fund-pass').value;
-      if (!pass || pass !== appState.pass) {
-        alert("La contraseña ingresada es incorrecta.");
-        return;
-      }
-
       const destName = document.getElementById('withdraw-dest-name').value.trim();
       const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
 
-      if (!destCvu || destCvu.length < 10) {
-        alert("Por favor ingresa un CBU o CVU personal válido (mínimo 10 a 22 dígitos).");
+      if (!destName || destName.length < 3) {
+        alert("Por favor ingresa el nombre y apellido completo del titular bancario.");
         return;
       }
 
+      if (!destCvu || destCvu.length < 10) {
+        alert("Por favor ingresa un CBU o CVU personal válido (de 10 a 22 dígitos).");
+        return;
+      }
+
+      // Rellenar ficha de revisión
+      const net = amt * 0.90;
+      document.getElementById('review-dest-name').innerText = destName;
+      document.getElementById('review-dest-cvu').innerText = destCvu;
+      document.getElementById('review-dest-net').innerText = `$${fmt(net)} ARS`;
+
+      // Alternar a pantalla de confirmación
+      document.getElementById('withdraw-step-input').classList.add('hidden');
+      document.getElementById('withdraw-step-confirm').classList.remove('hidden');
+      document.getElementById('withdraw-fund-pass').value = '';
+      document.getElementById('withdraw-fund-pass').focus();
+    };
+
+    window.cancelarRevisionRetiro = function() {
+      const stepInput = document.getElementById('withdraw-step-input');
+      const stepConfirm = document.getElementById('withdraw-step-confirm');
+      if (stepInput && stepConfirm) {
+        stepConfirm.classList.add('hidden');
+        stepInput.classList.remove('hidden');
+      }
+    };
+
+    // PASO 2: EJECUTAR RETIRO FINAL TRAS VALIDAR CONTRASEÑA DE ACCESO
+    window.ejecutarRetiroFinal = async function() {
+      const pass = document.getElementById('withdraw-fund-pass').value;
+
+      if (!pass) {
+        alert("Por favor ingresa tu contraseña para confirmar la extracción.");
+        return;
+      }
+
+      if (pass !== appState.pass) {
+        alert("La contraseña ingresada es incorrecta. Verifica tu clave de acceso a la cuenta.");
+        return;
+      }
+
+      const amt = parseFloat(withdrawInput.value);
+      const destName = document.getElementById('withdraw-dest-name').value.trim();
+      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
       const netAmount = amt * 0.90;
+      const now = Date.now();
+
       appState.name = destName || appState.name;
       appState.cvu = destCvu;
       appState.balance -= amt;
@@ -1406,7 +1477,8 @@
         cvu: appState.cvu
       });
 
-      alert(`¡Solicitud de retiro por $${fmt(amt)} ARS enviada! Se transferirá a tu cuenta en horario bancario.`);
+      alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta en horario bancario.`);
+      cancelarRevisionRetiro();
       closeWalletModal();
     };
 
@@ -1690,7 +1762,6 @@
       cargarSolicitudesAdmin();
     };
 
-    // RENDERIZADO VISUAL DEL ESTADO DE CUENTA BANCARIA
     function renderBankStatus() {
       const badge = document.getElementById('bank-status-badge');
       if (!badge) return;
