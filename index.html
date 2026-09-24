@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA Y DIRECTA) -->
+      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -329,6 +329,16 @@
           </div>
         </div>
 
+        <!-- TARJETA DINÁMICA: RETIRO EN CURSO -->
+        <div id="active-withdraw-box" class="hidden p-3.5 bg-sky-900/40 border border-sky-500/40 rounded-2xl space-y-1 text-xs font-mono">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-sky-300">Solicitud de Retiro en Proceso</span>
+            <span class="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">Horario Bancario</span>
+          </div>
+          <p id="active-withdraw-text" class="text-slate-300">Neto: $0 ARS hacia tu cuenta</p>
+          <span class="text-[10px] text-slate-400 block">Liquidaciones de Lun a Vie de 07:00 a 18:00 hs</span>
+        </div>
+
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div class="flex items-center gap-2.5">
             <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
@@ -361,7 +371,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CBU O CVU PERSONAL</label>
-                <input id="prof-cvu-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="22 dígitos">
+                <input id="prof-cvu-input" type="text" maxlength="22" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="22 dígitos">
               </div>
               <div>
                 <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">ALIAS BANCARIO</label>
@@ -446,7 +456,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO DIFERENCIADOS) -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -475,7 +485,7 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- ================= BOX 1: RECARGA (MÍNIMO $2.000 ARS) ================= -->
+        <!-- BOX RECARGA -->
         <div id="wallet-recarga-box" style="display: block;" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
@@ -511,7 +521,7 @@
           </button>
         </div>
 
-        <!-- ================= BOX 2: RETIRO (MÍNIMO $5.000 ARS - CVU PERSONAL) ================= -->
+        <!-- BOX RETIRO (SANITIZACIÓN AUTOMÁTICA DE CBU) -->
         <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
@@ -530,7 +540,7 @@
             </div>
             <div>
               <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TU CBU O CVU PERSONAL DE COBRO</label>
-              <input id="withdraw-dest-cvu" type="text" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
+              <input id="withdraw-dest-cvu" type="text" maxlength="22" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
             </div>
           </div>
 
@@ -587,6 +597,10 @@
               <i class="fa-solid fa-rotate-right"></i> Refrescar
             </button>
           </div>
+
+          <button onclick="auditarBonosAdmin()" class="w-full py-2 bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 hover:text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Auditar y Sincronizar Bonos
+          </button>
 
           <div id="admin-deposits-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
             <p class="text-[11px] text-slate-400 text-center py-6">Cargando solicitudes...</p>
@@ -655,6 +669,7 @@
       withdrawn: 0,
       lastClaim: 0,
       lastWithdraw: 0,
+      lastWithdrawNet: 0,
       darkMode: false,
       activePlans: []
     };
@@ -670,9 +685,20 @@
       appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
       appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
       appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
+      appState.lastWithdrawNet = parseFloat(localStorage.getItem('cy_last_withdraw_net')) || 0;
       appState.darkMode = localStorage.getItem('cy_dark') === 'true';
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
+
+    // Auto-sanitización de espacios o guiones en CBU/CVU
+    ['prof-cvu-input', 'withdraw-dest-cvu'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          e.target.value = e.target.value.replace(/\D/g, '');
+        });
+      }
+    });
 
     let authMode = 'register';
     window.setAuthMode = function(mode) {
@@ -727,6 +753,7 @@
         localStorage.setItem('cy_withdrawn', appState.withdrawn);
         localStorage.setItem('cy_claim', appState.lastClaim);
         localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
+        localStorage.setItem('cy_last_withdraw_net', appState.lastWithdrawNet);
         localStorage.setItem('cy_dark', appState.darkMode);
         localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
       } catch(e) {}
@@ -789,7 +816,7 @@
       let invitados = [];
       try {
         const queryFilter = `or=(invited_by.eq.${encodeURIComponent(rawPhone)},invited_by.eq.${encodeURIComponent(digitsPhone)},invited_by.ilike.*${encodeURIComponent(last8)})`;
-        const res = await supabaseRequest(`usuarios?${queryFilter}&select=phone,name,balance,created_at,invited_by`);
+        const res = await supabaseRequest(`usuarios?${queryFilter}&select=phone,name,balance,created_at,invited_by,has_deposited`);
         
         if (Array.isArray(res)) {
           invitados = res;
@@ -798,7 +825,7 @@
         }
 
         if (invitados.length === 0) {
-          const fallback = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by');
+          const fallback = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by,has_deposited');
           const allList = Array.isArray(fallback) ? fallback : (fallback && fallback.data ? fallback.data : []);
           if (Array.isArray(allList)) {
             invitados = allList.filter(u => {
@@ -825,7 +852,7 @@
       container.innerHTML = invitados.map(inv => {
         const ph = inv.phone || '';
         const maskedPhone = ph.length > 7 ? ph.substring(0, 6) + '***' + ph.substring(ph.length - 2) : ph;
-        const depositDone = parseFloat(inv.balance || 0) >= 2000;
+        const depositDone = inv.has_deposited === true || parseFloat(inv.balance || 0) >= 2000;
         const statusBadge = depositDone 
           ? '<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Oficial ✓</span>' 
           : '<span class="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Esperando validación</span>';
@@ -1014,14 +1041,12 @@
       renderPlans();
     });
 
-    // RENDERIZADO DE PLANES CON CONTROL DE 1 POR STOCK POR USUARIO
     function renderPlans() {
       const container = document.getElementById('plans-container');
       container.innerHTML = '';
 
       const filtered = plans.filter(p => p.cat === currentCategory);
       filtered.forEach(p => {
-        // Validación: revisa si el usuario ya tiene este plan activo en ejecución
         const yaAdquirido = appState.activePlans && appState.activePlans.some(plan => 
           (plan.plan_code === p.id || plan.id === p.id || plan.name === p.name) && !plan.completed && (plan.endTime > Date.now())
         );
@@ -1078,7 +1103,6 @@
       });
     }
 
-    // ACTIVACIÓN DE PLAN CON BLOQUEO A CONTRATOS DUPLICADOS
     window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
@@ -1127,6 +1151,7 @@
       }
     };
 
+    // RENDERIZADO CON LIBERACIÓN AUTOMÁTICA EN SUPABASE
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
@@ -1146,9 +1171,18 @@
       }
 
       const now = Date.now();
+      let huboLiberacion = false;
+
       appState.activePlans.forEach((plan) => {
         const remaining = plan.endTime - now;
         const isEnded = remaining <= 0 || plan.completed;
+
+        // Liberación autónoma de ganancias
+        if (remaining <= 0 && !plan.completed) {
+          plan.completed = true;
+          appState.balance += plan.total;
+          huboLiberacion = true;
+        }
 
         let statusBadge = '<span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">En Operación</span>';
         let timeDisplay = '';
@@ -1190,6 +1224,16 @@
         `;
         container.appendChild(card);
       });
+
+      if (huboLiberacion) {
+        saveLocal();
+        if (appState.phone) {
+          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
+            balance: appState.balance,
+            active_plans: appState.activePlans
+          });
+        }
+      }
     }
     setInterval(renderProducts, 1000);
 
@@ -1218,7 +1262,6 @@
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
 
-    // CONTROL EXACTO DE PESTAÑAS: SEPARA RECARGA DE RETIRO
     window.setWalletMode = function(mode) {
       const btnRec = document.getElementById('wallet-tab-recargar');
       const btnRet = document.getElementById('wallet-tab-retirar');
@@ -1248,7 +1291,6 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
-    // VALIDACIÓN ESTRICTA: NO PERMITE MENOS DE $2.000 ARS EN DEPÓSITO
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
       const inputEl = document.getElementById('deposit-custom-input');
@@ -1307,7 +1349,6 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    // VALIDACIÓN ESTRICTA: NO PERMITE MENOS DE $5.000 ARS EN RETIRO
     window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
@@ -1335,21 +1376,25 @@
       }
 
       const destName = document.getElementById('withdraw-dest-name').value.trim();
-      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim();
+      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
 
       if (!destCvu || destCvu.length < 10) {
         alert("Por favor ingresa un CBU o CVU personal válido (mínimo 10 a 22 dígitos).");
         return;
       }
 
+      const netAmount = amt * 0.90;
       appState.name = destName || appState.name;
       appState.cvu = destCvu;
       appState.balance -= amt;
+      appState.withdrawn += amt;
       appState.lastWithdraw = now;
+      appState.lastWithdrawNet = netAmount;
       saveLocal();
 
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
         balance: appState.balance,
+        withdrawn: appState.withdrawn,
         name: appState.name,
         cvu: appState.cvu
       });
@@ -1364,7 +1409,7 @@
 
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
-      appState.cvu = document.getElementById('prof-cvu-input').value.trim();
+      appState.cvu = document.getElementById('prof-cvu-input').value.trim().replace(/\D/g, '');
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
 
@@ -1440,7 +1485,6 @@
       }
     });
 
-    // CARGA DE SOLICITUDES CON BOTONES CONFIRMAR Y CANCELAR
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
@@ -1495,7 +1539,56 @@
       }).join('');
     };
 
-    // APROBAR / CONFIRMAR CON ESCALA PROGRESIVA ACUMULATIVA (POR DIFERENCIA)
+    // BOTÓN DE AUDITORÍA DIRECTA DE BONOS DESDE LA CONSOLA ADMIN
+    window.auditarBonosAdmin = async function() {
+      if (!confirm("¿Deseas auditar y sincronizar los bonos de referidos en toda la base de datos?")) return;
+      
+      const allUsers = await supabaseRequest('usuarios?select=*');
+      if (!Array.isArray(allUsers)) {
+        alert("No se pudo conectar con el servidor.");
+        return;
+      }
+
+      let actualizados = 0;
+      for (const rec of allUsers) {
+        const phoneClean = (rec.phone || '').replace(/\D/g, '').slice(-10);
+        if (!phoneClean) continue;
+
+        const oficiales = allUsers.filter(u => {
+          if (!u.invited_by) return false;
+          const uRefClean = String(u.invited_by).replace(/\D/g, '').slice(-10);
+          const uPhoneClean = (u.phone || '').replace(/\D/g, '').slice(-10);
+          const isDeposit = u.has_deposited === true || parseFloat(u.balance || 0) >= 2000;
+          return isDeposit && uRefClean === phoneClean && uPhoneClean !== phoneClean;
+        }).length;
+
+        let bonoTotal = 0;
+        if (oficiales >= 100) bonoTotal = 100000;
+        else if (oficiales >= 50) bonoTotal = 60000;
+        else if (oficiales >= 40) bonoTotal = 30000;
+        else if (oficiales >= 20) bonoTotal = 15000;
+        else if (oficiales >= 10) bonoTotal = 8000;
+        else if (oficiales >= 5)  bonoTotal = 4000;
+        else if (oficiales >= 3)  bonoTotal = 2000;
+        else if (oficiales >= 1)  bonoTotal = 1000;
+
+        const yaCobrado = parseFloat(rec.bono_referidos_cobrado || 0);
+        const dif = bonoTotal - yaCobrado;
+
+        if (dif > 0) {
+          const nuevoBal = (parseFloat(rec.balance) || 0) + dif;
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rec.phone)}`, 'PATCH', {
+            balance: nuevoBal,
+            bono_referidos_cobrado: bonoTotal
+          });
+          actualizados++;
+        }
+      }
+
+      alert(`Auditoría finalizada con éxito. Se actualizaron ${actualizados} cuentas.`);
+      cargarSolicitudesAdmin();
+    };
+
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
@@ -1597,6 +1690,19 @@
       document.getElementById('profile-pending-ars').innerText = `$${fmt(appState.pending)}`;
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
+
+      // Tarjeta de retiro en proceso en Mi Perfil
+      const withdrawBox = document.getElementById('active-withdraw-box');
+      const withdrawText = document.getElementById('active-withdraw-text');
+      const diffWithdraw = Date.now() - (appState.lastWithdraw || 0);
+
+      if (diffWithdraw < 24 * 60 * 60 * 1000 && appState.lastWithdrawNet > 0) {
+        withdrawBox.classList.remove('hidden');
+        withdrawText.innerText = `Neto a recibir: $${fmt(appState.lastWithdrawNet)} ARS hacia CVU ${appState.cvu ? appState.cvu.slice(-4).padStart(appState.cvu.length, '*') : ''}`;
+      } else {
+        withdrawBox.classList.add('hidden');
+      }
+
       renderPlans();
     }
 
