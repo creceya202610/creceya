@@ -248,7 +248,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (CON LA ESCALA LIMPIA SIN ACLARACIONES) -->
+      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA Y DIRECTA) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -290,7 +290,6 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES LIMPIA Y DIRECTA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -447,7 +446,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO DIFERENCIADOS) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -476,7 +475,7 @@
           <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- BOX RECARGA -->
+        <!-- ================= BOX 1: RECARGA (MÍNIMO $2.000 ARS) ================= -->
         <div id="wallet-recarga-box" style="display: block;" class="space-y-3.5">
           <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
             <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
@@ -512,7 +511,7 @@
           </button>
         </div>
 
-        <!-- BOX RETIRO -->
+        <!-- ================= BOX 2: RETIRO (MÍNIMO $5.000 ARS - CVU PERSONAL) ================= -->
         <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
@@ -1015,14 +1014,27 @@
       renderPlans();
     });
 
+    // RENDERIZADO DE PLANES CON CONTROL DE 1 POR STOCK POR USUARIO
     function renderPlans() {
       const container = document.getElementById('plans-container');
       container.innerHTML = '';
 
       const filtered = plans.filter(p => p.cat === currentCategory);
       filtered.forEach(p => {
+        // Validación: revisa si el usuario ya tiene este plan activo en ejecución
+        const yaAdquirido = appState.activePlans && appState.activePlans.some(plan => 
+          (plan.plan_code === p.id || plan.id === p.id || plan.name === p.name) && !plan.completed && (plan.endTime > Date.now())
+        );
+
         const canActivate = appState.balance >= p.cost;
-        const btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
+        let btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
+        let btnStyle = p.btnBg;
+
+        if (yaAdquirido) {
+          btnLabel = "Contrato en Curso ✓";
+          btnStyle = "bg-slate-700 text-slate-400 cursor-not-allowed";
+        }
+
         const card = document.createElement('div');
         card.className = `card-theme p-4 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2.5`;
         
@@ -1058,7 +1070,7 @@
             <span class="text-sky-600 font-bold">Ronda 1</span>
           </div>
 
-          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
+          <button onclick="handlePlanClick('${p.id}')" ${yaAdquirido ? 'disabled' : ''} class="w-full py-2.5 ${btnStyle} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
             ${btnLabel}
           </button>
         `;
@@ -1066,9 +1078,19 @@
       });
     }
 
+    // ACTIVACIÓN DE PLAN CON BLOQUEO A CONTRATOS DUPLICADOS
     window.handlePlanClick = async function(planId) {
       const p = plans.find(item => item.id === planId);
       if (!p) return;
+
+      const yaLoTiene = appState.activePlans && appState.activePlans.some(plan => 
+        (plan.plan_code === p.id || plan.id === p.id || plan.name === p.name) && !plan.completed && (plan.endTime > Date.now())
+      );
+
+      if (yaLoTiene) {
+        alert(`Límite por cuenta alcanzado: Ya posees el plan ${p.name} en operación. Selecciona otra acción del mercado o aguarda a que finalice tu ciclo.`);
+        return;
+      }
 
       await sincronizarSaldoServidor();
 
@@ -1080,6 +1102,7 @@
 
           appState.activePlans.push({
             id: contractId,
+            plan_code: p.id,
             name: p.name,
             cost: p.cost,
             total: p.total,
@@ -1195,7 +1218,7 @@
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
 
-    // CONTROL EXACTO DE PESTAÑAS: FUERZA LA VISIBILIDAD DIRECTAMENTE
+    // CONTROL EXACTO DE PESTAÑAS: SEPARA RECARGA DE RETIRO
     window.setWalletMode = function(mode) {
       const btnRec = document.getElementById('wallet-tab-recargar');
       const btnRet = document.getElementById('wallet-tab-retirar');
