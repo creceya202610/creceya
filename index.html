@@ -747,16 +747,13 @@
 
       let invitados = [];
       try {
-        const data1 = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(rawPhone)}&select=phone,name,balance,created_at`);
-        if (Array.isArray(data1)) invitados = invitados.concat(data1);
-
-        if (digitsPhone !== rawPhone) {
-          const data2 = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(digitsPhone)}&select=phone,name,balance,created_at`);
-          if (Array.isArray(data2)) {
-            data2.forEach(d => {
-              if (!invitados.some(i => i.phone === d.phone)) invitados.push(d);
-            });
-          }
+        const { data: allUsers } = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by');
+        if (Array.isArray(allUsers)) {
+          invitados = allUsers.filter(u => {
+            if (!u.invited_by) return false;
+            const refClean = String(u.invited_by).replace(/\D/g, '');
+            return refClean === digitsPhone || u.invited_by === rawPhone;
+          });
         }
       } catch(e) {}
 
@@ -884,7 +881,12 @@
           active_plans: []
         });
       } else {
-        const dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
+        let dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
+        if (!dbUsers || dbUsers.length === 0) {
+          const rawDigits = phone.replace(/\D/g, '');
+          dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rawDigits)}&select=*`);
+        }
+
         if (dbUsers && dbUsers.length > 0) {
           if (dbUsers[0].pass !== pass) {
             alert("Contraseña incorrecta.");
@@ -1328,13 +1330,40 @@
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
-      const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=balance`);
+      // 1. Obtener datos del usuario que depositó
+      const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
       let saldoActual = 0;
-      if (users && users.length > 0) saldoActual = parseFloat(users[0].balance) || 0;
+      let invitadoPor = null;
+      let yaTeniaDeposito = false;
+
+      if (users && users.length > 0) {
+        saldoActual = parseFloat(users[0].balance) || 0;
+        invitadoPor = users[0].invited_by;
+        yaTeniaDeposito = users[0].has_deposited === true || saldoActual >= 2000;
+      }
+
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { balance: nuevoSaldo });
+      // 2. Acreditar saldo al usuario
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
+        balance: nuevoSaldo,
+        has_deposited: true 
+      });
 
+      // 3. PAGO AUTOMÁTICO DE BONO DE REFERIDO (Si es su 1er depósito >= 2000)
+      if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
+        const cleanRef = String(invitadoPor).replace(/\D/g, '');
+        const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
+        if (sponsors && sponsors.length > 0) {
+          const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
+          const nuevoSaldoSponsor = saldoSponsor + 1000; // Bono de +$1.000 ARS
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsors[0].phone)}`, 'PATCH', { 
+            balance: nuevoSaldoSponsor 
+          });
+        }
+      }
+
+      // 4. Marcar solicitud como aprobada
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
