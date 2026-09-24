@@ -258,7 +258,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -300,7 +300,6 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES LIMPIA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -369,9 +368,7 @@
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex justify-between items-center">
             <span class="font-bold text-slate-800 text-sm text-main">Cuenta Bancaria para Retiros</span>
-            <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono font-bold">
-              <!-- Renderizado dinámico -->
-            </span>
+            <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono font-bold"></span>
           </div>
 
           <div class="space-y-2.5 text-xs">
@@ -395,7 +392,7 @@
           </div>
         </div>
 
-        <!-- CAMBIO DE CONTRASEÑA -->
+        <!-- CAMBIO DE CONTRASEÑA CON BOTÓN DE VISUALIZACIÓN (OJO) -->
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex items-center gap-2 border-b border-sky-100 pb-2">
             <i class="fa-solid fa-key text-sky-600 text-sm"></i>
@@ -755,7 +752,6 @@
       }
     });
 
-    // Función para mostrar/ocultar contraseñas
     window.togglePassView = function(inputId, btn) {
       const input = document.getElementById(inputId);
       if (!input) return;
@@ -988,6 +984,7 @@
 
     setInterval(sincronizarSaldoServidor, 5000);
 
+    // REGISTRO E INICIO DE SESIÓN CON PROTECCIÓN CONTRA CLAVES DUPLICADAS
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -1028,6 +1025,7 @@
           return;
         }
 
+        // Upsert en Supabase: si ya existe, actualiza; si es nuevo, crea la fila
         await supabaseRequest('usuarios', 'POST', {
           phone: phone,
           pass: pass,
@@ -1907,7 +1905,6 @@
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
 
-      // Tarjeta de retiro en proceso
       const withdrawBox = document.getElementById('active-withdraw-box');
       const withdrawText = document.getElementById('active-withdraw-text');
       const diffWithdraw = Date.now() - (appState.lastWithdraw || 0);
