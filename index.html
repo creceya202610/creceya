@@ -446,7 +446,7 @@
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA (RECARGA Y RETIRO CON CVU DESTINO EDITABLE) -->
+    <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
       <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -509,7 +509,7 @@
           </button>
         </div>
 
-        <!-- BOX RETIRO CON CVU DESTINO PROPIO -->
+        <!-- BOX RETIRO -->
         <div id="wallet-retiro-box" class="hidden space-y-3 text-xs">
           <div>
             <label class="text-xs text-slate-400 block mb-1">Monto de retiro</label>
@@ -1205,7 +1205,7 @@
         btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
         btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
         boxRet.classList.remove('hidden');
-        boxRec.classList.add('hidden');
+        boxRet.classList.add('hidden');
       }
     };
 
@@ -1219,6 +1219,7 @@
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
+    // ENVÍO DE DEPÓSITO GARANTIZADO HACIA SUPABASE
     window.notifyDepositTelegram = async function() {
       const btn = document.getElementById('btn-notify-deposit');
       const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
@@ -1228,7 +1229,7 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Registrando solicitud...";
+      btn.innerText = "Registrando solicitud en servidor...";
 
       appState.pending += val;
       saveLocal();
@@ -1240,7 +1241,11 @@
         status: 'pendiente'
       };
 
-      await supabaseRequest('solicitudes', 'POST', solicitudItem);
+      try {
+        await supabaseRequest('solicitudes', 'POST', solicitudItem);
+      } catch(err) {
+        console.warn("Fallo al guardar en Supabase:", err);
+      }
 
       try {
         let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
@@ -1251,8 +1256,8 @@
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante';
 
-      window.open('https://t.me/+gROOyK5OfpI5MTQx', '_blank');
       closeWalletModal();
+      window.open('https://t.me/+gROOyK5OfpI5MTQx', '_blank');
       alert("¡Solicitud registrada con éxito! El administrador verificará tu comprobante.");
     };
 
@@ -1335,7 +1340,6 @@
       alert("Datos bancarios guardados con éxito.");
     });
 
-    // LÓGICA CAMBIAR CONTRASEÑA EN EL PERFIL
     document.getElementById('btn-change-pass').addEventListener('click', async () => {
       const oldPass = document.getElementById('prof-old-pass').value;
       const newPass = document.getElementById('prof-new-pass').value;
@@ -1398,6 +1402,7 @@
       }
     });
 
+    // CARGA DE SOLICITUDES CON BOTONES CONFIRMAR Y CANCELAR
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
@@ -1408,15 +1413,17 @@
         if (Array.isArray(data)) list = data;
       } catch(e) {}
 
-      if (list.length === 0) {
-        try {
-          const localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-          list = localQueue.filter(item => item.status === 'pendiente');
-        } catch(e) {}
-      }
+      try {
+        const localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+        localQueue.filter(item => item.status === 'pendiente').forEach(lItem => {
+          if (!list.some(s => String(s.id) === String(lItem.id))) {
+            list.push(lItem);
+          }
+        });
+      } catch(e) {}
 
       if (list.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay depósitos pendientes por aprobar.</p>';
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay depósitos pendientes por revisar.</p>';
         return;
       }
 
@@ -1437,14 +1444,20 @@
               <span>${timeStr}</span>
             </div>
 
-            <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-              Aprobar y Acreditar Saldo
-            </button>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
+                ✕ Cancelar
+              </button>
+              <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount})" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+                ✓ Confirmar
+              </button>
+            </div>
           </div>
         `;
       }).join('');
     };
 
+    // APROBAR / CONFIRMAR CON ESCALA ACUMULATIVA DE BONOS
     window.aprobarDeposito = async function(solicitudId, phone, amount) {
       if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
 
@@ -1461,24 +1474,44 @@
 
       const nuevoSaldo = saldoActual + parseFloat(amount);
 
+      // 1. Acreditar saldo en Supabase
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
         balance: nuevoSaldo,
         has_deposited: true 
       });
 
-      // PAGO AUTOMÁTICO DE BONO DE REFERIDO
+      // 2. Liquidación del Bono al Referente con Escala Oficial
       if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
         const cleanRef = String(invitadoPor).replace(/\D/g, '');
         const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
+
         if (sponsors && sponsors.length > 0) {
+          const sponsorPhone = sponsors[0].phone;
           const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
-          const nuevoSaldoSponsor = saldoSponsor + 1000;
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsors[0].phone)}`, 'PATCH', { 
-            balance: nuevoSaldoSponsor 
+
+          const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
+          let cantOficiales = 1;
+          if (Array.isArray(refUsers)) {
+            cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
+          }
+
+          let bonoPagar = 1000;
+          if (cantOficiales >= 100) bonoPagar = 100000;
+          else if (cantOficiales >= 50) bonoPagar = 60000;
+          else if (cantOficiales >= 40) bonoPagar = 30000;
+          else if (cantOficiales >= 20) bonoPagar = 15000;
+          else if (cantOficiales >= 10) bonoPagar = 8000;
+          else if (cantOficiales >= 5)  bonoPagar = 4000;
+          else if (cantOficiales >= 3)  bonoPagar = 2000;
+          else bonoPagar = 1000;
+
+          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
+            balance: saldoSponsor + bonoPagar 
           });
         }
       }
 
+      // 3. Actualizar estado de solicitud
       if (String(solicitudId).startsWith('LOC-')) {
         try {
           let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
@@ -1495,7 +1528,30 @@
         saveLocal();
       }
 
-      alert(`¡Aprobado con éxito! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
+      alert(`¡Confirmado con éxito! Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
+      cargarSolicitudesAdmin();
+    };
+
+    // CANCELAR / RECHAZAR SOLICITUD
+    window.cancelarDeposito = async function(solicitudId, phone, amount) {
+      if (!confirm(`¿Deseas CANCELAR y rechazar la solicitud de $${fmt(amount)} ARS de ${phone}?`)) return;
+
+      if (String(solicitudId).startsWith('LOC-')) {
+        try {
+          let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
+          localQueue = localQueue.filter(i => i.id !== solicitudId);
+          localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
+        } catch(e) {}
+      } else {
+        await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'rechazado' });
+      }
+
+      if (appState.phone === phone) {
+        if (appState.pending >= amount) appState.pending -= amount;
+        saveLocal();
+      }
+
+      alert(`Solicitud cancelada y retirada de la lista.`);
       cargarSolicitudesAdmin();
     };
 
