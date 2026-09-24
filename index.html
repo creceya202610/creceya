@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
   
+  <!-- Soporte App Móvil PWA -->
+  <meta name="theme-color" content="#030a13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Crece YA">
+  <link rel="apple-touch-icon" href="./logo.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -137,6 +144,9 @@
           <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
             <i class="fa-solid fa-lock text-sky-400 mr-2"></i>
             <input id="auth-pass" type="password" placeholder="Ingresa tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
+            <button type="button" onclick="togglePassView('auth-pass', this)" class="text-slate-400 hover:text-white ml-2 text-xs cursor-pointer">
+              <i class="fa-solid fa-eye"></i>
+            </button>
           </div>
         </div>
 
@@ -290,6 +300,7 @@
           </div>
         </div>
 
+        <!-- ESCALA DE BONIFICACIONES LIMPIA -->
         <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
           <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -394,7 +405,12 @@
           <div class="space-y-2.5 text-xs">
             <div>
               <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CONTRASEÑA ACTUAL</label>
-              <input id="prof-old-pass" type="password" placeholder="Tu contraseña actual" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
+              <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 subbox-theme">
+                <input id="prof-old-pass" type="password" placeholder="Tu contraseña actual" class="w-full bg-transparent font-mono text-slate-900 text-main outline-none">
+                <button type="button" onclick="togglePassView('prof-old-pass', this)" class="text-slate-400 hover:text-sky-500 ml-1.5 text-xs cursor-pointer">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
@@ -588,6 +604,9 @@
               <div class="flex items-center bg-[#132337] border border-slate-700 rounded-xl px-3 py-2 text-xs">
                 <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
                 <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña de cuenta" class="bg-transparent text-white w-full outline-none font-mono">
+                <button type="button" onclick="togglePassView('withdraw-fund-pass', this)" class="text-slate-400 hover:text-white ml-2 text-xs cursor-pointer">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </div>
             </div>
 
@@ -622,9 +641,14 @@
         <div id="admin-dashboard-box" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
           <div class="flex justify-between items-center text-xs">
             <span class="font-bold text-white">Solicitudes Pendientes en Vivo</span>
-            <button onclick="cargarSolicitudesAdmin()" class="text-sky-400 hover:underline flex items-center gap-1 font-mono cursor-pointer">
-              <i class="fa-solid fa-rotate-right"></i> Refrescar
-            </button>
+            <div class="flex gap-2 items-center">
+              <button onclick="bloquearConsolaAdmin()" class="text-[10px] text-rose-400 hover:underline font-mono cursor-pointer">
+                <i class="fa-solid fa-lock"></i> Bloquear
+              </button>
+              <button onclick="cargarSolicitudesAdmin()" class="text-sky-400 hover:underline flex items-center gap-1 font-mono cursor-pointer">
+                <i class="fa-solid fa-rotate-right"></i> Refrescar
+              </button>
+            </div>
           </div>
 
           <button onclick="auditarBonosAdmin()" class="w-full py-2 bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 hover:text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -730,6 +754,19 @@
         });
       }
     });
+
+    // Función para mostrar/ocultar contraseñas
+    window.togglePassView = function(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+      }
+    };
 
     let authMode = 'register';
     window.setAuthMode = function(mode) {
@@ -1439,7 +1476,6 @@
       }
     };
 
-    // REGISTRO DE RETIRO GARANTIZADO EN SUPABASE Y LOCAL
     window.ejecutarRetiroFinal = async function() {
       const pass = document.getElementById('withdraw-fund-pass').value;
 
@@ -1467,7 +1503,6 @@
       appState.lastWithdrawNet = netAmount;
       saveLocal();
 
-      // Guardar en tabla usuarios
       await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
         balance: appState.balance,
         withdrawn: appState.withdrawn,
@@ -1475,7 +1510,6 @@
         cvu: appState.cvu
       });
 
-      // Crear solicitud formal de retiro en Supabase
       const retiroItem = {
         user_phone: appState.phone,
         user_name: destName,
@@ -1575,6 +1609,12 @@
 
     window.closeAdminModal = () => document.getElementById('admin-modal').classList.add('hidden');
 
+    window.bloquearConsolaAdmin = function() {
+      document.getElementById('admin-dashboard-box').classList.add('hidden');
+      document.getElementById('admin-auth-box').classList.remove('hidden');
+      document.getElementById('admin-pin-input').value = '';
+    };
+
     document.getElementById('btn-admin-unlock').addEventListener('click', () => {
       if (document.getElementById('admin-pin-input').value === "161928") {
         document.getElementById('admin-auth-box').classList.add('hidden');
@@ -1585,7 +1625,14 @@
       }
     });
 
-    // CARGA DE SOLICITUDES CON DISTINCIÓN DE DEPÓSITO VS RETIRO
+    window.copiarTextoRapido = function(txt, btn) {
+      navigator.clipboard.writeText(txt).then(() => {
+        const prev = btn.innerText;
+        btn.innerText = "¡Copiado!";
+        setTimeout(() => btn.innerText = prev, 1500);
+      });
+    };
+
     window.cargarSolicitudesAdmin = async function() {
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
@@ -1618,7 +1665,11 @@
           : '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">RECARGA ENTRANTE</span>';
 
         const extraInfo = isRetiro 
-          ? `<p class="text-[11px] font-mono text-amber-300 pt-1">CVU: ${item.cvu || 'No provisto'} | Neto a pagar: $${fmt(item.net_amount || item.amount * 0.9)} ARS</p>` 
+          ? `<div class="bg-[#091522] p-2 rounded-xl border border-slate-700/60 flex items-center justify-between text-[11px] font-mono mt-1">
+              <span class="text-slate-300 truncate">CVU: <strong class="text-amber-400">${item.cvu || 'No provisto'}</strong></span>
+              <button onclick="copiarTextoRapido('${item.cvu}', this)" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-[10px] rounded cursor-pointer shrink-0 ml-1">Copiar</button>
+            </div>
+            <p class="text-[11px] font-mono text-emerald-400 font-bold pt-1">Neto a transferir: $${fmt(item.net_amount || item.amount * 0.9)} ARS</p>` 
           : `<p class="text-[10px] font-mono text-slate-400 pt-0.5">Transferencia Recibida</p>`;
 
         return `
@@ -1703,7 +1754,6 @@
       cargarSolicitudesAdmin();
     };
 
-    // APROBACIÓN DINÁMICA: DEPÓSITO O LIQUIDACIÓN DE RETIRO
     window.aprobarDeposito = async function(solicitudId, phone, amount, type = 'recarga') {
       const isRetiro = type === 'retiro';
 
@@ -1731,7 +1781,6 @@
           has_deposited: true 
         });
 
-        // Escala acumulativa al referente
         if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
           const cleanRef = String(invitadoPor).replace(/\D/g, '');
           const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
@@ -1770,7 +1819,6 @@
           saveLocal();
         }
       } else {
-        // En caso de retiro, confirmar la cuenta bancaria como verificada
         await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
           bank_verified: true
         });
@@ -1799,7 +1847,6 @@
 
       if (!confirm(`¿Deseas rechazar la solicitud de ${isRetiro ? 'retiro' : 'recarga'} de $${fmt(amount)} ARS de ${phone}?`)) return;
 
-      // Si se rechaza un retiro, reintegrar el dinero al balance
       if (isRetiro) {
         const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=balance,withdrawn`);
         if (users && users.length > 0) {
