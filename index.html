@@ -16,15 +16,6 @@
 </head>
 <body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
-  <!-- ================= SPLASH SCREEN INICIAL ================= -->
-  <div id="splash-screen" onclick="this.remove()" class="fixed inset-0 z-[60] bg-[#e0f2fe] flex flex-col items-center justify-center transition-opacity duration-300 select-none cursor-pointer">
-    <div class="text-center space-y-3">
-      <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-28 w-auto mx-auto object-contain drop-shadow-md animate-pulse">
-      <p class="text-xs font-mono font-bold text-sky-800 tracking-wider">CARGANDO MERCADO...</p>
-      <span class="text-[10px] text-sky-600 block">(Toca la pantalla si no avanza)</span>
-    </div>
-  </div>
-
   <!-- ================= PANTALLA DE REGISTRO / LOGIN ================= -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-[#061424]/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-5 shadow-2xl space-y-4 text-white">
@@ -496,18 +487,6 @@
 
   <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
-    // DESTRUCCIÓN GARANTIZADA DEL SPLASH SCREEN
-    function dismissSplash() {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.style.opacity = '0';
-        splash.style.pointerEvents = 'none';
-        setTimeout(() => { if (splash) splash.remove(); }, 300);
-      }
-    }
-    setTimeout(dismissSplash, 800);
-    window.addEventListener('load', dismissSplash);
-
     const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
     let supabase = null;
@@ -607,7 +586,7 @@
       renderUI();
     }
 
-    // Intervalo restaurado a 5000 ms (flujo original)
+    // Intervalo de sincronización periódico restaurado a 5 segundos (5000 ms)
     setInterval(() => {
       if (appState.phone) syncWithSupabase(true);
     }, 5000);
