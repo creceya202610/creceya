@@ -17,7 +17,7 @@
 <body class="bg-[#bae6fd] text-slate-850 font-sans antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-500 selection:text-white">
 
   <!-- ================= SPLASH SCREEN INICIAL ================= -->
-  <div id="splash-screen" onclick="this.remove()" class="fixed inset-0 z-[60] bg-[#e0f2fe] flex flex-col items-center justify-center transition-opacity duration-500 select-none cursor-pointer">
+  <div id="splash-screen" onclick="this.remove()" class="fixed inset-0 z-[60] bg-[#e0f2fe] flex flex-col items-center justify-center transition-opacity duration-300 select-none cursor-pointer">
     <div class="text-center space-y-3">
       <img src="./logo.png" onerror="this.style.display='none'" alt="Crece YA" class="h-28 w-auto mx-auto object-contain drop-shadow-md animate-pulse">
       <p class="text-xs font-mono font-bold text-sky-800 tracking-wider">CARGANDO MERCADO...</p>
@@ -496,6 +496,18 @@
 
   <!-- ================= LÓGICA JAVASCRIPT ================= -->
   <script>
+    // DESTRUCCIÓN GARANTIZADA DEL SPLASH SCREEN
+    function dismissSplash() {
+      const splash = document.getElementById('splash-screen');
+      if (splash) {
+        splash.style.opacity = '0';
+        splash.style.pointerEvents = 'none';
+        setTimeout(() => { if (splash) splash.remove(); }, 300);
+      }
+    }
+    setTimeout(dismissSplash, 800);
+    window.addEventListener('load', dismissSplash);
+
     const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
     let supabase = null;
@@ -506,14 +518,6 @@
     } catch(err) {
       console.warn("Supabase initialization bypassed:", err);
     }
-
-    setTimeout(() => {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => splash.remove(), 400);
-      }
-    }, 1200);
 
     const plans = [
       { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 15, slotsLeft: 8, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
@@ -603,10 +607,10 @@
       renderUI();
     }
 
-    // Intervalo de sincronización con el servidor reducido a 60 segundos para evitar saturación de logs
+    // Intervalo restaurado a 5000 ms (flujo original)
     setInterval(() => {
       if (appState.phone) syncWithSupabase(true);
-    }, 60000);
+    }, 5000);
 
     function fmt(n) {
       return new Intl.NumberFormat('es-AR').format(Math.round(n));
@@ -641,12 +645,12 @@
       if (el) el.innerText = currentCaptcha;
     }
 
-    async function checkAuth() {
+    function checkAuth() {
       if (appState.phone && appState.pass) {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('user-display-phone').innerText = appState.phone;
         renderUI();
-        await syncWithSupabase(true);
+        syncWithSupabase(true);
       } else {
         setAuthMode('login');
         document.getElementById('auth-screen').classList.remove('hidden');
@@ -676,7 +680,7 @@
       appState.pass = pass;
       saveLocal();
       checkAuth();
-      await syncWithSupabase(false);
+      syncWithSupabase(false);
     });
 
     document.getElementById('btn-logout').addEventListener('click', () => {
