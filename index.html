@@ -514,7 +514,7 @@ Retirar
 <span class="text-sky-400 font-bold">Billetera / Banco</span>
 </div>
 <div class="flex items-center justify-between gap-1 pt-1">
-<span id="cvu-text-val" class="font-mono font-bold text-xs text-white select-all">0000168300000008340656</span>
+<span id="cvu-text-val" class="font-mono font-bold text-xs text-white select-all">4530000800013866529417</span>
 <button id="btn-copy-cvu" onclick="copyOfficialCVU()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-black rounded-lg transition shrink-0 cursor-pointer">
 Copiar
 </button>
@@ -606,7 +606,7 @@ Revisar y Confirmar Retiro
 
 <div class="pt-2 border-t border-slate-800 space-y-1.5">
 <label class="text-[11px] text-slate-300 block font-bold">Confirma ingresando tu contraseña de inicio:</label>
-<div class="flex items-center bg-[#132337] border border-slate-700 rounded-xl px-3 py-2 text-xs">
+<div class="flex items-center bg-[#13283f] border border-slate-700 rounded-xl px-3 py-2 text-xs">
 <i class="fa-solid fa-lock text-slate-400 mr-2"></i>
 <input id="withdraw-fund-pass" type="password" placeholder="Tu contraseña de cuenta" class="bg-transparent text-white w-full outline-none font-mono">
 <button type="button" onclick="togglePassView('withdraw-fund-pass', this)" class="text-slate-400 hover:text-white ml-2 text-xs cursor-pointer">
@@ -942,14 +942,14 @@ const statusBadge = depositDone
 : '<span class="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Esperando validación</span>';
 
 return `
-         <div class="subbox-theme flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
-           <div>
-             <span class="font-bold text-slate-800 text-xs block text-main">${inv.name || 'Usuario Crece YA'}</span>
-             <span class="text-[10px] text-slate-400 font-mono text-sub">${maskedPhone}</span>
-           </div>
-           ${statusBadge}
-         </div>
-       `;
+          <div class="subbox-theme flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-100">
+            <div>
+              <span class="font-bold text-slate-800 text-xs block text-main">${inv.name || 'Usuario Crece YA'}</span>
+              <span class="text-[10px] text-slate-400 font-mono text-sub">${maskedPhone}</span>
+            </div>
+            ${statusBadge}
+          </div>
+        `;
 }).join('');
 }
 
@@ -981,7 +981,6 @@ if (dbUser.bank_verified !== undefined) {
 appState.bankVerified = dbUser.bank_verified === true;
 }
 
-// Si en Supabase last_withdraw está en 0, limpiar bloqueo en el móvil
 if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
 appState.lastWithdraw = 0;
 appState.lastWithdrawNet = 0;
@@ -1176,41 +1175,41 @@ const card = document.createElement('div');
 card.className = `card-theme p-4 rounded-2xl bg-white border ${p.border} shadow-xs hover:border-sky-400 transition space-y-2.5`;
 
 card.innerHTML = `
-         <div class="flex justify-between items-center">
-           <div class="flex items-center gap-2.5">
-             <div class="subbox-theme w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
-               <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain">
-             </div>
-             <div>
-               <h3 class="font-bold text-slate-900 text-sm leading-none text-main">${p.name}</h3>
-               <span class="text-[10px] text-slate-400 font-mono text-sub">Contrato Fraccional</span>
-             </div>
-           </div>
-           <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
-             ${p.days} Días
-           </span>
-         </div>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2.5">
+              <div class="subbox-theme w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
+                <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain">
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm leading-none text-main">${p.name}</h3>
+                <span class="text-[10px] text-slate-400 font-mono text-sub">Contrato Fraccional</span>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-md text-white" style="background-color: ${p.color}">
+              ${p.days} Días
+            </span>
+          </div>
 
-         <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-           <div>
-             <span class="text-slate-400 block text-[10px] text-sub">DIVIDENDO DIARIO</span>
-             <strong class="text-sky-700 font-bold">+$${fmt(p.daily)} ARS/d</strong>
-           </div>
-           <div>
-             <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
-             <strong class="text-slate-900 font-bold text-main">$${fmt(p.total)} ARS</strong>
-           </div>
-         </div>
+          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <div>
+              <span class="text-slate-400 block text-[10px] text-sub">DIVIDENDO DIARIO</span>
+              <strong class="text-sky-700 font-bold">+$${fmt(p.daily)} ARS/d</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
+              <strong class="text-slate-900 font-bold text-main">$${fmt(p.total)} ARS</strong>
+            </div>
+          </div>
 
-         <div class="flex justify-between text-xs text-slate-400 font-mono pt-0.5 text-sub">
-           <span>Quedan ${p.slotsLeft} de ${p.slotsTotal} cupos</span>
-           <span class="text-sky-600 font-bold">Ronda 1</span>
-         </div>
+          <div class="flex justify-between text-xs text-slate-400 font-mono pt-0.5 text-sub">
+            <span>Quedan ${p.slotsLeft} de ${p.slotsTotal} cupos</span>
+            <span class="text-sky-600 font-bold">Ronda 1</span>
+          </div>
 
-         <button onclick="handlePlanClick('${p.id}')" ${yaAdquirido ? 'disabled' : ''} class="w-full py-2.5 ${btnStyle} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
-           ${btnLabel}
-         </button>
-       `;
+          <button onclick="handlePlanClick('${p.id}')" ${yaAdquirido ? 'disabled' : ''} class="w-full py-2.5 ${btnStyle} font-black text-xs rounded-xl transition shadow flex items-center justify-center gap-1 cursor-pointer">
+            ${btnLabel}
+          </button>
+        `;
 container.appendChild(card);
 });
 }
@@ -1271,14 +1270,14 @@ container.innerHTML = '';
 
 if (!appState.activePlans || appState.activePlans.length === 0) {
 container.innerHTML = `
-         <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
-           <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
-           <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
-           <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer">
-             Explorar Mercado
-           </button>
-         </div>
-       `;
+          <div class="card-theme p-6 bg-white border border-sky-100 rounded-2xl text-center space-y-2">
+            <i class="fa-solid fa-folder-open text-sky-300 text-4xl"></i>
+            <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
+            <button onclick="switchTab('planes')" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer">
+              Explorar Mercado
+            </button>
+          </div>
+        `;
 return;
 }
 
@@ -1313,28 +1312,28 @@ timeDisplay = `<span class="font-mono font-bold text-sky-800 text-sm">${dText}${
 const card = document.createElement('div');
 card.className = "card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-xs space-y-2.5";
 card.innerHTML = `
-         <div class="flex justify-between items-center">
-           <div class="flex items-center gap-2">
-             <img src="${plan.logo}" class="w-6 h-6 object-contain">
-             <h4 class="font-bold text-sm text-slate-900 text-main">${plan.name}</h4>
-           </div>
-           ${statusBadge}
-         </div>
-         <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-           <div>
-             <span class="text-slate-400 block text-[10px] text-sub">INVERSIÓN</span>
-             <strong class="text-slate-800 text-main">$${fmt(plan.cost)} ARS</strong>
-           </div>
-           <div>
-             <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
-             <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
-           </div>
-         </div>
-         <div class="flex items-center justify-between text-xs pt-1">
-           <span class="text-slate-400 font-mono text-sub">Estado:</span>
-           ${timeDisplay}
-         </div>
-       `;
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <img src="${plan.logo}" class="w-6 h-6 object-contain">
+              <h4 class="font-bold text-sm text-slate-900 text-main">${plan.name}</h4>
+            </div>
+            ${statusBadge}
+          </div>
+          <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <div>
+              <span class="text-slate-400 block text-[10px] text-sub">INVERSIÓN</span>
+              <strong class="text-slate-800 text-main">$${fmt(plan.cost)} ARS</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] text-sub">TOTAL AL CIERRE</span>
+              <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs pt-1">
+            <span class="text-slate-400 font-mono text-sub">Estado:</span>
+            ${timeDisplay}
+          </div>
+        `;
 container.appendChild(card);
 });
 
@@ -1402,7 +1401,7 @@ boxRet.style.display = 'block';
 };
 
 window.copyOfficialCVU = function() {
-navigator.clipboard.writeText("0000168300000008340656").then(() => {
+navigator.clipboard.writeText("4530000800013866529417").then(() => {
 const btn = document.getElementById('btn-copy-cvu');
 btn.innerText = "¡Copiado! ✓";
 setTimeout(() => { btn.innerText = "Copiar"; }, 1500);
@@ -1721,35 +1720,35 @@ const extraInfo = isRetiro
 : `<p class="text-[10px] font-mono text-slate-400 pt-0.5">Transferencia Recibida</p>`;
 
 return `
-         <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? 'border-rose-500/50' : 'border-sky-800/70'} shadow-md space-y-2 text-left">
-           <div class="flex justify-between items-start">
-             <div>
-               <div class="flex items-center gap-2">
-                 <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
-                 ${tipoBadge}
-               </div>
-               <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
-             </div>
-             <span class="font-bold ${isRetiro ? 'text-rose-400' : 'text-sky-400'} font-mono text-sm">$${fmt(item.amount)} ARS</span>
-           </div>
+          <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? 'border-rose-500/50' : 'border-sky-800/70'} shadow-md space-y-2 text-left">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
+                  ${tipoBadge}
+                </div>
+                <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
+              </div>
+              <span class="font-bold ${isRetiro ? 'text-rose-400' : 'text-sky-400'} font-mono text-sm">$${fmt(item.amount)} ARS</span>
+            </div>
 
-           <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono border-t border-slate-800 pt-1.5">
-             <span>${timeStr}</span>
-             <span>${item.cvu ? 'CVU Personal' : 'Comprobante CVU'}</span>
-           </div>
+            <div class="flex justify-between items-center text-[10px] text-sky-300/70 font-mono border-t border-slate-800 pt-1.5">
+              <span>${timeStr}</span>
+              <span>${item.cvu ? 'CVU Personal' : 'Comprobante CVU'}</span>
+            </div>
 
-           ${extraInfo}
+            ${extraInfo}
 
-           <div class="grid grid-cols-2 gap-2 pt-1">
-             <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
-               ✕ Rechazar
-             </button>
-             <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
-               ✓ ${isRetiro ? 'Liquidar Retiro' : 'Acreditar Saldo'}
-             </button>
-           </div>
-         </div>
-       `;
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="cancelarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs rounded-xl border border-rose-500/40 transition cursor-pointer">
+                ✕ Rechazar
+              </button>
+              <button onclick="aprobarDeposito('${item.id}', '${item.user_phone}', ${item.amount}, '${item.type || 'recarga'}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow cursor-pointer">
+                ✓ ${isRetiro ? 'Liquidar Retiro' : 'Acreditar Saldo'}
+              </button>
+            </div>
+          </div>
+        `;
 }).join('');
 };
 
@@ -2003,5 +2002,3 @@ renderProducts();
 </script>
 </body>
 </html>
-
-  
