@@ -714,7 +714,7 @@ const plans = [
 { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 4778, total: 215000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
 { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 6667, total: 400000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
 { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 7333, total: 550000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
-{ id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 500000, days: 100, daily: 21000, total: 2100000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
+{ id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 14500, total: 1450000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
 ];
 
 let appState = {
@@ -1925,7 +1925,7 @@ saveLocal();
 if (String(solicitudId).startsWith('LOC-')) {
 try {
 let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-localQueue = localQueue.filter(i => i.id !== solicitudId);
+localQueue.filter(i => i.id !== solicitudId);
 localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
 } catch(e) {}
 } else {
