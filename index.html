@@ -700,7 +700,7 @@ return null;
 }
 }
 
-// CATÁLOGO: 6 INICIALES Y 6 VIP CON ESCALA DE DÍAS EXTENDIDA
+// CATÁLOGO: 6 INICIALES Y 6 VIP CON VALORES ACTUALIZADOS
 const plans = [
 { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
 { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 3000, total: 12500, slotsTotal: 100, slotsLeft: 58, color: '#06b6d4', btnBg: 'bg-cyan-500 hover:bg-cyan-400 text-white', border: 'border-cyan-300', logo: './tiktok.png' },
@@ -710,11 +710,11 @@ const plans = [
 { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 10, daily: 7000, total: 85000, slotsTotal: 100, slotsLeft: 22, color: '#e50914', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-300', logo: './netflix.png' },
 
 { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 15, daily: 3000, total: 65000, slotsTotal: 50, slotsLeft: 28, color: '#16a34a', btnBg: 'bg-emerald-600 hover:bg-emerald-500 text-white', border: 'border-emerald-300', logo: './nvidia.png' },
-{ id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 25000, days: 25, daily: 4560, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
-{ id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 35000, days: 45, daily: 4667, total: 245000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
-{ id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 50000, days: 60, daily: 6000, total: 410000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
-{ id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 80000, days: 75, daily: 8667, total: 730000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
-{ id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 24000, total: 2600000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
+{ id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 30000, days: 25, daily: 5560, total: 139000, slotsTotal: 50, slotsLeft: 21, color: '#e11d48', btnBg: 'bg-rose-600 hover:bg-rose-500 text-white', border: 'border-rose-300', logo: './instagram.png' },
+{ id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 4778, total: 215000, slotsTotal: 50, slotsLeft: 17, color: '#dc2626', btnBg: 'bg-red-600 hover:bg-red-500 text-white', border: 'border-red-400', logo: './tesla.png' },
+{ id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 6667, total: 400000, slotsTotal: 50, slotsLeft: 12, color: '#ef4444', btnBg: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-300', logo: './youtube.png' },
+{ id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 7333, total: 550000, slotsTotal: 50, slotsLeft: 8, color: '#2563eb', btnBg: 'bg-blue-600 hover:bg-blue-500 text-white', border: 'border-blue-300', logo: './google.png' },
+{ id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 500000, days: 100, daily: 21000, total: 2100000, slotsTotal: 50, slotsLeft: 5, color: '#0284c7', btnBg: 'bg-sky-600 hover:bg-sky-500 text-white', border: 'border-sky-300', logo: './microsoft.png' }
 ];
 
 let appState = {
@@ -1881,7 +1881,7 @@ saveLocal();
 if (String(solicitudId).startsWith('LOC-')) {
 try {
 let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-localQueue = localQueue.filter(i => i.id !== solicitudId);
+localQueue.filter(i => i.id !== solicitudId);
 localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
 } catch(e) {}
 } else {
