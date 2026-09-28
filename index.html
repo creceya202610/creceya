@@ -701,6 +701,22 @@ return null;
 }
 }
 
+// DETERMINAR SI ES HORARIO BANCARIO OFICIAL DE ARGENTINA (LUN A VIE 07:00 A 18:00 HS)
+function isBusinessHours() {
+try {
+const nowArg = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+const day = nowArg.getDay(); // 0: Dom, 1: Lun, ..., 6: Sab
+const hour = nowArg.getHours();
+if (day === 0 || day === 6) return false;
+if (hour < 7 || hour >= 18) return false;
+return true;
+} catch (e) {
+const localDay = new Date().getDay();
+const localHour = new Date().getHours();
+return localDay >= 1 && localDay <= 5 && localHour >= 7 && localHour < 18;
+}
+}
+
 // CATÁLOGO: 6 INICIALES Y 6 VIP CON VALORES ACTUALIZADOS
 const plans = [
 { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2500, total: 7000, slotsTotal: 100, slotsLeft: 64, color: '#f59e0b', btnBg: 'bg-amber-400 hover:bg-amber-300 text-slate-950', border: 'border-amber-300', logo: './meli.png' },
@@ -954,7 +970,7 @@ return `
 }).join('');
 }
 
-// SINCRONIZACIÓN CORREGIDA Y ACTIVA
+// SINCRONIZACIÓN Y AUTO-RECHAZO EN APERTURA BANCARIA SI CORRESPONDE
 async function sincronizarSaldoServidor() {
 if (!appState.phone) return;
 
@@ -989,6 +1005,36 @@ appState.lastWithdrawNet = 0;
 
 if (dbUser.active_plans && Array.isArray(dbUser.active_plans)) {
 appState.activePlans = dbUser.active_plans;
+}
+
+// AUTO-RECHAZO AUTOMÁTICO EN HORARIO BANCARIO SI LA ORDEN FUE FUERA DE HORA
+if (isBusinessHours() && appState.lastWithdraw > 0) {
+try {
+const pendingReqs = await supabaseRequest(`solicitudes?user_phone=eq.${encodeURIComponent(cleanPhone)}&status=eq.pendiente&type=eq.retiro`);
+if (Array.isArray(pendingReqs) && pendingReqs.length > 0) {
+const req = pendingReqs[0];
+if (req.fuera_horario === true) {
+const refundAmt = parseFloat(req.amount) || 0;
+const nuevoSaldo = appState.balance + refundAmt;
+const ajustadoWithdrawn = Math.max(0, appState.withdrawn - refundAmt);
+
+await supabaseRequest(`solicitudes?id=eq.${req.id}`, 'PATCH', { status: 'rechazado' });
+await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(cleanPhone)}`, 'PATCH', {
+balance: nuevoSaldo,
+withdrawn: ajustadoWithdrawn,
+last_withdraw: 0
+});
+
+appState.balance = nuevoSaldo;
+appState.withdrawn = ajustadoWithdrawn;
+appState.lastWithdraw = 0;
+appState.lastWithdrawNet = 0;
+saveLocal();
+
+alert("Aviso de Apertura Bancaria: Tu solicitud de retiro anterior fue rechazada automáticamente por haber sido enviada fuera del horario bancario reglamentario. Tus fondos han sido reintegrados a tu saldo disponible para que operes de Lun a Vie de 07:00 a 18:00 hs.");
+}
+}
+} catch(e) {}
 }
 
 saveLocal();
@@ -1548,6 +1594,7 @@ const destName = document.getElementById('withdraw-dest-name').value.trim();
 const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
 const netAmount = amt * 0.90;
 const now = Date.now();
+const esHorarioHabil = isBusinessHours();
 
 appState.name = destName || appState.name;
 appState.cvu = destCvu;
@@ -1572,7 +1619,8 @@ amount: amt,
 net_amount: netAmount,
 cvu: destCvu,
 status: 'pendiente',
-type: 'retiro'
+type: 'retiro',
+fuera_horario: !esHorarioHabil
 };
 
 try {
@@ -1587,7 +1635,12 @@ localQueue.unshift({ ...retiroItem, id: 'LOC-W-' + Date.now(), created_at: new D
 localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
 } catch(e) {}
 
-alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta en horario bancario.`);
+if (esHorarioHabil) {
+alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta bancaria.`);
+} else {
+alert(`⚠️ Aviso Operativo: Tu solicitud de retiro por $${fmt(amt)} ARS fue registrada fuera del horario bancario reglamentario (Lun a Vie 07:00 a 18:00 hs).\n\nQueda sujeta a revisión en la apertura del siguiente día hábil. En caso de no cumplir con la compensación reglamentaria, la orden será rechazada y tus fondos reintegrados automáticamente a tu saldo disponible.`);
+}
+
 cancelarRevisionRetiro();
 closeWalletModal();
 };
@@ -1715,9 +1768,15 @@ return;
 container.innerHTML = list.map(item => {
 const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente';
 const isRetiro = item.type === 'retiro';
+const isFuera = item.fuera_horario === true;
+
 const tipoBadge = isRetiro 
 ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">RETIRO A PAGAR</span>' 
 : '<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">RECARGA ENTRANTE</span>';
+
+const fueraBadge = isFuera 
+? '<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40 font-bold ml-1">⚠️ FUERA DE HORARIO</span>' 
+: '';
 
 const extraInfo = isRetiro 
 ? `<div class="bg-[#091522] p-2 rounded-xl border border-slate-700/60 flex items-center justify-between text-[11px] font-mono mt-1">
@@ -1728,12 +1787,13 @@ const extraInfo = isRetiro
 : `<p class="text-[10px] font-mono text-slate-400 pt-0.5">Transferencia Recibida</p>`;
 
 return `
-          <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? 'border-rose-500/50' : 'border-sky-800/70'} shadow-md space-y-2 text-left">
+          <div class="p-3.5 rounded-2xl bg-[#13283f] border ${isRetiro ? (isFuera ? 'border-amber-400/70' : 'border-rose-500/50') : 'border-sky-800/70'} shadow-md space-y-2 text-left">
             <div class="flex justify-between items-start">
               <div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap">
                   <h4 class="font-bold text-white text-xs leading-tight">${item.user_name || 'Usuario Crece YA'}</h4>
                   ${tipoBadge}
+                  ${fueraBadge}
                 </div>
                 <span class="text-[11px] text-sky-300 font-mono block mt-0.5">${item.user_phone}</span>
               </div>
@@ -1889,7 +1949,7 @@ saveLocal();
 if (String(solicitudId).startsWith('LOC-')) {
 try {
 let localQueue = JSON.parse(localStorage.getItem('cy_solicitudes_queue') || '[]');
-localQueue = localQueue.filter(i => i.id !== solicitudId);
+localQueue.filter(i => i.id !== solicitudId);
 localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
 } catch(e) {}
 } else {
@@ -1940,7 +2000,7 @@ localStorage.setItem('cy_solicitudes_queue', JSON.stringify(localQueue));
 await supabaseRequest(`solicitudes?id=eq.${solicitudId}`, 'PATCH', { status: 'rechazado' });
 }
 
-alert(`Solicitud rechazada y actualizada.`);
+alert(`Solicitud rechazada y fondos reintegrados.`);
 cargarSolicitudesAdmin();
 };
 
