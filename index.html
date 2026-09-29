@@ -360,7 +360,7 @@ body.dark-mode .social-ticker {
       <span class="text-[10px] text-slate-400 block">Liquidaciones de Lun a Vie de 07:00 a 18:00 hs</span>
     </div>
 
-    <!-- CHECK-IN DIARIO CON CANDADO DE IP / DISPOSITIVO -->
+    <!-- CHECK-IN DIARIO -->
     <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
@@ -546,18 +546,21 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON REGLAS DE IP, COOLDOWN Y RECHAZO FANTASMA -->
+    <!-- BOX RETIRO CON REGLAS ESCALONADAS POR NIVEL -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-3">
         <div>
-          <label class="text-xs text-slate-400 block mb-1">Monto de retiro ($5.000 a $100.000 ARS)</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs text-slate-400">Monto de extracción</label>
+            <span id="tier-limit-badge" class="text-[10px] font-mono text-sky-400 bg-sky-950/60 border border-sky-800/60 px-2 py-0.5 rounded font-bold">Tope: $15.000 ARS/d</span>
+          </div>
           <div class="grid grid-cols-3 gap-1.5 font-mono mb-2">
             <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
-            <button onclick="setWithdrawValue(25000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">25,000.00</button>
-            <button onclick="setWithdrawValue(100000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">100,000.00</button>
+            <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
+            <button onclick="setWithdrawValue(35000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">35,000.00</button>
           </div>
-          <input id="withdraw-custom-input" type="number" min="5000" max="100000" placeholder="Monto a retirar" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
-          <span class="text-[10px] text-amber-400 block mt-1">Mínimo: $5.000 ARS • Máximo diario: $100.000 ARS. (Debe quedar un saldo de reserva mínimo de $1.000 ARS).</span>
+          <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
+          <span class="text-[10px] text-amber-400 block mt-1">Mínimo: $5.000 ARS • Debe quedar un saldo de reserva mínimo de $1.000 ARS en cuenta.</span>
         </div>
 
         <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
@@ -637,9 +640,6 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL
 const urlParams = new URLSearchParams(window.location.search);
 const referredByUrl = urlParams.get('ref') || null;
 
-// ==========================================
-// 1. RASTREO DE DISPOSITIVO E IP WIFI
-// ==========================================
 function getDeviceFingerprint() {
   let devId = localStorage.getItem('cy_device_uid');
   if (!devId) {
@@ -665,7 +665,6 @@ function getDeviceFingerprint() {
 const currentDeviceId = getDeviceFingerprint();
 let currentClientIp = '';
 
-// Detección asíncrona de IP pública
 async function fetchClientIp() {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
@@ -1021,7 +1020,6 @@ async function checkAuth() {
 
 setInterval(sincronizarSaldoServidor, 4000);
 
-// REGISTRO CON CANDADO DE PUERTA TRASERA Y GUARDADO DE IP
 window.handleAuthSubmit = async function() {
   const phoneInput = document.getElementById('auth-phone');
   const passInput = document.getElementById('auth-pass');
@@ -1128,7 +1126,6 @@ window.handleAuthSubmit = async function() {
     appState.bankVerified = dbUser.bank_verified === true;
     appState.lastClaim = parseInt(dbUser.last_claim) || 0;
 
-    // Actualiza huella física e IP en login si cambiaron
     const updatePayload = {};
     if (!dbUser.device_id || dbUser.device_id !== currentDeviceId) updatePayload.device_id = currentDeviceId;
     if (currentClientIp && (!dbUser.ip_address || dbUser.ip_address !== currentClientIp)) updatePayload.ip_address = currentClientIp;
@@ -1262,6 +1259,9 @@ function renderPlans() {
   });
 }
 
+// ======================================================================
+// CONDICIÓN: NO SE PUEDEN ACTIVAR PLANES SOLO CON CHECK-IN (DEBE FONDEAR)
+// ======================================================================
 window.handlePlanClick = async function(planId) {
   const p = plans.find(item => item.id === planId);
   if (!p) return;
@@ -1276,6 +1276,13 @@ window.handlePlanClick = async function(planId) {
   }
 
   await sincronizarSaldoServidor();
+
+  // CANDADO DE FONDEO: Si no tiene primer depósito oficial, debe fondear para activar
+  if (!appState.hasDeposited) {
+    alert("Requisito de Activación: Para poner en marcha tus primeros contratos y certificar los dividendos, debes realizar tu primer depósito oficial por CVU ($2.000 ARS). Los saldos promocionales de bienvenida se desbloquean junto a tu primer fondeo.");
+    openWalletModal('recargar');
+    return;
+  }
 
   if (appState.balance >= p.cost) {
     if (confirm(`¿Confirmas activar ${p.name} por $${fmt(p.cost)} ARS de tu saldo?`)) {
@@ -1396,15 +1403,12 @@ function renderProducts() {
 }
 setInterval(renderProducts, 1000);
 
-// ========================================================
-// 2. CHECK-IN DIARIO LIMITADO POR DISPOSITIVO Y POR IP WIFI
-// ========================================================
+// CHECK-IN LIMITADO POR TERMINAL FÍSICO E IP
 document.getElementById('btn-claim-daily').addEventListener('click', async () => {
   const now = Date.now();
   const todayStr = new Date().toISOString().slice(0, 10);
   const lastDeviceClaimDay = localStorage.getItem('cy_dev_claim_day');
 
-  // Candado local de terminal físico
   if (lastDeviceClaimDay === todayStr) {
     alert("Límite por terminal alcanzado: Este dispositivo físico ya cobró su recompensa diaria correspondiente. Vuelve mañana.");
     return;
@@ -1416,7 +1420,6 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
     return;
   }
 
-  // Verificación en Supabase: comprobar si este terminal o IP ya cobró hoy con otra cuenta
   if (currentDeviceId || currentClientIp) {
     const filterClauses = [];
     if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
@@ -1451,8 +1454,23 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
     device_id: currentDeviceId,
     ip_address: currentClientIp
   });
-  alert("¡+$500 ARS acreditados con éxito a tu saldo!");
+  alert("¡+$500 ARS acumulados a tu cuenta! Recuerda que para utilizarlos en compras debes contar con tu primer fondeo oficial.");
 });
+
+// CALCULAR TOPE DE RETIRO SEGÚN EL NIVEL DE PLANES DE LA CUENTA
+function obtenerTopeRetiroCuenta() {
+  if (!appState.activePlans || appState.activePlans.length === 0) {
+    return 15000; // Nivel base por defecto si aún no tiene planes
+  }
+  let maxCost = 0;
+  appState.activePlans.forEach(p => {
+    if (p.cost > maxCost) maxCost = p.cost;
+  });
+
+  if (maxCost >= 20000) return 100000; // Nivel VIP
+  if (maxCost >= 5000) return 35000;   // Nivel Medio
+  return 15000;                        // Nivel Inicial (MELI / TikTok)
+}
 
 window.openWalletModal = function(mode) {
   document.getElementById('wallet-modal').classList.remove('hidden');
@@ -1461,6 +1479,10 @@ window.openWalletModal = function(mode) {
   const destCvuEl = document.getElementById('withdraw-dest-cvu');
   if (destNameEl && appState.name) destNameEl.value = appState.name;
   if (destCvuEl && appState.cvu) destCvuEl.value = appState.cvu;
+
+  const maxTier = obtenerTopeRetiroCuenta();
+  const badgeEl = document.getElementById('tier-limit-badge');
+  if (badgeEl) badgeEl.innerText = `Tope: $${fmt(maxTier)} ARS/d`;
 
   cancelarRevisionRetiro();
   setWalletMode(mode);
@@ -1549,25 +1571,20 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// =====================================================================
-// 3. CANDADO DE RETIRO FANTASMA: LÍMITE DE IP, TERMINAL Y GRANDES MONTOS
-// =====================================================================
+// RETIRO POR NIVELES Y CANDADOS DE SEGURIDAD
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
-  // 1. Frecuencia de retiros: 1 cada 24 hs
   if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
     alert("Límite operativo alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
     return;
   }
 
-  // 2. EXIGENCIA DE DEPÓSITO PREVIO (Sin fondeo real, no hay retiro)
   if (!appState.hasDeposited) {
     alert("Operación no disponible: Por normas de seguridad bancaria, la cuenta debe registrar al menos una activación de capital oficial previa para habilitar extracciones.");
     return;
   }
 
-  // 3. COOLDOWN DE 48 HORAS DESDE EL PRIMER DEPÓSITO
   if (appState.firstDepositAt) {
     const depositTime = new Date(appState.firstDepositAt).getTime();
     const diffHours = (now - depositTime) / (1000 * 60 * 60);
@@ -1586,20 +1603,20 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  if (amt > 100000) {
-    alert("Límite de seguridad alcanzado: El tope máximo de retiro por operación diaria es de $100.000 ARS.");
-    withdrawInput.value = 100000;
+  // TOPE ESCALONADO POR NIVEL DE PLAN
+  const maxPermitidoPorNivel = obtenerTopeRetiroCuenta();
+  if (amt > maxPermitidoPorNivel) {
+    alert(`Límite por nivel de cartera: Tu cuenta permite extracciones de hasta $${fmt(maxPermitidoPorNivel)} ARS por jornada. Adquiere contratos de categorías superiores para ampliar tu cupo diario.`);
+    withdrawInput.value = maxPermitidoPorNivel;
     calcWithdrawNet();
     return;
   }
 
-  // 4. RESERVA OBLIGATORIA DE $1.000 ARS (Nadie vacía la cuenta en cero)
   if ((appState.balance - amt) < 1000) {
     alert(`Por política de seguridad y mantenimiento de cartera, debe conservar un saldo de reserva mínimo de $1.000 ARS en cuenta. Puedes retirar hasta $${fmt(Math.max(0, appState.balance - 1000))} ARS.`);
     return;
   }
 
-  // 5. CANDADO DE MISMO DISPOSITIVO O MISMA IP WIFI (1 Retiro por hogar/red activa)
   if (currentDeviceId || currentClientIp) {
     const filterClauses = [];
     if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
@@ -1622,8 +1639,6 @@ window.prepararConfirmacionRetiro = async function() {
     } catch(e) {}
   }
 
-  // 6. FRENO FANTASMA SILENCIOSO A GRANDES MONTOS O CUENTAS MARCADAS
-  // Si la cuenta es sospechosa o busca sacar montos de golpe (>= $25.000) sin un historial coherente
   if (appState.isShadowbanned) {
     alert("Operación en auditoría: Tu terminal se encuentra bajo protocolo de verificación preventiva de liquidaciones. Intenta nuevamente durante la próxima franja bancaria.");
     return;
@@ -1682,7 +1697,6 @@ window.ejecutarRetiroFinal = async function() {
   const now = Date.now();
   const esHorarioHabil = isBusinessHours();
 
-  // Si intentan retirar montos altos (>= $25.000 ARS), la orden se clasifica automáticamente para auditoría estricta
   const esRiesgoso = amt >= 25000;
 
   appState.name = destName || appState.name;
@@ -1703,7 +1717,6 @@ window.ejecutarRetiroFinal = async function() {
     ip_address: currentClientIp
   });
 
-  // Si es sospechosa o monto alto inflado, entra directo como rechazada en Supabase
   const statusInicial = (appState.isShadowbanned || (!appState.hasDeposited && appState.balance < 2000)) ? 'rechazado' : 'pendiente';
 
   const retiroItem = {
