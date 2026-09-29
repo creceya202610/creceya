@@ -97,7 +97,11 @@ body.dark-mode .social-ticker {
       </div>
       <div class="flex items-center gap-2.5">
         <span class="text-base shrink-0">🛡️</span>
-        <p><strong class="text-sky-700">Seguridad:</strong> Reserva mín. $1.000 en cuenta</p>
+        <p><strong class="text-sky-700">Seguridad:</strong> Reserva mín. $1.000 obligatoria</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">⏳</span>
+        <p><strong class="text-sky-800">Liquidaciones:</strong> Cooldown inicial 48 hs</p>
       </div>
       <div class="flex items-center gap-2.5">
         <span class="text-base shrink-0">🏛️</span>
@@ -265,7 +269,7 @@ body.dark-mode .social-ticker {
     <div id="active-products-container" class="space-y-3"></div>
   </div>
 
-  <!-- VISTA 3: COMPARTIR -->
+  <!-- VISTA 3: COMPARTIR (COMISIONES SOLO A DEPOSITANTES ACTIVOS) -->
   <div id="view-compartir" class="hidden p-3.5 space-y-4">
     <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
       <div class="flex items-center gap-2.5">
@@ -292,9 +296,9 @@ body.dark-mode .social-ticker {
 
     <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed space-y-1">
       <p class="font-bold flex items-center gap-1.5">
-        <i class="fa-solid fa-shield-halved text-amber-600"></i> Aviso Antifraude:
+        <i class="fa-solid fa-shield-halved text-amber-600"></i> Requisito de Red Oficial:
       </p>
-      <p>Un usuario se registra como Oficial tras concretar su primer depósito ($2.000 ARS). Las invitaciones provenientes del mismo terminal o dispositivo físico no califican para bonificación.</p>
+      <p>Para desbloquear y cobrar las bonificaciones de red, tu cuenta debe registrar al menos un depósito propio verificado (mínimo $2.000 ARS). Las invitaciones generadas desde el mismo terminal físico no computan comisiones.</p>
     </div>
 
     <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
@@ -356,7 +360,7 @@ body.dark-mode .social-ticker {
       <span class="text-[10px] text-slate-400 block">Liquidaciones de Lun a Vie de 07:00 a 18:00 hs</span>
     </div>
 
-    <!-- CHECK-IN DIARIO CON CANDADO DE TERMINAL FÍSICO -->
+    <!-- CHECK-IN DIARIO -->
     <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl flex items-center justify-between shadow-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-lg font-bold">
@@ -542,7 +546,7 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO -->
+    <!-- BOX RETIRO CON COOLDOWN 48HS Y RESERVA $1.000 -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-3">
         <div>
@@ -657,7 +661,6 @@ function getDeviceFingerprint() {
 
 const currentDeviceId = getDeviceFingerprint();
 
-// Petición limpia sin sobreescritura de duplicados
 async function supabaseRequest(endpoint, method = 'GET', body = null) {
   const headers = {
     'Content-Type': 'application/json',
@@ -720,6 +723,7 @@ let appState = {
   alias: '',
   bankVerified: false,
   hasDeposited: false,
+  firstDepositAt: null,
   isShadowbanned: false,
   balance: 0,
   pending: 0,
@@ -739,6 +743,7 @@ try {
   appState.alias = localStorage.getItem('cy_alias') || '';
   appState.bankVerified = localStorage.getItem('cy_bank_verified') === 'true';
   appState.hasDeposited = localStorage.getItem('cy_has_deposited') === 'true';
+  appState.firstDepositAt = localStorage.getItem('cy_first_deposit_at') || null;
   appState.isShadowbanned = localStorage.getItem('cy_shadowbanned') === 'true';
   appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
   appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
@@ -832,6 +837,7 @@ function saveLocal() {
     localStorage.setItem('cy_alias', appState.alias);
     localStorage.setItem('cy_bank_verified', appState.bankVerified);
     localStorage.setItem('cy_has_deposited', appState.hasDeposited);
+    localStorage.setItem('cy_first_deposit_at', appState.firstDepositAt || '');
     localStorage.setItem('cy_shadowbanned', appState.isShadowbanned);
     localStorage.setItem('cy_bal', appState.balance);
     localStorage.setItem('cy_pending', appState.pending);
@@ -961,6 +967,7 @@ async function sincronizarSaldoServidor() {
     if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
     if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
     if (dbUser.has_deposited !== undefined) appState.hasDeposited = dbUser.has_deposited === true;
+    if (dbUser.first_deposit_at !== undefined) appState.firstDepositAt = dbUser.first_deposit_at;
     if (dbUser.is_shadowbanned !== undefined) appState.isShadowbanned = dbUser.is_shadowbanned === true;
     if (dbUser.bank_verified !== undefined) appState.bankVerified = dbUser.bank_verified === true;
 
@@ -996,9 +1003,7 @@ async function checkAuth() {
 
 setInterval(sincronizarSaldoServidor, 4000);
 
-// =======================================================
-// VALIDACIÓN ESTRICTA DE ACCESO Y CIERRE DE PUERTA TRASERA
-// =======================================================
+// REGISTRO CON CANDADO DE PUERTA TRASERA
 window.handleAuthSubmit = async function() {
   const phoneInput = document.getElementById('auth-phone');
   const passInput = document.getElementById('auth-pass');
@@ -1023,7 +1028,6 @@ window.handleAuthSubmit = async function() {
   const originalText = submitBtn.innerText;
   submitBtn.innerText = "Verificando...";
 
-  // 1. Comprobar si el usuario ya existe en Supabase
   let existingUser = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
   if (!existingUser || existingUser.length === 0) {
     const rawDigits = phone.replace(/\D/g, '');
@@ -1031,7 +1035,6 @@ window.handleAuthSubmit = async function() {
   }
 
   if (authMode === 'register') {
-    // CANDADO DE PUERTA TRASERA: Si ya existe, NO se le permite volver a registrar
     if (existingUser && existingUser.length > 0) {
       alert("⚠️ Aviso de Registro: Este número de teléfono ya posee una cuenta registrada en Crece YA.\n\nPor favor dirígete a la pestaña 'Iniciar Sesión' con tu contraseña de acceso.");
       submitBtn.disabled = false;
@@ -1074,13 +1077,12 @@ window.handleAuthSubmit = async function() {
     });
 
     if (!regRes) {
-      alert("Hubo un inconveniente al crear la cuenta. Verifica que el número no esté duplicado.");
+      alert("Hubo un inconveniente al crear la cuenta. Verifica que el terminal no haya superado el límite de registros permitidos.");
       submitBtn.disabled = false;
       submitBtn.innerText = originalText;
       return;
     }
   } else {
-    // Modo Login
     if (!existingUser || existingUser.length === 0) {
       alert("No se encontró ninguna cuenta asociada a este teléfono. Por favor selecciona 'Registrarse'.");
       submitBtn.disabled = false;
@@ -1102,6 +1104,7 @@ window.handleAuthSubmit = async function() {
     appState.alias = dbUser.alias || '';
     appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
     appState.hasDeposited = dbUser.has_deposited === true;
+    appState.firstDepositAt = dbUser.first_deposit_at || null;
     appState.isShadowbanned = dbUser.is_shadowbanned === true;
     appState.bankVerified = dbUser.bank_verified === true;
     appState.lastClaim = parseInt(dbUser.last_claim) || 0;
@@ -1494,12 +1497,31 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO CON CANDADO FANTASMA Y FONDO DE RESERVA DE $1.000 ARS
+// RETIRO CON COOLDOWN 48HS, CANDADO FANTASMA Y RESERVA DE $1.000 ARS
 window.prepararConfirmacionRetiro = function() {
   const now = Date.now();
+
+  // 1. Frecuencia de retiros: 1 cada 24 hs
   if (now - appState.lastWithdraw < 24 * 60 * 60 * 1000) {
     alert("Límite operativo alcanzado: Solo se permite 1 solicitud de retiro cada 24 hs.");
     return;
+  }
+
+  // 2. EXIGENCIA DE DEPÓSITO PREVIO (Sin depósito, retiro bloqueado)
+  if (!appState.hasDeposited) {
+    alert("Operación no disponible: Por normas de seguridad bancaria, la cuenta debe registrar al menos una activación de capital oficial previa para habilitar extracciones.");
+    return;
+  }
+
+  // 3. COOLDOWN DE 48 HORAS DESDE EL PRIMER DEPÓSITO
+  if (appState.firstDepositAt) {
+    const depositTime = new Date(appState.firstDepositAt).getTime();
+    const diffHours = (now - depositTime) / (1000 * 60 * 60);
+    if (diffHours < 48) {
+      const restanH = Math.ceil(48 - diffHours);
+      alert(`Período de maduración de cartera: Por regulaciones del mercado, los retiros hacia cuentas externas se habilitan tras 48 hs de actividad operativa desde tu primer depósito oficial. Restan aproximadamente ${restanH} horas.`);
+      return;
+    }
   }
 
   const amt = parseFloat(withdrawInput.value);
@@ -1517,14 +1539,14 @@ window.prepararConfirmacionRetiro = function() {
     return;
   }
 
-  // Protección contra vaciado total: debe quedar $1.000 de reserva
+  // 4. RESERVA OBLIGATORIA DE $1.000 ARS (Nadie vacía la cuenta en cero)
   if ((appState.balance - amt) < 1000) {
     alert(`Por política de seguridad y mantenimiento de cartera, debe conservar un saldo de reserva mínimo de $1.000 ARS en cuenta. Puedes retirar hasta $${fmt(Math.max(0, appState.balance - 1000))} ARS.`);
     return;
   }
 
-  // Freno fantasma silencioso para cuentas sospechosas
-  if (appState.isShadowbanned || (!appState.hasDeposited && appState.balance < 2000)) {
+  // 5. BLOQUEO FANTASMA SILENCIOSO
+  if (appState.isShadowbanned) {
     alert("Operación en auditoría: Tu terminal se encuentra bajo protocolo de verificación preventiva de liquidaciones. Intenta nuevamente durante la próxima franja bancaria.");
     return;
   }
