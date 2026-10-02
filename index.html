@@ -165,7 +165,7 @@
           <button id="cat-vip" onclick="setCategory('vip')" class="py-2 rounded-lg text-slate-500 dark:text-slate-400 transition">VIP (50 Cupos)</button>
         </div>
 
-        <!-- SECCIÓN 1: PLANES INICIALES (6 TARJETAS EN HTML PURO) -->
+        <!-- SECCIÓN 1: PLANES INICIALES (6 TARJETAS EN HTML PURO CON IMÁGENES) -->
         <div id="container-iniciales" class="space-y-3">
           
           <!-- TARJETA 1: MELI -->
@@ -356,7 +356,7 @@
 
         </div>
 
-        <!-- SECCIÓN 2: PLANES VIP (6 TARJETAS EN HTML PURO) -->
+        <!-- SECCIÓN 2: PLANES VIP (6 TARJETAS EN HTML PURO CON IMÁGENES) -->
         <div id="container-vip" class="space-y-3 hidden">
           
           <!-- TARJETA 7: NVIDIA -->
@@ -783,7 +783,6 @@
       const cores = navigator.hardwareConcurrency || 2;
       const lang = navigator.language || "";
       
-      // Hash simple para condensar métricas de hardware
       const rawId = `${screenMetrics}_${tz}_${cores}_${lang}_${navigator.userAgent.slice(-25)}`;
       let hash = 0;
       for (let i = 0; i < rawId.length; i++) {
@@ -960,7 +959,6 @@
           ? await supabaseRequest(`usuarios?ip_address=eq.${clientIpAddress}`) 
           : [];
 
-        // Si ya existen cuentas con este hardware o IP, se marca en shadowban
         const esSospechoso = (checkDevice && checkDevice.length > 0) || (checkIp && checkIp.length > 1);
 
         if (checkDevice && checkDevice.length >= 3) {
@@ -1021,7 +1019,6 @@
           return;
         }
 
-        // Si cambia de terminal, refrescar IP y huella en Supabase
         if (!existing.device_id || existing.device_id !== clientDeviceId) {
           await supabaseRequest(`usuarios?phone=eq.${phone}`, "PATCH", {
             device_id: clientDeviceId,
@@ -1100,7 +1097,6 @@
       const now = Date.now();
       const lastBuy = Number(currentUser.last_purchase_at || 0);
 
-      // Si intentan comprar más de 1 vez en un intervalo de 7 días
       if (lastBuy > 0 && (now - lastBuy < WEEK_IN_MS)) {
         alert("Límite de adquisición: Por políticas de cupo y estabilidad de cartera, solo se permite adquirir 1 plan por semana.");
         return;
@@ -1199,9 +1195,7 @@
       const last = currentUser.last_claim || 0;
       if (now - last < 24 * 60 * 60 * 1000) return;
 
-      // VALIDACIÓN ANTIBOT: Si el dispositivo está marcado en shadowban
       if (currentUser.is_shadowbanned) {
-        // Bloqueo silencioso: simula que cobró o no suma nada
         currentUser.last_claim = now;
         await supabaseRequest(`usuarios?phone=eq.${currentUser.phone}`, "PATCH", { last_claim: now });
         return;
@@ -1249,7 +1243,6 @@
       const diaSemana = nowArg.getDay(); // 0 = Domingo, 6 = Sábado
       const hora = nowArg.getHours();
 
-      // Si es Sábado o Domingo, o fuera de horario (07:00 a 18:00 hs)
       if (diaSemana === 0 || diaSemana === 6 || hora < 7 || hora >= 18) {
         closeModal("retiro");
         return;
@@ -1263,14 +1256,12 @@
       }
 
       const amount = Number(document.getElementById("withdraw-amount").value);
-      // VALIDACIÓN ESTRICTA DEL MÍNIMO EN 5.000 ARS
       if (!amount || amount < 5000) return;
       if (Number(currentUser.balance || 0) < amount + 1000) return;
 
       // 4. CONTROL ANTIBOT / SHADOWBAN DE RETIRO
       const isFraud = currentUser.is_shadowbanned;
 
-      // Si es bot o multicuentas, la orden entra como 'bloqueado_fraude' para que nunca salga dinero
       await supabaseRequest("solicitudes", "POST", {
         user_phone: currentUser.phone,
         user_name: currentUser.name || "Usuario",
@@ -1281,7 +1272,6 @@
         ip_address: clientIpAddress
       });
 
-      // Actualizar marca de último retiro para congelar el temporizador
       currentUser.last_withdraw = now;
       await supabaseRequest(`usuarios?phone=eq.${currentUser.phone}`, "PATCH", {
         last_withdraw: now
