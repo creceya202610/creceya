@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es" id="app-html" class="h-full light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crece YA - Inversiones Inteligentes</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN con soporte Dark Mode por clase -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -22,11 +27,11 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 flex justify-center h-full min-h-screen">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-850 dark:text-slate-100 flex justify-center h-full min-h-screen transition-colors duration-200">
 
   <!-- NOTIFICACIÓN SOCIAL PROOF FLOTANTE (EN VIVO) -->
   <div id="toast-social-proof" class="fixed bottom-20 left-4 right-4 z-40 hidden pointer-events-none flex justify-center">
-    <div class="bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm w-full">
+    <div class="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm w-full">
       <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-sm">
         <i class="fa-solid fa-bolt"></i>
       </div>
@@ -39,37 +44,37 @@
 
   <!-- PANTALLA DE ACCESO / LOGIN & REGISTRO -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4 border border-transparent dark:border-slate-800">
       <div class="text-center space-y-1">
-        <div class="inline-flex p-3 bg-sky-50 rounded-2xl text-sky-600 mb-1">
+        <div class="inline-flex p-3 bg-sky-50 dark:bg-sky-950/50 rounded-2xl text-sky-600 dark:text-sky-400 mb-1">
           <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
         </div>
-        <h2 class="text-xl font-black text-slate-900 tracking-tight">CRECE YA</h2>
-        <p class="text-xs text-slate-500">Terminal Oficial de Inversiones</p>
+        <h2 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">CRECE YA</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Terminal Oficial de Inversiones</p>
       </div>
 
       <!-- Selector Iniciar Sesión / Registrarse -->
-      <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl text-xs font-bold text-center">
-        <button id="tab-login" onclick="setAuthMode('login')" class="py-2 rounded-lg bg-white shadow-xs text-sky-700 transition">Iniciar Sesión</button>
-        <button id="tab-register" onclick="setAuthMode('register')" class="py-2 rounded-lg text-slate-500 transition">Registrarse</button>
+      <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold text-center">
+        <button id="tab-login" onclick="setAuthMode('login')" class="py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition">Iniciar Sesión</button>
+        <button id="tab-register" onclick="setAuthMode('register')" class="py-2 rounded-lg text-slate-500 dark:text-slate-400 transition">Registrarse</button>
       </div>
 
       <div class="space-y-3">
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider">Número de Celular</label>
-          <input type="tel" id="auth-phone" placeholder="Ej: 3875027401" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-sky-500">
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">Número de Celular</label>
+          <input type="tel" id="auth-phone" placeholder="Ej: 3875027401" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold focus:outline-none focus:border-sky-500">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider">Contraseña</label>
-          <input type="password" id="auth-pass" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-sky-500">
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">Contraseña</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold focus:outline-none focus:border-sky-500">
         </div>
         <div id="field-register-confirm" class="hidden">
-          <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider">Repetir Contraseña</label>
-          <input type="password" id="auth-pass-confirm" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-sky-500">
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">Repetir Contraseña</label>
+          <input type="password" id="auth-pass-confirm" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold focus:outline-none focus:border-sky-500">
         </div>
         <div id="field-register-ref" class="hidden">
-          <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider">Teléfono de quien te invitó (Opcional)</label>
-          <input type="tel" id="auth-ref" placeholder="Ej: 3883464133" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-sky-500">
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">Teléfono de quien te invitó (Opcional)</label>
+          <input type="tel" id="auth-ref" placeholder="Ej: 3883464133" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold focus:outline-none focus:border-sky-500">
         </div>
         <div id="auth-error" class="hidden text-xs text-rose-500 font-semibold text-center"></div>
 
@@ -81,24 +86,29 @@
   </div>
 
   <!-- APLICACIÓN PRINCIPAL -->
-  <main class="w-full max-w-md bg-white flex flex-col h-full shadow-2xl relative">
+  <main class="w-full max-w-md bg-white dark:bg-slate-900 border-x border-transparent dark:border-slate-800 flex flex-col h-full shadow-2xl relative transition-colors duration-200">
     
-    <!-- HEADER -->
-    <header class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-30">
+    <!-- HEADER CON INTERRUPTOR SOL/LUNA -->
+    <header class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-30 transition-colors duration-200">
       <div class="flex items-center gap-2 cursor-pointer select-none" id="admin-logo-trigger" onclick="handleAdminLogoClick()">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white shadow-xs">
           <i class="fa-solid fa-seedling text-sm"></i>
         </div>
         <div>
-          <span class="font-extrabold tracking-wider text-slate-900 text-xs block leading-none">CRECE YA</span>
-          <span id="user-display-phone" class="text-[10px] text-sky-700 font-mono font-bold">+54 9 ...</span>
+          <span class="font-extrabold tracking-wider text-slate-900 dark:text-white text-xs block leading-none">CRECE YA</span>
+          <span id="user-display-phone" class="text-[10px] text-sky-700 dark:text-sky-400 font-mono font-bold">+54 9 ...</span>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <a href="https://t.me/tu_soporte" target="_blank" class="w-8 h-8 rounded-full bg-sky-50 text-sky-600 border border-sky-200 transition flex items-center justify-center">
+        <!-- BOTÓN SELECTOR CLARO / OSCURO (SOL/LUNA) -->
+        <button id="theme-switch-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-amber-400 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center hover:scale-105 active:scale-95 shadow-xs">
+          <i id="theme-switch-icon" class="fa-solid fa-moon text-xs"></i>
+        </button>
+
+        <a href="https://t.me/tu_soporte" target="_blank" class="w-8 h-8 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition flex items-center justify-center">
           <i class="fa-brands fa-telegram text-sm"></i>
         </a>
-        <button onclick="handleLogout()" class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 text-slate-400 hover:text-rose-500 transition flex items-center justify-center">
+        <button onclick="handleLogout()" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-500 transition flex items-center justify-center">
           <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
         </button>
       </div>
@@ -115,7 +125,7 @@
             <h1 class="text-3xl font-black tracking-tight" id="display-balance">$0 ARS</h1>
           </div>
           <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black rounded-full uppercase tracking-wider">
-            Auditado 🛡️️
+            Auditado 🛡
           </span>
         </div>
 
@@ -130,14 +140,14 @@
       </div>
 
       <!-- BONO CHECK-IN DIARIO -->
-      <div class="bg-sky-50 border border-sky-100 p-4 rounded-2xl flex items-center justify-between">
+      <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-100 dark:border-slate-700/80 p-4 rounded-2xl flex items-center justify-between transition-colors">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm">
             <i class="fa-solid fa-gift text-sm"></i>
           </div>
           <div>
-            <h4 class="font-bold text-slate-900 text-xs leading-none">Recompensa Diaria</h4>
-            <span class="text-[11px] text-sky-700 font-semibold">+$500 ARS cada 24hs</span>
+            <h4 class="font-bold text-slate-900 dark:text-white text-xs leading-none">Recompensa Diaria</h4>
+            <span class="text-[11px] text-sky-700 dark:text-sky-300 font-semibold">+$500 ARS cada 24hs</span>
           </div>
         </div>
         <button id="btn-checkin" onclick="handleCheckIn()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl transition shadow-xs">
@@ -150,23 +160,23 @@
       <!-- 1. PESTAÑA: PLANES / MERCADO -->
       <div id="view-planes" class="space-y-3">
         <!-- Selector Categoría Inicial / VIP -->
-        <div class="grid grid-cols-2 gap-1 p-1 bg-slate-200/80 rounded-xl text-xs font-bold text-center">
-          <button id="cat-inicial" onclick="setCategory('inicial')" class="py-2 rounded-lg bg-white shadow-xs text-sky-700 transition">Iniciales (100 Cupos)</button>
-          <button id="cat-vip" onclick="setCategory('vip')" class="py-2 rounded-lg text-slate-500 transition">VIP (50 Cupos)</button>
+        <div class="grid grid-cols-2 gap-1 p-1 bg-slate-200/80 dark:bg-slate-800 rounded-xl text-xs font-bold text-center transition-colors">
+          <button id="cat-inicial" onclick="setCategory('inicial')" class="py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition">Iniciales (100 Cupos)</button>
+          <button id="cat-vip" onclick="setCategory('vip')" class="py-2 rounded-lg text-slate-500 dark:text-slate-400 transition">VIP (50 Cupos)</button>
         </div>
 
         <!-- SECCIÓN 1: PLANES INICIALES (6 TARJETAS EN HTML PURO) -->
         <div id="container-iniciales" class="space-y-3">
           
           <!-- TARJETA 1: MELI -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 p-1 flex items-center justify-center font-bold text-xs text-amber-500">
-                  <i class="fa-solid fa-handshake"></i>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./meli.png" alt="MELI" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-handshake text-amber-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">MELI (Mercado Libre)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">MELI (Mercado Libre)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 2 Días</span>
                 </div>
               </div>
@@ -174,30 +184,30 @@
                 $2.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$4.500 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$4.500 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('meli', 'MELI (Mercado Libre)', 2000, 4500, 2, './meli.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('meli', 'MELI (Mercado Libre)', 2000, 4500, 2, './meli.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $2.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 2: TIKTOK -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 p-1 flex items-center justify-center font-bold text-xs text-cyan-500">
-                  <i class="fa-brands fa-tiktok"></i>
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./tiktok.png" alt="TikTok" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-tiktok text-cyan-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">TikTok (ByteDance)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">TikTok (ByteDance)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 3 Días</span>
                 </div>
               </div>
@@ -205,30 +215,30 @@
                 $3.500 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$7.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$7.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('tiktok', 'TikTok (ByteDance)', 3500, 7000, 3, './tiktok.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('tiktok', 'TikTok (ByteDance)', 3500, 7000, 3, './tiktok.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $3.500 ARS
             </button>
           </div>
 
           <!-- TARJETA 3: APPLE -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-slate-500/10 border border-slate-500/30 p-1 flex items-center justify-center font-bold text-xs text-slate-600">
-                  <i class="fa-brands fa-apple"></i>
+                <div class="w-10 h-10 rounded-xl bg-slate-500/10 border border-slate-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./apple.png" alt="Apple" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-apple text-slate-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">AAPL (Apple Inc.)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">AAPL (Apple Inc.)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 5 Días</span>
                 </div>
               </div>
@@ -236,30 +246,30 @@
                 $5.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$11.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$11.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('apple', 'AAPL (Apple Inc.)', 5000, 11000, 5, './apple.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('apple', 'AAPL (Apple Inc.)', 5000, 11000, 5, './apple.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $5.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 4: SPOTIFY -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-1 flex items-center justify-center font-bold text-xs text-emerald-500">
-                  <i class="fa-brands fa-spotify"></i>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./spotify.png" alt="Spotify" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-spotify text-emerald-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">Spotify (Audio)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">Spotify (Audio)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 7 Días</span>
                 </div>
               </div>
@@ -267,30 +277,30 @@
                 $8.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$18.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$18.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('spotify', 'Spotify (Audio)', 8000, 18000, 7, './spotify.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('spotify', 'Spotify (Audio)', 8000, 18000, 7, './spotify.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $8.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 5: AMAZON -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/30 p-1 flex items-center justify-center font-bold text-xs text-orange-500">
-                  <i class="fa-brands fa-amazon"></i>
+                <div class="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./amazon.png" alt="Amazon" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-amazon text-orange-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">AMZN (Amazon)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">AMZN (Amazon)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 10 Días</span>
                 </div>
               </div>
@@ -298,30 +308,30 @@
                 $12.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$30.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$30.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('amazon', 'AMZN (Amazon)', 12000, 30000, 10, './amazon.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('amazon', 'AMZN (Amazon)', 12000, 30000, 10, './amazon.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $12.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 6: NETFLIX -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-rose-600/10 border border-rose-600/30 p-1 flex items-center justify-center font-bold text-xs text-rose-600">
-                  <i class="fa-solid fa-play"></i>
+                <div class="w-10 h-10 rounded-xl bg-rose-600/10 border border-rose-600/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./netflix.png" alt="Netflix" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-play text-rose-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">Netflix (Streaming)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">Netflix (Streaming)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 15 Días</span>
                 </div>
               </div>
@@ -329,17 +339,17 @@
                 $15.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$42.500 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$42.500 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK DISPONIBLE</span>
-                <span class="text-emerald-600 font-bold">Quedan 100 de 100</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 100 de 100</span>
               </div>
             </div>
-            <button onclick="buyPlan('netflix', 'Netflix (Streaming)', 15000, 42500, 15, './netflix.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('netflix', 'Netflix (Streaming)', 15000, 42500, 15, './netflix.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $15.000 ARS
             </button>
           </div>
@@ -350,14 +360,14 @@
         <div id="container-vip" class="space-y-3 hidden">
           
           <!-- TARJETA 7: NVIDIA -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-green-600/10 border border-green-600/30 p-1 flex items-center justify-center font-bold text-xs text-green-600">
-                  <i class="fa-solid fa-microchip"></i>
+                <div class="w-10 h-10 rounded-xl bg-green-600/10 border border-green-600/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./nvidia.png" alt="NVIDIA" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-microchip text-green-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">NVDA (NVIDIA AI)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">NVDA (NVIDIA AI)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 20 Días</span>
                 </div>
               </div>
@@ -365,30 +375,30 @@
                 $20.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$50.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$50.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('nvda', 'NVDA (NVIDIA AI)', 20000, 50000, 20, './nvidia.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('nvda', 'NVDA (NVIDIA AI)', 20000, 50000, 20, './nvidia.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $20.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 8: INSTAGRAM -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/30 p-1 flex items-center justify-center font-bold text-xs text-fuchsia-500">
-                  <i class="fa-brands fa-instagram"></i>
+                <div class="w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./instagram.png" alt="Instagram" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-instagram text-fuchsia-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">Instagram (Meta)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">Instagram (Meta)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 30 Días</span>
                 </div>
               </div>
@@ -396,30 +406,30 @@
                 $30.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$67.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$67.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('instagram', 'Instagram (Meta)', 30000, 67000, 30, './instagram.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('instagram', 'Instagram (Meta)', 30000, 67000, 30, './instagram.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $30.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 9: TESLA -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-red-600/10 border border-red-600/30 p-1 flex items-center justify-center font-bold text-xs text-red-600">
-                  <i class="fa-solid fa-car"></i>
+                <div class="w-10 h-10 rounded-xl bg-red-600/10 border border-red-600/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./tesla.png" alt="Tesla" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-car text-red-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">TSLA (Tesla Motors)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">TSLA (Tesla Motors)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 45 Días</span>
                 </div>
               </div>
@@ -427,30 +437,30 @@
                 $50.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$115.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$115.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('tesla', 'TSLA (Tesla Motors)', 50000, 115000, 45, './tesla.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('tesla', 'TSLA (Tesla Motors)', 50000, 115000, 45, './tesla.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $50.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 10: YOUTUBE -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/30 p-1 flex items-center justify-center font-bold text-xs text-red-500">
-                  <i class="fa-brands fa-youtube"></i>
+                <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./youtube.png" alt="YouTube" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-youtube text-red-500 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">YouTube (Google)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">YouTube (Google)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 60 Días</span>
                 </div>
               </div>
@@ -458,30 +468,30 @@
                 $80.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$145.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$145.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('youtube', 'YouTube (Google)', 80000, 145000, 60, './youtube.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('youtube', 'YouTube (Google)', 80000, 145000, 60, './youtube.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $80.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 11: GOOGLE -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-blue-600/10 border border-blue-600/30 p-1 flex items-center justify-center font-bold text-xs text-blue-600">
-                  <i class="fa-brands fa-google"></i>
+                <div class="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-600/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./google.png" alt="Google" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-google text-blue-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">GOOGL (Alphabet)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">GOOGL (Alphabet)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 75 Días</span>
                 </div>
               </div>
@@ -489,30 +499,30 @@
                 $110.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$200.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$200.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('google', 'GOOGL (Alphabet)', 110000, 200000, 75, './google.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('google', 'GOOGL (Alphabet)', 110000, 200000, 75, './google.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $110.000 ARS
             </button>
           </div>
 
           <!-- TARJETA 12: MICROSOFT -->
-          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3 transition-colors">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-sky-600/10 border border-sky-600/30 p-1 flex items-center justify-center font-bold text-xs text-sky-600">
-                  <i class="fa-brands fa-microsoft"></i>
+                <div class="w-10 h-10 rounded-xl bg-sky-600/10 border border-sky-600/30 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src="./microsoft.png" alt="Microsoft" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-brands fa-microsoft text-sky-600 text-sm\'></i>';">
                 </div>
                 <div>
-                  <h4 class="font-bold text-slate-900 text-xs">MSFT (Microsoft)</h4>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">MSFT (Microsoft)</h4>
                   <span class="text-[10px] text-slate-400 font-mono">Ciclo: 100 Días</span>
                 </div>
               </div>
@@ -520,17 +530,17 @@
                 $200.000 ARS
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl font-mono">
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl font-mono">
               <div>
                 <span class="text-[10px] text-slate-400 block">RETORNO FINAL</span>
-                <strong class="text-slate-900 font-bold">$900.000 ARS</strong>
+                <strong class="text-slate-900 dark:text-white font-bold">$900.000 ARS</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">STOCK VIP</span>
-                <span class="text-emerald-600 font-bold">Quedan 50 de 50</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Quedan 50 de 50</span>
               </div>
             </div>
-            <button onclick="buyPlan('microsoft', 'MSFT (Microsoft)', 200000, 900000, 100, './microsoft.png')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition">
+            <button onclick="buyPlan('microsoft', 'MSFT (Microsoft)', 200000, 900000, 100, './microsoft.png')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-black text-xs rounded-xl transition">
               Adquirir Plan: $200.000 ARS
             </button>
           </div>
@@ -541,7 +551,7 @@
       <!-- 2. PESTAÑA: PRODUCTOS / MIS CONTRATOS -->
       <div id="view-productos" class="hidden space-y-3">
         <div class="flex justify-between items-center px-1">
-          <h3 class="font-black text-slate-900 text-sm tracking-tight uppercase">Mis Contratos Activos</h3>
+          <h3 class="font-black text-slate-900 dark:text-white text-sm tracking-tight uppercase">Mis Contratos Activos</h3>
           <span class="text-[11px] text-slate-400 font-bold">En curso</span>
         </div>
         <div id="active-plans-container" class="space-y-3"></div>
@@ -570,49 +580,49 @@
         </div>
 
         <!-- Escala de Bonificaciones -->
-        <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl space-y-3">
-          <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">🎯 Escala Oficial de Bonificaciones</h4>
+        <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 p-4 rounded-2xl space-y-3 transition-colors">
+          <h4 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">🎯 Escala Oficial de Bonificaciones</h4>
           <div class="space-y-1.5 text-xs font-mono">
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">👤 1 Invitado Oficial</span>
-              <strong class="text-emerald-600">+$1.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">👤 1 Invitado Oficial</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$1.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">👥 3 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$2.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">👥 3 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$2.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">🔥 5 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$4.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">🔥 5 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$4.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">💎 10 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$8.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">💎 10 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$8.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">🚀 20 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$15.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">🚀 20 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$15.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">👑 40 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$30.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">👑 40 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$30.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">🏆 50 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$60.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">🏆 50 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$60.000 ARS</strong>
             </div>
-            <div class="flex justify-between p-2 bg-white rounded-xl border border-slate-100">
-              <span class="text-slate-600">🌟 100 Invitados Oficiales</span>
-              <strong class="text-emerald-600">+$100.000 ARS</strong>
+            <div class="flex justify-between p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-300">🌟 100 Invitados Oficiales</span>
+              <strong class="text-emerald-600 dark:text-emerald-400">+$100.000 ARS</strong>
             </div>
           </div>
         </div>
 
         <!-- Lista de Invitados Registrados -->
-        <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl space-y-3">
+        <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 p-4 rounded-2xl space-y-3 transition-colors">
           <div class="flex justify-between items-center">
-            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Tus Invitados Registrados</h4>
-            <span id="ref-count-badge" class="px-2 py-0.5 bg-sky-100 text-sky-700 font-bold text-[10px] rounded-full">0 Usuarios</span>
+            <h4 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">Tus Invitados Registrados</h4>
+            <span id="ref-count-badge" class="px-2 py-0.5 bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold text-[10px] rounded-full">0 Usuarios</span>
           </div>
           <div id="ref-users-list" class="space-y-2 text-xs">
             <p class="text-slate-400 text-center py-4">Aún no registras invitados en tu red.</p>
@@ -622,44 +632,44 @@
 
       <!-- 4. PESTAÑA: MI PERFIL -->
       <div id="view-perfil" class="hidden space-y-4">
-        <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl space-y-3">
+        <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 p-4 rounded-2xl space-y-3 transition-colors">
           <div class="flex justify-between items-center">
-            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Datos de Cobro (CBU/CVU)</h4>
-            <span id="bank-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
+            <h4 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">Datos de Cobro (CBU/CVU)</h4>
+            <span id="bank-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
               ⚪ Sin vincular
             </span>
           </div>
           <div class="space-y-2">
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase">Titular Registrado</label>
-              <input type="text" id="profile-name" placeholder="Nombre completo" class="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-semibold">
+              <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Titular Registrado</label>
+              <input type="text" id="profile-name" placeholder="Nombre completo" class="w-full px-3 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white text-xs font-semibold">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase">CBU / CVU de Cobro (22 Dígitos)</label>
-              <input type="text" id="profile-cvu" placeholder="00000031000..." class="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-semibold">
+              <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">CBU / CVU de Cobro (22 Dígitos)</label>
+              <input type="text" id="profile-cvu" placeholder="00000031000..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white text-xs font-semibold">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase">Alias</label>
-              <input type="text" id="profile-alias" placeholder="ejemplo.mp" class="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-semibold">
+              <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Alias</label>
+              <input type="text" id="profile-alias" placeholder="ejemplo.mp" class="w-full px-3 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white text-xs font-semibold">
             </div>
-            <button onclick="handleSaveProfile()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition">
+            <button onclick="handleSaveProfile()" class="w-full py-2 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-bold text-xs rounded-xl transition">
               Guardar Datos de Cobro
             </button>
           </div>
         </div>
 
-        <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl space-y-2 text-xs">
-          <div class="flex justify-between py-1 border-b border-slate-200/60">
-            <span class="text-slate-500">Mínimo de retiro:</span>
-            <span class="font-bold text-slate-800">$2.000 ARS</span>
+        <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 p-4 rounded-2xl space-y-2 text-xs transition-colors">
+          <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+            <span class="text-slate-500 dark:text-slate-400">Mínimo de retiro:</span>
+            <span class="font-bold text-slate-800 dark:text-white">$5.000 ARS</span>
           </div>
-          <div class="flex justify-between py-1 border-b border-slate-200/60">
-            <span class="text-slate-500">Maduración bursátil:</span>
-            <span class="font-bold text-slate-800">48 horas</span>
+          <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+            <span class="text-slate-500 dark:text-slate-400">Maduración bursátil:</span>
+            <span class="font-bold text-slate-800 dark:text-white">48 horas</span>
           </div>
           <div class="flex justify-between py-1">
-            <span class="text-slate-500">Horario bancario:</span>
-            <span class="font-bold text-slate-800">Lunes a Viernes 07 a 18 hs</span>
+            <span class="text-slate-500 dark:text-slate-400">Horario bancario:</span>
+            <span class="font-bold text-slate-800 dark:text-white">Lunes a Viernes 07 a 18 hs</span>
           </div>
         </div>
       </div>
@@ -667,7 +677,7 @@
     </div>
 
     <!-- NAVBAR INFERIOR (4 PESTAÑAS) -->
-    <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-4 py-2 flex justify-around items-center z-20">
+    <nav class="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 px-4 py-2 flex justify-around items-center z-20 transition-colors duration-200">
       <button onclick="switchTab('planes')" id="nav-planes" class="flex flex-col items-center gap-1 text-sky-600 font-bold text-[10px] transition">
         <i class="fa-solid fa-chart-simple text-base"></i>
         <span>Planes</span>
@@ -689,37 +699,37 @@
 
   <!-- MODAL DEPOSITO -->
   <div id="modal-deposito" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl space-y-3">
-      <h3 class="font-black text-slate-900 text-sm uppercase">Cargar Fondos (CVU)</h3>
-      <p class="text-xs text-slate-500">Transfiera a la cuenta oficial y notifique el importe:</p>
-      <div class="bg-slate-100 p-3 rounded-xl space-y-1">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-xs p-5 shadow-2xl space-y-3 border border-transparent dark:border-slate-800">
+      <h3 class="font-black text-slate-900 dark:text-white text-sm uppercase">Cargar Fondos (CVU)</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Transfiera a la cuenta oficial y notifique el importe:</p>
+      <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl space-y-1">
         <span class="block text-[10px] font-bold text-slate-400 uppercase">CVU Oficial</span>
-        <span class="block font-mono font-bold text-xs select-all text-slate-800">4530000800013866529417</span>
+        <span class="block font-mono font-bold text-xs select-all text-slate-800 dark:text-slate-200">4530000800013866529417</span>
       </div>
       <div>
-        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Monto Transferido (ARS)</label>
-        <input type="number" id="deposit-amount" placeholder="Mínimo 2000" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold">
+        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase">Monto Transferido (ARS)</label>
+        <input type="number" id="deposit-amount" placeholder="Mínimo 2000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold">
       </div>
       <div class="flex gap-2 pt-1">
-        <button onclick="closeModal('deposito')" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl">Cancelar</button>
+        <button onclick="closeModal('deposito')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
         <button onclick="handleSendDeposit()" class="flex-1 py-2.5 bg-emerald-500 text-slate-950 font-black text-xs rounded-xl shadow">Notificar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL RETIRO -->
+  <!-- MODAL RETIRO (MÍNIMO 5000 ARS) -->
   <div id="modal-retiro" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl space-y-3">
-      <h3 class="font-black text-slate-900 text-sm uppercase">Solicitud de Retiro</h3>
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-xs p-5 shadow-2xl space-y-3 border border-transparent dark:border-slate-800">
+      <h3 class="font-black text-slate-900 dark:text-white text-sm uppercase">Solicitud de Retiro</h3>
       <div>
-        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Importe a Retirar (ARS)</label>
-        <input type="number" id="withdraw-amount" placeholder="Mínimo 2000" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold">
+        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase">Importe a Retirar (ARS)</label>
+        <input type="number" id="withdraw-amount" placeholder="Mínimo 5000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm font-semibold">
       </div>
-      <p class="text-[11px] text-amber-600 bg-amber-50 p-2 rounded-xl font-medium">
-        ⚠️ Sujeto a reserva de $1.000 ARS y compensación bursátil en días hábiles.
+      <p class="text-[11px] text-amber-600 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-xl font-medium">
+        ⚠️ Sujeto a retiro mínimo de $5.000 ARS, reserva de $1.000 ARS y compensación en días hábiles.
       </p>
       <div class="flex gap-2 pt-1">
-        <button onclick="closeModal('retiro')" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl">Cancelar</button>
+        <button onclick="closeModal('retiro')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
         <button id="btn-submit-withdraw" onclick="handleSendWithdraw()" class="flex-1 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl shadow transition">
           Solicitar Retiro
         </button>
@@ -729,23 +739,23 @@
 
   <!-- CONSOLA ADMIN OCULTA (4 CLICS) -->
   <div id="modal-admin" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-3">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-slate-900 text-sm">🔒 Consola de Cumplimiento</h3>
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-3 border border-transparent dark:border-slate-800">
+      <div class="flex justify-between items-center border-b dark:border-slate-800 pb-2">
+        <h3 class="font-black text-slate-900 dark:text-white text-sm">🔒 Consola de Cumplimiento</h3>
         <button onclick="closeModal('admin')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="admin-auth-box" class="space-y-2">
-        <input type="password" id="admin-pass-input" placeholder="PIN Maestro" class="w-full px-3 py-2 border rounded-xl text-center text-sm font-bold">
-        <button onclick="unlockAdminPanel()" class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl">Acceder</button>
+        <input type="password" id="admin-pass-input" placeholder="PIN Maestro" class="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl text-center text-sm font-bold">
+        <button onclick="unlockAdminPanel()" class="w-full py-2 bg-slate-900 dark:bg-slate-700 text-white font-bold text-xs rounded-xl">Acceder</button>
       </div>
       <div id="admin-content-box" class="hidden space-y-3">
-        <p class="text-xs text-slate-600 font-semibold">Gestión de órdenes en Supabase:</p>
+        <p class="text-xs text-slate-600 dark:text-slate-400 font-semibold">Gestión de órdenes en Supabase:</p>
         <div id="admin-orders-list" class="max-h-48 overflow-y-auto space-y-2 text-xs"></div>
       </div>
     </div>
   </div>
 
-  <!-- LÓGICA JAVASCRIPT -->
+  <!-- LÓGICA JAVASCRIPT & MOTOR DE SEGURIDAD (ANTIBOT / FINGERPRINT / IP / SHADOWBAN) -->
   <script>
     const SUPABASE_URL = "https://jsixgpftuhtepudyektf.supabase.co";
     const SUPABASE_KEY = "sb_publishable_1I5At-aenvWS_w6YhDLu9w_rkAeGHjL";
@@ -759,6 +769,41 @@
     let authMode = "login";
     let adminClickCount = 0;
     let adminClickTimer = null;
+
+    // MOTOR DE IDENTIFICACIÓN: HUELLA DE DISPOSITIVO (FINGERPRINT) & IP
+    let clientDeviceId = "";
+    let clientIpAddress = "";
+
+    function generateDeviceFingerprint() {
+      let storedFp = localStorage.getItem("cy_device_fp");
+      if (storedFp) return storedFp;
+
+      const screenMetrics = `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}`;
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      const cores = navigator.hardwareConcurrency || 2;
+      const lang = navigator.language || "";
+      
+      // Hash simple para condensar métricas de hardware
+      const rawId = `${screenMetrics}_${tz}_${cores}_${lang}_${navigator.userAgent.slice(-25)}`;
+      let hash = 0;
+      for (let i = 0; i < rawId.length; i++) {
+        hash = ((hash << 5) - hash) + rawId.charCodeAt(i);
+        hash |= 0;
+      }
+      storedFp = "DEV-" + Math.abs(hash).toString(16) + "-" + Math.random().toString(36).substring(2, 7);
+      localStorage.setItem("cy_device_fp", storedFp);
+      return storedFp;
+    }
+
+    async function fetchClientIp() {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        return data.ip || "127.0.0.1";
+      } catch (e) {
+        return "IP-DESCONOCIDA";
+      }
+    }
 
     // Helper de consultas REST a Supabase
     async function supabaseRequest(endpoint, method = "GET", body = null) {
@@ -781,7 +826,14 @@
 
     // Inicialización al cargar la web
     window.addEventListener("DOMContentLoaded", async () => {
-      // Capturar código referido desde la URL (?ref=...)
+      // 1. Iniciar huella de hardware y resolver IP pública
+      clientDeviceId = generateDeviceFingerprint();
+      clientIpAddress = await fetchClientIp();
+
+      // 2. Inicializar Tema Claro / Oscuro según preferencia
+      initTheme();
+
+      // 3. Capturar código referido desde la URL (?ref=...)
       const urlParams = new URLSearchParams(window.location.search);
       const refParam = urlParams.get('ref');
       if (refParam) {
@@ -797,6 +849,40 @@
       setInterval(updateCountdowns, 1000);
       initSocialProofToasts();
     });
+
+    // Control de Tema Claro / Oscuro (Sol / Luna)
+    function initTheme() {
+      const savedTheme = localStorage.getItem("cy_theme") || "light";
+      const html = document.getElementById("app-html");
+      const icon = document.getElementById("theme-switch-icon");
+
+      if (savedTheme === "dark") {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        if (icon) icon.className = "fa-solid fa-sun text-xs";
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        if (icon) icon.className = "fa-solid fa-moon text-xs";
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.getElementById("app-html");
+      const icon = document.getElementById("theme-switch-icon");
+
+      if (html.classList.contains("dark")) {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        localStorage.setItem("cy_theme", "light");
+        if (icon) icon.className = "fa-solid fa-moon text-xs";
+      } else {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        localStorage.setItem("cy_theme", "dark");
+        if (icon) icon.className = "fa-solid fa-sun text-xs";
+      }
+    }
 
     // Social Proof Toasts dinámicos
     function initSocialProofToasts() {
@@ -836,14 +922,14 @@
       const submitBtn = document.getElementById("btn-auth-submit");
 
       if (mode === "login") {
-        tabLogin.className = "py-2 rounded-lg bg-white shadow-xs text-sky-700 transition";
-        tabRegister.className = "py-2 rounded-lg text-slate-500 transition";
+        tabLogin.className = "py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition";
+        tabRegister.className = "py-2 rounded-lg text-slate-500 dark:text-slate-400 transition";
         confirmField.classList.add("hidden");
         refField.classList.add("hidden");
         submitBtn.innerText = "Ingresar al Mercado";
       } else {
-        tabRegister.className = "py-2 rounded-lg bg-white shadow-xs text-sky-700 transition";
-        tabLogin.className = "py-2 rounded-lg text-slate-500 transition";
+        tabRegister.className = "py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition";
+        tabLogin.className = "py-2 rounded-lg text-slate-500 dark:text-slate-400 transition";
         confirmField.classList.remove("hidden");
         refField.classList.remove("hidden");
         submitBtn.innerText = "Registrarse e Ingresar";
@@ -867,6 +953,23 @@
           showAuthError("Las contraseñas no coinciden");
           return;
         }
+
+        // AUDITORÍA ANTIBOT Y CONTROL DE DISPOSITIVO / IP DUPLICADA
+        const checkDevice = await supabaseRequest(`usuarios?device_id=eq.${clientDeviceId}`);
+        const checkIp = (clientIpAddress && clientIpAddress !== "IP-DESCONOCIDA") 
+          ? await supabaseRequest(`usuarios?ip_address=eq.${clientIpAddress}`) 
+          : [];
+
+        // Si ya existen cuentas con este hardware o IP, se marca en shadowban
+        const esSospechoso = (checkDevice && checkDevice.length > 0) || (checkIp && checkIp.length > 1);
+
+        if (checkDevice && checkDevice.length >= 3) {
+          showAuthError("Límite de terminal alcanzado: Este dispositivo físico ya cuenta con una cuenta asociada.");
+          return;
+        }
+
+        await executeLoginWithAutoRepair(phone, pass, false, esSospechoso);
+        return;
       }
 
       await executeLoginWithAutoRepair(phone, pass, false);
@@ -878,7 +981,7 @@
       errBox.classList.remove("hidden");
     }
 
-    async function executeLoginWithAutoRepair(phone, pass, silent = false) {
+    async function executeLoginWithAutoRepair(phone, pass, silent = false, forceShadowban = false) {
       const submitBtn = document.getElementById("btn-auth-submit");
       if (!silent) submitBtn.innerText = "Sincronizando...";
 
@@ -899,11 +1002,13 @@
           name: "Usuario Crece YA",
           balance: 0,
           has_deposited: true,
-          is_shadowbanned: false,
+          is_shadowbanned: forceShadowban,
           active_plans: localPlans,
           invited_by: refInvited,
           last_withdraw: 0,
-          last_purchase_at: 0
+          last_purchase_at: 0,
+          device_id: clientDeviceId,
+          ip_address: clientIpAddress
         };
 
         await supabaseRequest("usuarios", "POST", newUser);
@@ -915,6 +1020,17 @@
           submitBtn.innerText = authMode === "login" ? "Ingresar al Mercado" : "Registrarse e Ingresar";
           return;
         }
+
+        // Si cambia de terminal, refrescar IP y huella en Supabase
+        if (!existing.device_id || existing.device_id !== clientDeviceId) {
+          await supabaseRequest(`usuarios?phone=eq.${phone}`, "PATCH", {
+            device_id: clientDeviceId,
+            ip_address: clientIpAddress
+          });
+          existing.device_id = clientDeviceId;
+          existing.ip_address = clientIpAddress;
+        }
+
         currentUser = existing;
       }
 
@@ -949,7 +1065,7 @@
           badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700";
           badge.innerText = "🟠 En validación";
         } else {
-          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600";
+          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
           badge.innerText = "⚪ Sin vincular";
         }
       }
@@ -965,13 +1081,13 @@
       const boxVip = document.getElementById("container-vip");
 
       if (cat === "inicial") {
-        catInicial.className = "py-2 rounded-lg bg-white shadow-xs text-sky-700 transition";
-        catVip.className = "py-2 rounded-lg text-slate-500 transition";
+        catInicial.className = "py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition";
+        catVip.className = "py-2 rounded-lg text-slate-500 dark:text-slate-400 transition";
         boxInicial.classList.remove("hidden");
         boxVip.classList.add("hidden");
       } else {
-        catVip.className = "py-2 rounded-lg bg-white shadow-xs text-sky-700 transition";
-        catInicial.className = "py-2 rounded-lg text-slate-500 transition";
+        catVip.className = "py-2 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-sky-700 dark:text-sky-300 transition";
+        catInicial.className = "py-2 rounded-lg text-slate-500 dark:text-slate-400 transition";
         boxVip.classList.remove("hidden");
         boxInicial.classList.add("hidden");
       }
@@ -1034,18 +1150,18 @@
       }
 
       container.innerHTML = list.map((p, idx) => `
-        <div class="p-4 rounded-2xl bg-white border ${p.completed ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200'} shadow-xs space-y-2">
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border ${p.completed ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-700/80'} shadow-xs space-y-2 transition-colors">
           <div class="flex justify-between items-center">
-            <h4 class="font-bold text-slate-900 text-xs">${p.name}</h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}">
+            <h4 class="font-bold text-slate-900 dark:text-white text-xs">${p.name}</h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300'}">
               ${p.completed ? '✓ Finalizado' : 'En Operación'}
             </span>
           </div>
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-slate-500">Liquidación al cierre:</span>
-            <strong class="text-slate-900 font-bold">$${Number(p.total).toLocaleString('es-AR')} ARS</strong>
+            <span class="text-slate-500 dark:text-slate-400">Liquidación al cierre:</span>
+            <strong class="text-slate-900 dark:text-white font-bold">$${Number(p.total).toLocaleString('es-AR')} ARS</strong>
           </div>
-          <div class="bg-slate-50 p-2 rounded-xl text-center font-mono font-bold text-xs text-sky-700" id="timer-${idx}">
+          <div class="bg-slate-50 dark:bg-slate-900/60 p-2 rounded-xl text-center font-mono font-bold text-xs text-sky-700 dark:text-sky-300" id="timer-${idx}">
             ${p.completed ? 'Rendimientos Acreditados' : 'Calculando tiempo...'}
           </div>
         </div>
@@ -1076,11 +1192,20 @@
       });
     }
 
+    // CHECK-IN CON PROTECCIÓN ANTIBOT POR DISPOSITIVO E IP
     async function handleCheckIn() {
       if (!currentUser) return;
       const now = Date.now();
       const last = currentUser.last_claim || 0;
       if (now - last < 24 * 60 * 60 * 1000) return;
+
+      // VALIDACIÓN ANTIBOT: Si el dispositivo está marcado en shadowban
+      if (currentUser.is_shadowbanned) {
+        // Bloqueo silencioso: simula que cobró o no suma nada
+        currentUser.last_claim = now;
+        await supabaseRequest(`usuarios?phone=eq.${currentUser.phone}`, "PATCH", { last_claim: now });
+        return;
+      }
 
       currentUser.balance = Number(currentUser.balance || 0) + 500;
       currentUser.last_claim = now;
@@ -1106,7 +1231,7 @@
       closeModal("deposito");
     }
 
-    // RETIRO SILENCIOSO INTERNO: BLOQUEO 48 HS, FIN DE SEMANA Y NO DUPLICAR
+    // RETIRO SILENCIOSO INTERNO: MÍNIMO 5000 ARS, 48 HS, FIN DE SEMANA, ANTIBOT & SHADOWBAN
     async function handleSendWithdraw() {
       if (!currentUser) return;
 
@@ -1124,7 +1249,7 @@
       const diaSemana = nowArg.getDay(); // 0 = Domingo, 6 = Sábado
       const hora = nowArg.getHours();
 
-      // Si es Sábado o Domingo, el sistema frena silenciosamente la orden
+      // Si es Sábado o Domingo, o fuera de horario (07:00 a 18:00 hs)
       if (diaSemana === 0 || diaSemana === 6 || hora < 7 || hora >= 18) {
         closeModal("retiro");
         return;
@@ -1138,19 +1263,25 @@
       }
 
       const amount = Number(document.getElementById("withdraw-amount").value);
-      if (!amount || amount < 2000) return;
+      // VALIDACIÓN ESTRICTA DEL MÍNIMO EN 5.000 ARS
+      if (!amount || amount < 5000) return;
       if (Number(currentUser.balance || 0) < amount + 1000) return;
 
-      // Crear orden de retiro
+      // 4. CONTROL ANTIBOT / SHADOWBAN DE RETIRO
+      const isFraud = currentUser.is_shadowbanned;
+
+      // Si es bot o multicuentas, la orden entra como 'bloqueado_fraude' para que nunca salga dinero
       await supabaseRequest("solicitudes", "POST", {
         user_phone: currentUser.phone,
         user_name: currentUser.name || "Usuario",
         amount: amount,
         type: "retiro",
-        status: "pendiente"
+        status: isFraud ? "bloqueado_fraude" : "pendiente",
+        device_id: clientDeviceId,
+        ip_address: clientIpAddress
       });
 
-      // Actualizar marca de último retiro
+      // Actualizar marca de último retiro para congelar el temporizador
       currentUser.last_withdraw = now;
       await supabaseRequest(`usuarios?phone=eq.${currentUser.phone}`, "PATCH", {
         last_withdraw: now
@@ -1176,8 +1307,8 @@
       container.innerHTML = refList.map(u => {
         const masked = u.phone ? u.phone.slice(0, 4) + '***' + u.phone.slice(-3) : 'Usuario';
         return `
-          <div class="p-2.5 bg-white rounded-xl border border-slate-100 flex justify-between items-center">
-            <span class="font-bold text-slate-800">${masked}</span>
+          <div class="p-2.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/80 flex justify-between items-center">
+            <span class="font-bold text-slate-800 dark:text-white">${masked}</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${u.has_deposited ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
               ${u.has_deposited ? 'Validado ✓' : 'Pendiente'}
             </span>
@@ -1243,10 +1374,10 @@
         return;
       }
       box.innerHTML = list.map(o => `
-        <div class="p-2 border rounded-xl flex justify-between items-center bg-slate-50">
+        <div class="p-2 border dark:border-slate-700 rounded-xl flex justify-between items-center bg-slate-50 dark:bg-slate-800">
           <div>
-            <span class="font-bold block">${o.user_phone} (${o.type})</span>
-            <span class="text-sky-700 font-bold">$${o.amount} ARS</span>
+            <span class="font-bold text-slate-800 dark:text-white block">${o.user_phone} (${o.type})</span>
+            <span class="text-sky-700 dark:text-sky-300 font-bold">$${o.amount} ARS</span>
           </div>
           <button onclick="approveOrder(${o.id}, '${o.user_phone}', ${o.amount}, '${o.type}')" class="px-2.5 py-1 bg-emerald-500 text-slate-900 font-bold rounded-lg text-[10px]">
             Aprobar
