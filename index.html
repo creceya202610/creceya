@@ -13,7 +13,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -42,7 +42,7 @@ body {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
 
-/* SOPORTE MODO OSCURO */
+/* SISTEMA COMPLETO MODO OSCURO */
 body.dark-mode {
   background-color: #030a13 !important;
   color: #e2e8f0 !important;
@@ -79,11 +79,16 @@ body.dark-mode .input-theme {
 body.dark-mode .nav-inactive {
   color: #94a3b8 !important;
 }
+body.dark-mode .social-ticker {
+  background-color: #0c1a2d !important;
+  border-color: #1a3252 !important;
+  color: #94a3b8 !important;
+}
 </style>
 </head>
 <body class="bg-[#e0f2fe] text-slate-800 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-600 selection:text-white">
 
-<!-- AVISO OFICIAL MODAL -->
+<!-- MODAL AVISO OFICIAL CRECE YA -->
 <div id="notice-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
   <div class="meli-card bg-white border border-slate-200 w-full max-w-sm rounded-xl p-5 shadow-2xl space-y-4 text-slate-800 relative text-main">
     <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
@@ -110,8 +115,12 @@ body.dark-mode .nav-inactive {
         <span><strong>Asignación por Rondas:</strong> Los nuevos cupos abren de forma escalonada.</span>
       </p>
       <p class="flex items-center gap-2 text-slate-700 text-sub">
+        <span class="text-sky-700 font-bold">●</span>
+        <span><strong>Escala de Retiro:</strong> Mínimo desde $10.000 ARS acumulativo.</span>
+      </p>
+      <p class="flex items-center gap-2 text-slate-700 text-sub">
         <span class="text-slate-500 font-bold">●</span>
-        <span><strong>Retiros Progresivos:</strong> Escala acumulativa de $10.000 a $100.000 ARS.</span>
+        <span><strong>Horario Bancario:</strong> Lunes a Viernes de 07:00 a 18:00 hs.</span>
       </p>
     </div>
 
@@ -121,7 +130,7 @@ body.dark-mode .nav-inactive {
   </div>
 </div>
 
-<!-- PANTALLA DE ACCESO -->
+<!-- PANTALLA DE ACCESO Y REGISTRO -->
 <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(15, 23, 42, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
   <div class="w-full max-w-sm bg-white rounded-xl p-6 shadow-2xl space-y-4 text-slate-800 border border-slate-200">
     <div class="text-center space-y-2">
@@ -201,7 +210,7 @@ body.dark-mode .nav-inactive {
 <main class="w-full max-w-sm bg-[#edf5fc] border-x sm:border border-sky-200 min-h-screen sm:rounded-2xl shadow-xl flex flex-col justify-between relative pb-20">
 
 <div>
-  <!-- HEADER CON LOGO OFICIAL Y SELECTOR SOL/LUNA -->
+  <!-- HEADER CON LOGO DE ÁRBOL Y MODO OSCURO -->
   <header class="bg-white border-b border-slate-200/90 px-3.5 py-3 flex items-center justify-between sticky top-0 z-30">
     <div class="flex items-center gap-2.5 select-none">
       <div class="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 p-1 flex items-center justify-center shrink-0">
@@ -214,7 +223,7 @@ body.dark-mode .nav-inactive {
     </div>
 
     <div class="flex items-center gap-2">
-      <!-- SELECTOR MODO OSCURO / CLARO -->
+      <!-- SELECTOR MODO OSCURO/CLARO -->
       <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition cursor-pointer" title="Modo Claro/Oscuro">
         <i id="theme-icon" class="fa-solid fa-moon"></i>
       </button>
@@ -227,6 +236,14 @@ body.dark-mode .nav-inactive {
       </button>
     </div>
   </header>
+
+  <!-- TICKER SOCIAL FINTECH -->
+  <section class="social-ticker bg-white/70 border-b border-slate-200/60 px-3.5 py-2 text-xs text-slate-600 text-sub">
+    <p class="truncate font-mono-num text-[11px] flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>Operación ejecutada: +$7.000 ARS liquidados en TikTok</span>
+    </p>
+  </section>
 
   <!-- VISTA 1: PLANES (INICIO) -->
   <div id="view-planes" class="space-y-3 p-3">
@@ -245,11 +262,11 @@ body.dark-mode .nav-inactive {
           <span class="text-xl font-normal text-slate-400 mr-0.5">$</span>0 <span class="text-xs font-normal text-slate-400">ARS</span>
         </h1>
         <p id="home-withdraw-hint" class="text-[11px] text-slate-500 mt-0.5 text-sub">
-          Retiro mín.: $5.000 ARS • <span id="home-tier-text" class="text-sky-700 font-medium">Tope actual: $10.000 ARS</span>
+          Retiro mín.: $10.000 ARS • <span id="home-tier-text" class="text-sky-700 font-medium">Tope actual: $10.000 ARS</span>
         </p>
       </div>
 
-      <!-- LOS DOS BOTONES DIRECTOS -->
+      <!-- LOS DOS BOTONES DIRECTOS Y PROPORCIONADOS -->
       <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
         <button onclick="openWalletModal('recargar')" class="meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
           <i class="fa-solid fa-plus text-xs"></i> Cargar saldo
@@ -264,7 +281,7 @@ body.dark-mode .nav-inactive {
     <div class="flex items-center justify-between pt-1">
       <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide text-main">Mercado Bursátil</h3>
       <div class="flex bg-slate-200/70 p-0.5 rounded-lg text-xs font-semibold subbox-theme">
-        <button id="btn-tab-iniciales" class="px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer">
+        <button id="btn-tab-iniciales" class="px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer text-main">
           Iniciales
         </button>
         <button id="btn-tab-pro" class="px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer text-sub">
@@ -273,7 +290,7 @@ body.dark-mode .nav-inactive {
       </div>
     </div>
 
-    <!-- CONTENEDOR DE TARJETAS -->
+    <!-- CONTENEDOR DE TARJETAS DE PLANES -->
     <div id="plans-container" class="space-y-2.5"></div>
   </div>
 
@@ -349,7 +366,7 @@ body.dark-mode .nav-inactive {
       </div>
     </div>
 
-    <!-- RETIRO ACTIVO -->
+    <!-- RETIRO ACTIVO EN PROCESO -->
     <div id="active-withdraw-box" class="hidden p-3 bg-sky-50 border border-sky-200 rounded-lg text-xs space-y-1">
       <span class="font-semibold text-sky-800 block">Solicitud de Retiro en Proceso</span>
       <p id="active-withdraw-text" class="text-slate-700 font-mono-num">Neto: $0 ARS hacia tu cuenta</p>
@@ -372,7 +389,7 @@ body.dark-mode .nav-inactive {
       </button>
     </div>
 
-    <!-- HISTORIAL DE TRANSACCIONES -->
+    <!-- HISTORIAL DE TRANSACCIONES EN VIVO CON SUPABASE -->
     <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <div class="flex items-center gap-2">
@@ -448,7 +465,7 @@ body.dark-mode .nav-inactive {
       </div>
     </div>
 
-    <!-- ENLACE OFICIAL WHATSAPP -->
+    <!-- ENLACE OFICIAL CANAL WHATSAPP -->
     <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-between shadow-xs transition meli-card text-xs">
       <div class="flex items-center gap-2.5">
         <i class="fa-brands fa-whatsapp text-xl"></i>
@@ -559,7 +576,7 @@ body.dark-mode .nav-inactive {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON REGLA ESCALONADA -->
+    <!-- BOX RETIRO CON ESCALA DESDE $10.000 ARS -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-2.5">
         <div>
@@ -567,8 +584,8 @@ body.dark-mode .nav-inactive {
             <label class="text-[11px] text-slate-500">Monto a retirar</label>
             <span id="tier-limit-badge" class="text-[10px] font-mono-num text-sky-800 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded font-semibold">Tope: $10.000 ARS</span>
           </div>
-          <input id="withdraw-custom-input" type="number" min="5000" placeholder="Ej: 5000" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num font-bold text-slate-900 outline-none">
-          <span class="text-[10px] text-slate-500 block mt-1">Mínimo $5.000 ARS • Reserva obligatoria de $1.000 ARS</span>
+          <input id="withdraw-custom-input" type="number" min="10000" placeholder="Ej: 10000" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num font-bold text-slate-900 outline-none">
+          <span class="text-[10px] text-slate-500 block mt-1">Retiro inicial desde $10.000 ARS • Reserva obligatoria de $1.000 ARS</span>
         </div>
 
         <div class="space-y-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
@@ -598,7 +615,7 @@ body.dark-mode .nav-inactive {
         </button>
       </div>
 
-      <!-- CONFIRMACIÓN RETIRO -->
+      <!-- CONFIRMACIÓN DE RETIRO -->
       <div id="withdraw-step-confirm" class="hidden space-y-2.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
         <div class="border-b border-slate-200 pb-1.5 flex justify-between items-center">
           <span class="font-bold text-slate-800 text-xs">Revisa los datos</span>
@@ -700,7 +717,7 @@ function isBusinessHours() {
   }
 }
 
-// CATÁLOGO COMPLETO: PLANES EXISTENTES + 12 NUEVOS LANZADOS (PREPARADOS PARA CARGAR IMÁGENES)
+// CATÁLOGO COMPLETO: 12 EXISTENTES + 12 NUEVOS FASE 2
 const plans = [
   // 6 EXISTENTES INICIALES
   { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2250, total: 4500, slotsTotal: 100, slotsLeft: 64, isNew: false, logo: './meli.png' },
@@ -710,7 +727,7 @@ const plans = [
   { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 3000, total: 30000, slotsTotal: 100, slotsLeft: 31, isNew: false, logo: './amazon.png' },
   { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 15, daily: 2833, total: 42500, slotsTotal: 100, slotsLeft: 22, isNew: false, logo: './netflix.png' },
 
-  // 6 NUEVOS INICIALES (FASE 2)
+  // 6 NUEVOS INICIALES FASE 2
   { id: 'pedidosya', name: 'PedidosYa (Delivery)', cat: 'inicial', cost: 2500, days: 2, daily: 2750, total: 5500, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './pedidosya.png' },
   { id: 'shein', name: 'SHEIN (E-Commerce)', cat: 'inicial', cost: 4000, days: 3, daily: 2833, total: 8500, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './shein.png' },
   { id: 'uber', name: 'Uber (Movilidad)', cat: 'inicial', cost: 6000, days: 4, daily: 3250, total: 13000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './uber.png' },
@@ -724,9 +741,9 @@ const plans = [
   { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 2555, total: 115000, slotsTotal: 50, slotsLeft: 17, isNew: false, logo: './tesla.png' },
   { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 2417, total: 145000, slotsTotal: 50, slotsLeft: 12, isNew: false, logo: './youtube.png' },
   { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 2667, total: 200000, slotsTotal: 50, slotsLeft: 8, isNew: false, logo: './google.png' },
-  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 20000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, isNew: false, logo: './microsoft.png' },
+  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, isNew: false, logo: './microsoft.png' },
 
-  // 6 NUEVOS VIP (FASE 2)
+  // 6 NUEVOS VIP FASE 2
   { id: 'cocacola', name: 'Coca-Cola (Consumo)', cat: 'pro', cost: 25000, days: 15, daily: 4333, total: 65000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './cocacola.png' },
   { id: 'playstation', name: 'PlayStation (Sony Gaming)', cat: 'pro', cost: 40000, days: 25, daily: 4600, total: 115000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './playstation.png' },
   { id: 'visa', name: 'Visa (Fintech Global)', cat: 'pro', cost: 60000, days: 35, daily: 5143, total: 180000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './visa.png' },
@@ -1016,9 +1033,12 @@ async function cargarHistorialTransacciones() {
   }
 }
 
-// ESCALA PROGRESIVA DE RETIROS ($10K, $20K, ..., $100K)
+// ESCALA PROGRESIVA DE RETIROS: ARRANCA SIEMPRE DESDE $10.000 ARS
 function obtenerTopeRetiroCuenta() {
   const retirosPrevios = appState.withdrawCount || 0;
+  // 1er retiro = 1 * 10000 = $10.000 ARS
+  // 2do retiro = 2 * 10000 = $20.000 ARS
+  // ... hasta tope absoluto de $100.000 ARS
   const topeEscala = (retirosPrevios + 1) * 10000;
   return Math.min(100000, topeEscala);
 }
@@ -1606,7 +1626,7 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO CON COOLDOWN 48HS, FIN DE SEMANA Y ESCALA PROGRESIVA
+// RETIRO CON COOLDOWN 48HS, FIN DE SEMANA Y ESCALA PROGRESIVA DESDE $10.000
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
@@ -1640,9 +1660,9 @@ window.prepararConfirmacionRetiro = async function() {
   }
 
   const amt = parseFloat(withdrawInput.value);
-  if (isNaN(amt) || amt < 5000) {
-    alert("El monto mínimo de extracción bancaria es de $5.000 ARS.");
-    withdrawInput.value = 5000;
+  if (isNaN(amt) || amt < 10000) {
+    alert("El monto mínimo inicial de extracción bancaria es de $10.000 ARS.");
+    withdrawInput.value = 10000;
     calcWithdrawNet();
     return;
   }
@@ -1840,7 +1860,7 @@ function renderUI() {
   const maxTier = obtenerTopeRetiroCuenta();
   const nroRetiro = (appState.withdrawCount || 0) + 1;
   const hintEl = document.getElementById('home-withdraw-hint');
-  if (hintEl) hintEl.innerHTML = `Retiro mín.: $5.000 ARS • <span class="text-sky-700 font-medium">Tope retiro N°${nroRetiro}: $${fmt(maxTier)} ARS</span>`;
+  if (hintEl) hintEl.innerHTML = `Retiro mín.: $10.000 ARS • <span class="text-sky-700 font-medium">Tope retiro N°${nroRetiro}: $${fmt(maxTier)} ARS</span>`;
 
   const profileTierBadge = document.getElementById('profile-tier-badge');
   if (profileTierBadge) profileTierBadge.innerText = `Tope: $${fmt(maxTier)} ARS`;
