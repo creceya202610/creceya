@@ -23,6 +23,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 .font-mono-num {
   font-family: 'JetBrains Mono', monospace;
@@ -40,37 +41,75 @@ body {
   border-radius: 8px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
+
+/* SOPORTE MODO OSCURO */
+body.dark-mode {
+  background-color: #030a13 !important;
+  color: #e2e8f0 !important;
+}
+body.dark-mode main {
+  background-color: #081322 !important;
+  border-color: #162a45 !important;
+}
+body.dark-mode header,
+body.dark-mode nav {
+  background-color: rgba(8, 19, 34, 0.95) !important;
+  border-color: #162a45 !important;
+}
+body.dark-mode .meli-card {
+  background-color: #0e1e33 !important;
+  border-color: #1e3657 !important;
+  color: #f1f5f9 !important;
+}
+body.dark-mode .subbox-theme {
+  background-color: #132742 !important;
+  border-color: #203e66 !important;
+}
+body.dark-mode .text-main {
+  color: #f8fafc !important;
+}
+body.dark-mode .text-sub {
+  color: #94a3b8 !important;
+}
+body.dark-mode .input-theme {
+  background-color: #081320 !important;
+  border-color: #1e3657 !important;
+  color: #ffffff !important;
+}
+body.dark-mode .nav-inactive {
+  color: #94a3b8 !important;
+}
 </style>
 </head>
 <body class="bg-[#e0f2fe] text-slate-800 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-600 selection:text-white">
 
 <!-- AVISO OFICIAL MODAL -->
 <div id="notice-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-  <div class="bg-white border border-slate-200 w-full max-w-sm rounded-xl p-5 shadow-2xl space-y-4 text-slate-800 relative">
+  <div class="meli-card bg-white border border-slate-200 w-full max-w-sm rounded-xl p-5 shadow-2xl space-y-4 text-slate-800 relative text-main">
     <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
       <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center text-lg shrink-0">
         <i class="fa-solid fa-bullhorn"></i>
       </div>
       <div>
-        <h3 class="text-sm font-bold text-slate-900 leading-tight">COMUNICADO OFICIAL</h3>
-        <span class="text-[11px] text-slate-500 font-medium">Mercado Bursátil • Crece YA</span>
+        <h3 class="text-sm font-bold text-slate-900 leading-tight text-main">COMUNICADO OFICIAL</h3>
+        <span class="text-[11px] text-slate-500 font-medium text-sub">Mercado Bursátil • Crece YA</span>
       </div>
     </div>
 
-    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
-      <p class="flex items-center gap-2 text-slate-700">
+    <div class="subbox-theme bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
+      <p class="flex items-center gap-2 text-slate-700 text-sub">
         <span class="text-emerald-600 font-bold">●</span>
         <span><strong>Fase 1 Activa:</strong> MELI ($4.500) y contratos vigentes en curso.</span>
       </p>
-      <p class="flex items-center gap-2 text-slate-700">
+      <p class="flex items-center gap-2 text-slate-700 text-sub">
         <span class="text-sky-600 font-bold">●</span>
         <span><strong>Lanzamiento Fase 2:</strong> 12 nuevas acciones institucionales.</span>
       </p>
-      <p class="flex items-center gap-2 text-slate-700">
+      <p class="flex items-center gap-2 text-slate-700 text-sub">
         <span class="text-amber-600 font-bold">●</span>
         <span><strong>Asignación por Rondas:</strong> Los nuevos cupos abren de forma escalonada.</span>
       </p>
-      <p class="flex items-center gap-2 text-slate-700">
+      <p class="flex items-center gap-2 text-slate-700 text-sub">
         <span class="text-slate-500 font-bold">●</span>
         <span><strong>Retiros Progresivos:</strong> Escala acumulativa de $10.000 a $100.000 ARS.</span>
       </p>
@@ -162,19 +201,24 @@ body {
 <main class="w-full max-w-sm bg-[#edf5fc] border-x sm:border border-sky-200 min-h-screen sm:rounded-2xl shadow-xl flex flex-col justify-between relative pb-20">
 
 <div>
-  <!-- HEADER ESTILO APP BANCARIA -->
+  <!-- HEADER CON LOGO OFICIAL Y SELECTOR SOL/LUNA -->
   <header class="bg-white border-b border-slate-200/90 px-3.5 py-3 flex items-center justify-between sticky top-0 z-30">
     <div class="flex items-center gap-2.5 select-none">
       <div class="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 p-1 flex items-center justify-center shrink-0">
         <img src="./logo.png" alt="Crece YA" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/628/628283.png';">
       </div>
       <div>
-        <span class="font-bold text-slate-900 text-sm block leading-none">CRECE YA</span>
-        <span id="user-display-phone" class="text-[11px] text-slate-500 font-mono-num">+54 9 11 ...</span>
+        <span class="font-bold text-slate-900 text-sm block leading-none text-main">CRECE YA</span>
+        <span id="user-display-phone" class="text-[11px] text-slate-500 font-mono-num text-sub">+54 9 11 ...</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
+      <!-- SELECTOR MODO OSCURO / CLARO -->
+      <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition cursor-pointer" title="Modo Claro/Oscuro">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+      </button>
+
       <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En línea
       </span>
@@ -187,9 +231,9 @@ body {
   <!-- VISTA 1: PLANES (INICIO) -->
   <div id="view-planes" class="space-y-3 p-3">
 
-    <!-- TARJETA SALDO MERCADO PAGO CON OJITO Y DOS BOTONES -->
-    <div class="bg-white border border-slate-200/90 rounded-lg p-4 meli-card space-y-3">
-      <div class="flex items-center justify-between text-xs text-slate-500">
+    <!-- TARJETA SALDO MERCADO PAGO CON OJITO Y DOS BOTONES DIRECTOS -->
+    <div class="meli-card bg-white border border-slate-200/90 rounded-lg p-4 space-y-3">
+      <div class="flex items-center justify-between text-xs text-slate-500 text-sub">
         <span class="font-medium">Dinero disponible</span>
         <button onclick="toggleBalanceMask()" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
           <i id="balance-eye-icon" class="fa-solid fa-eye text-xs"></i>
@@ -197,15 +241,15 @@ body {
       </div>
 
       <div>
-        <h1 id="home-balance-display" class="text-3xl font-bold text-slate-900 tracking-tight font-sans">
+        <h1 id="home-balance-display" class="text-3xl font-bold text-slate-900 tracking-tight font-sans text-main">
           <span class="text-xl font-normal text-slate-400 mr-0.5">$</span>0 <span class="text-xs font-normal text-slate-400">ARS</span>
         </h1>
-        <p id="home-withdraw-hint" class="text-[11px] text-slate-500 mt-0.5">
+        <p id="home-withdraw-hint" class="text-[11px] text-slate-500 mt-0.5 text-sub">
           Retiro mín.: $5.000 ARS • <span id="home-tier-text" class="text-sky-700 font-medium">Tope actual: $10.000 ARS</span>
         </p>
       </div>
 
-      <!-- LOS DOS BOTONES DIRECTOS Y PROPORCIONADOS -->
+      <!-- LOS DOS BOTONES DIRECTOS -->
       <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
         <button onclick="openWalletModal('recargar')" class="meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
           <i class="fa-solid fa-plus text-xs"></i> Cargar saldo
@@ -218,12 +262,12 @@ body {
 
     <!-- SELECTOR DE MERCADOS TIPO CHIP ML -->
     <div class="flex items-center justify-between pt-1">
-      <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Mercado Bursátil</h3>
-      <div class="flex bg-slate-200/70 p-0.5 rounded-lg text-xs font-semibold">
+      <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide text-main">Mercado Bursátil</h3>
+      <div class="flex bg-slate-200/70 p-0.5 rounded-lg text-xs font-semibold subbox-theme">
         <button id="btn-tab-iniciales" class="px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer">
           Iniciales
         </button>
-        <button id="btn-tab-pro" class="px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer">
+        <button id="btn-tab-pro" class="px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer text-sub">
           VIP
         </button>
       </div>
@@ -235,30 +279,30 @@ body {
 
   <!-- VISTA 2: PRODUCTOS -->
   <div id="view-productos" class="hidden p-3 space-y-2.5">
-    <div class="bg-white border border-slate-200 rounded-lg p-3 meli-card">
-      <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3">
+      <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5 text-main">
         <i class="fa-solid fa-box-open text-sky-600"></i> Tus Acciones en Operación
       </h2>
-      <p class="text-[11px] text-slate-500 mt-0.5">El capital y los dividendos se acreditan automáticamente al culminar el ciclo.</p>
+      <p class="text-[11px] text-slate-500 mt-0.5 text-sub">El capital y los dividendos se acreditan automáticamente al culminar el ciclo.</p>
     </div>
     <div id="active-products-container" class="space-y-2.5"></div>
   </div>
 
   <!-- VISTA 3: COMPARTIR (AMIGOS) -->
   <div id="view-compartir" class="hidden p-3 space-y-3">
-    <div class="bg-white border border-slate-200 rounded-lg p-4 meli-card space-y-3">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-4 space-y-3">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-sm">
           <i class="fa-solid fa-share-nodes"></i>
         </div>
         <div>
-          <h2 class="text-xs font-bold text-slate-900">Tu Enlace de Invitación</h2>
-          <span class="text-[11px] text-slate-500 font-medium">Recompensas directas por cada depósito validado</span>
+          <h2 class="text-xs font-bold text-slate-900 text-main">Tu Enlace de Invitación</h2>
+          <span class="text-[11px] text-slate-500 font-medium text-sub">Recompensas directas por cada depósito validado</span>
         </div>
       </div>
 
-      <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 gap-2">
-        <input id="ref-link-input" type="text" readonly class="bg-transparent text-xs text-slate-700 font-mono-num w-full outline-none select-all truncate">
+      <div class="subbox-theme flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 gap-2">
+        <input id="ref-link-input" type="text" readonly class="bg-transparent text-xs text-slate-700 font-mono-num w-full outline-none select-all truncate text-main">
         <button id="btn-copy-ref" class="meli-btn px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs cursor-pointer shrink-0">
           Copiar
         </button>
@@ -269,13 +313,13 @@ body {
       </button>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg p-3 meli-card space-y-2">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3 space-y-2">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="text-xs font-bold text-slate-800">Personas en tu red</h3>
-        <span id="invites-count-badge" class="text-[10px] font-mono-num bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold">0 registrados</span>
+        <h3 class="text-xs font-bold text-slate-800 text-main">Personas en tu red</h3>
+        <span id="invites-count-badge" class="text-[10px] font-mono-num bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold subbox-theme text-main">0 registrados</span>
       </div>
       <div id="invites-list-container" class="space-y-1.5 text-xs">
-        <p class="text-slate-400 text-center py-2">Consultando tus referidos...</p>
+        <p class="text-slate-400 text-center py-2 text-sub">Consultando tus referidos...</p>
       </div>
     </div>
   </div>
@@ -283,24 +327,24 @@ body {
   <!-- VISTA 4: MI PERFIL -->
   <div id="view-perfil" class="hidden p-3 space-y-3">
     <!-- RESUMEN DE SALDOS -->
-    <div class="bg-white border border-slate-200 rounded-lg p-3.5 meli-card space-y-2.5">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5">
       <div class="flex justify-between items-center text-xs">
-        <span class="font-medium text-slate-500">Estado de Cuenta</span>
+        <span class="font-medium text-slate-500 text-sub">Estado de Cuenta</span>
         <span id="profile-tier-badge" class="text-[11px] font-mono-num bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded font-semibold">Tope: $10.000 ARS</span>
       </div>
 
       <div class="grid grid-cols-3 gap-2 text-center font-mono-num">
-        <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
-          <span class="text-[10px] text-slate-400 block">DISPONIBLE</span>
-          <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold">$0</strong>
+        <div class="subbox-theme p-2 bg-slate-50 rounded-lg border border-slate-100">
+          <span class="text-[10px] text-slate-400 block text-sub">DISPONIBLE</span>
+          <strong id="profile-bal-ars" class="text-xs text-slate-900 font-bold text-main">$0</strong>
         </div>
-        <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
-          <span class="text-[10px] text-slate-400 block">EN REVISIÓN</span>
-          <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold">$0</strong>
+        <div class="subbox-theme p-2 bg-slate-50 rounded-lg border border-slate-100">
+          <span class="text-[10px] text-slate-400 block text-sub">EN REVISIÓN</span>
+          <strong id="profile-pending-ars" class="text-xs text-amber-600 font-bold text-main">$0</strong>
         </div>
-        <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
-          <span class="text-[10px] text-slate-400 block">RETIRADO</span>
-          <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold">$0</strong>
+        <div class="subbox-theme p-2 bg-slate-50 rounded-lg border border-slate-100">
+          <span class="text-[10px] text-slate-400 block text-sub">RETIRADO</span>
+          <strong id="profile-withdrawn-ars" class="text-xs text-sky-700 font-bold text-main">$0</strong>
         </div>
       </div>
     </div>
@@ -313,13 +357,13 @@ body {
     </div>
 
     <!-- CHECK-IN DIARIO -->
-    <div class="bg-white border border-slate-200 rounded-lg p-3 meli-card flex items-center justify-between">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-base">
           <i class="fa-solid fa-calendar-check"></i>
         </div>
         <div>
-          <span class="text-xs font-bold text-slate-900 block leading-tight">Check-in Diario</span>
+          <span class="text-xs font-bold text-slate-900 block leading-tight text-main">Check-in Diario</span>
           <span id="checkin-status-text" class="text-[11px] text-amber-700 font-medium">+$500 ARS listos para reclamar</span>
         </div>
       </div>
@@ -329,40 +373,40 @@ body {
     </div>
 
     <!-- HISTORIAL DE TRANSACCIONES -->
-    <div class="bg-white border border-slate-200 rounded-lg p-3.5 meli-card space-y-2.5 text-xs">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-clock-rotate-left text-sky-600"></i>
-          <span class="font-bold text-slate-900 text-xs">Historial de Transacciones</span>
+          <span class="font-bold text-slate-900 text-xs text-main">Historial de Transacciones</span>
         </div>
         <button onclick="cargarHistorialTransacciones()" class="text-sky-700 hover:text-sky-900 text-xs cursor-pointer">
           <i class="fa-solid fa-rotate-right"></i>
         </button>
       </div>
       <div id="tx-history-container" class="space-y-1.5 font-mono-num">
-        <p class="text-slate-400 text-center py-2 text-xs">Cargando movimientos...</p>
+        <p class="text-slate-400 text-center py-2 text-xs text-sub">Cargando movimientos...</p>
       </div>
     </div>
 
     <!-- DATOS BANCARIOS -->
-    <div class="bg-white border border-slate-200 rounded-lg p-3.5 meli-card space-y-2.5 text-xs">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <span class="font-bold text-slate-900 text-xs">Cuenta Bancaria para Retiros</span>
+        <span class="font-bold text-slate-900 text-xs text-main">Cuenta Bancaria para Retiros</span>
         <span id="bank-status-badge" class="text-[11px] font-semibold text-slate-400">⚪ Sin vincular</span>
       </div>
       <div class="space-y-2">
         <div>
-          <label class="text-slate-400 block text-[10px] mb-0.5">TITULAR DE LA CUENTA</label>
-          <input id="prof-name-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2 text-slate-800 outline-none" placeholder="Nombre y Apellido">
+          <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">TITULAR DE LA CUENTA</label>
+          <input id="prof-name-input" type="text" class="input-theme w-full bg-slate-50 border border-slate-200 rounded-md p-2 text-slate-800 outline-none" placeholder="Nombre y Apellido">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-slate-400 block text-[10px] mb-0.5">CBU O CVU (22 DÍGITOS)</label>
-            <input id="prof-cvu-input" type="text" maxlength="22" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none" placeholder="22 números">
+            <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">CBU O CVU (22 DÍGITOS)</label>
+            <input id="prof-cvu-input" type="text" maxlength="22" class="input-theme w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none" placeholder="22 números">
           </div>
           <div>
-            <label class="text-slate-400 block text-[10px] mb-0.5">ALIAS BANCARIO</label>
-            <input id="prof-alias-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none" placeholder="tu.alias.mp">
+            <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">ALIAS BANCARIO</label>
+            <input id="prof-alias-input" type="text" class="input-theme w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none" placeholder="tu.alias.mp">
           </div>
         </div>
         <button id="btn-save-profile" class="w-full meli-btn py-2 bg-slate-800 hover:bg-slate-900 text-white shadow-xs cursor-pointer">
@@ -371,13 +415,58 @@ body {
       </div>
     </div>
 
-    <!-- ENLACES OFICIALES -->
+    <!-- CAMBIAR CONTRASEÑA -->
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
+      <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+        <i class="fa-solid fa-key text-sky-600"></i>
+        <span class="font-bold text-slate-900 text-xs text-main">Seguridad / Cambiar Contraseña</span>
+      </div>
+
+      <div class="space-y-2">
+        <div>
+          <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">CONTRASEÑA ACTUAL</label>
+          <div class="subbox-theme flex items-center bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5">
+            <input id="prof-old-pass" type="password" placeholder="Tu contraseña actual" class="w-full bg-transparent font-mono-num text-slate-800 text-main outline-none text-xs">
+            <button type="button" onclick="togglePassView('prof-old-pass', this)" class="text-slate-400 hover:text-sky-600 ml-1.5 text-xs cursor-pointer">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">NUEVA CLAVE</label>
+            <input id="prof-new-pass" type="password" placeholder="Nueva clave" class="input-theme w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none text-xs">
+          </div>
+          <div>
+            <label class="text-slate-400 block text-[10px] mb-0.5 text-sub">REPETIR NUEVA</label>
+            <input id="prof-new-pass-confirm" type="password" placeholder="Repetir clave" class="input-theme w-full bg-slate-50 border border-slate-200 rounded-md p-2 font-mono-num text-slate-800 outline-none text-xs">
+          </div>
+        </div>
+        <button id="btn-change-pass" class="w-full meli-btn py-2 bg-sky-600 hover:bg-sky-700 text-white shadow-xs cursor-pointer">
+          Actualizar Contraseña
+        </button>
+      </div>
+    </div>
+
+    <!-- ENLACE OFICIAL WHATSAPP -->
+    <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-between shadow-xs transition meli-card text-xs">
+      <div class="flex items-center gap-2.5">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <div>
+          <span class="font-bold block">Canal Oficial en WhatsApp</span>
+          <span class="text-[10px] text-emerald-100">Alertas de Mercado y Nuevas Rondas</span>
+        </div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-xs"></i>
+    </a>
+
+    <!-- ENLACE OFICIAL TELEGRAM -->
     <a href="https://t.me/creceya2026" target="_blank" class="p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg flex items-center justify-between shadow-xs transition meli-card text-xs">
       <div class="flex items-center gap-2.5">
         <i class="fa-brands fa-telegram text-xl"></i>
         <div>
           <span class="font-bold block">Canal Oficial en Telegram</span>
-          <span class="text-[10px] text-sky-100">@creceya2026 • Comunidad</span>
+          <span class="text-[10px] text-sky-100">@creceya2026 • Comunidad y Soporte</span>
         </div>
       </div>
       <i class="fa-solid fa-chevron-right text-xs"></i>
@@ -391,15 +480,15 @@ body {
     <i class="fa-solid fa-house text-base"></i>
     <span class="text-[11px] leading-none">Inicio</span>
   </button>
-  <button onclick="switchTab('productos')" id="nav-btn-productos" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
+  <button onclick="switchTab('productos')" id="nav-btn-productos" class="nav-inactive flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
     <i class="fa-solid fa-box-archive text-base"></i>
     <span class="text-[11px] leading-none">Productos</span>
   </button>
-  <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
+  <button onclick="switchTab('compartir')" id="nav-btn-compartir" class="nav-inactive flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
     <i class="fa-solid fa-user-group text-base"></i>
     <span class="text-[11px] leading-none">Amigos</span>
   </button>
-  <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
+  <button onclick="switchTab('perfil')" id="nav-btn-perfil" class="nav-inactive flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer">
     <i class="fa-solid fa-user text-base"></i>
     <span class="text-[11px] leading-none">Mi Perfil</span>
   </button>
@@ -407,7 +496,7 @@ body {
 
 <!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
 <div id="wallet-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-3">
-  <div class="bg-white border border-slate-200 w-full max-w-sm rounded-xl p-4 shadow-2xl space-y-3.5 text-slate-800">
+  <div class="bg-white border border-slate-200 w-full max-w-sm rounded-xl p-4 shadow-2xl space-y-3.5 text-slate-800 meli-card">
     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
       <div class="flex items-center gap-2">
         <button onclick="closeWalletModal()" class="text-slate-400 hover:text-slate-700 text-sm cursor-pointer">
@@ -635,7 +724,7 @@ const plans = [
   { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 2555, total: 115000, slotsTotal: 50, slotsLeft: 17, isNew: false, logo: './tesla.png' },
   { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 2417, total: 145000, slotsTotal: 50, slotsLeft: 12, isNew: false, logo: './youtube.png' },
   { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 2667, total: 200000, slotsTotal: 50, slotsLeft: 8, isNew: false, logo: './google.png' },
-  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, isNew: false, logo: './microsoft.png' },
+  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 20000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, isNew: false, logo: './microsoft.png' },
 
   // 6 NUEVOS VIP (FASE 2)
   { id: 'cocacola', name: 'Coca-Cola (Consumo)', cat: 'pro', cost: 25000, days: 15, daily: 4333, total: 65000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './cocacola.png' },
@@ -652,6 +741,7 @@ let appState = {
   balance: 0, pending: 0, withdrawn: 0, withdrawCount: 0,
   lastClaim: 0, lastWithdraw: 0, lastWithdrawNet: 0,
   hideBalance: false,
+  darkMode: false,
   activePlans: []
 };
 
@@ -671,6 +761,7 @@ try {
   appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
   appState.lastWithdrawNet = parseFloat(localStorage.getItem('cy_last_withdraw_net')) || 0;
   appState.hideBalance = localStorage.getItem('cy_hide_bal') === 'true';
+  appState.darkMode = localStorage.getItem('cy_dark') === 'true';
   appState.activePlans = JSON.parse(localStorage.getItem('cy_active_plans')) || [];
 } catch(e) {}
 
@@ -716,6 +807,23 @@ function renderBalanceDisplay() {
   }
 }
 
+function applyTheme() {
+  const icon = document.getElementById('theme-icon');
+  if (appState.darkMode) {
+    document.body.classList.add('dark-mode');
+    if (icon) icon.className = "fa-solid fa-sun text-amber-300";
+  } else {
+    document.body.classList.remove('dark-mode');
+    if (icon) icon.className = "fa-solid fa-moon text-slate-600";
+  }
+}
+
+window.toggleTheme = function() {
+  appState.darkMode = !appState.darkMode;
+  try { localStorage.setItem('cy_dark', appState.darkMode); } catch(e) {}
+  applyTheme();
+};
+
 let authMode = 'register';
 window.setAuthMode = function(mode) {
   authMode = mode;
@@ -759,6 +867,7 @@ function saveLocal() {
     localStorage.setItem('cy_claim', appState.lastClaim);
     localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
     localStorage.setItem('cy_last_withdraw_net', appState.lastWithdrawNet);
+    localStorage.setItem('cy_dark', appState.darkMode);
     localStorage.setItem('cy_active_plans', JSON.stringify(appState.activePlans));
   } catch(e) {}
   renderUI();
@@ -827,7 +936,7 @@ async function cargarInvitadosEnVivo() {
   if (badge) badge.innerText = `${invitados.length} en tu red`;
 
   if (invitados.length === 0) {
-    container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs">Aún no tienes amigos registrados con tu link.</p>';
+    container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs text-sub">Aún no tienes amigos registrados con tu link.</p>';
     return;
   }
 
@@ -840,10 +949,10 @@ async function cargarInvitadosEnVivo() {
       : '<span class="text-[10px] font-mono-num text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Esperando validación</span>';
 
     return `
-      <div class="flex justify-between items-center p-2 rounded-md bg-slate-50 border border-slate-200 text-xs">
+      <div class="subbox-theme flex justify-between items-center p-2 rounded-md bg-slate-50 border border-slate-200 text-xs">
         <div>
-          <span class="font-bold text-slate-800 block">${inv.name || 'Usuario Crece YA'}</span>
-          <span class="text-[10px] text-slate-400 font-mono-num">${maskedPhone}</span>
+          <span class="font-bold text-slate-800 text-main block">${inv.name || 'Usuario Crece YA'}</span>
+          <span class="text-[10px] text-slate-400 font-mono-num text-sub">${maskedPhone}</span>
         </div>
         ${statusBadge}
       </div>
@@ -855,14 +964,14 @@ async function cargarHistorialTransacciones() {
   const container = document.getElementById('tx-history-container');
   if (!container || !appState.phone) return;
 
-  container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs">Consultando movimientos...</p>';
+  container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs text-sub">Consultando movimientos...</p>';
   try {
     const rawPhone = appState.phone.trim();
     const digitsPhone = rawPhone.replace(/\D/g, '');
     const res = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&order=created_at.desc&limit=15`);
 
     if (!res || !Array.isArray(res) || res.length === 0) {
-      container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs">No registras transacciones recientes.</p>';
+      container.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs text-sub">No registras transacciones recientes.</p>';
       return;
     }
 
@@ -885,14 +994,14 @@ async function cargarHistorialTransacciones() {
       const fechaStr = tx.created_at ? new Date(tx.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
 
       return `
-        <div class="p-2 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+        <div class="subbox-theme p-2 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-xs shrink-0">
+            <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-xs shrink-0 meli-card">
               <i class="fa-solid ${icon}"></i>
             </div>
             <div>
-              <span class="font-bold text-slate-800 block leading-tight">${typeLabel}</span>
-              <span class="text-[10px] text-slate-400">${fechaStr}</span>
+              <span class="font-bold text-slate-800 text-main block leading-tight">${typeLabel}</span>
+              <span class="text-[10px] text-slate-400 text-sub">${fechaStr}</span>
             </div>
           </div>
           <div class="text-right">
@@ -903,7 +1012,7 @@ async function cargarHistorialTransacciones() {
       `;
     }).join('');
   } catch(e) {
-    container.innerHTML = '<p class="text-rose-400 text-center py-2 text-xs">Error al cargar historial.</p>';
+    container.innerHTML = '<p class="text-rose-400 text-center py-2 text-xs text-sub">Error al cargar historial.</p>';
   }
 }
 
@@ -1085,7 +1194,7 @@ window.switchTab = async function(tabName) {
   const tabs = ['planes', 'productos', 'compartir', 'perfil'];
   tabs.forEach(t => {
     document.getElementById(`view-${t}`).classList.add('hidden');
-    document.getElementById(`nav-btn-${t}`).className = "flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer";
+    document.getElementById(`nav-btn-${t}`).className = "nav-inactive flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 py-1 cursor-pointer";
   });
   document.getElementById(`view-${tabName}`).classList.remove('hidden');
   document.getElementById(`nav-btn-${tabName}`).className = "flex flex-col items-center gap-0.5 text-sky-700 font-semibold py-1 cursor-pointer";
@@ -1098,15 +1207,15 @@ window.switchTab = async function(tabName) {
 
 document.getElementById('btn-tab-iniciales').addEventListener('click', () => {
   currentCategory = 'inicial';
-  document.getElementById('btn-tab-iniciales').className = "px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer";
-  document.getElementById('btn-tab-pro').className = "px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer";
+  document.getElementById('btn-tab-iniciales').className = "px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer text-main";
+  document.getElementById('btn-tab-pro').className = "px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer text-sub";
   renderPlans();
 });
 
 document.getElementById('btn-tab-pro').addEventListener('click', () => {
   currentCategory = 'pro';
-  document.getElementById('btn-tab-pro').className = "px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer";
-  document.getElementById('btn-tab-iniciales').className = "px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer";
+  document.getElementById('btn-tab-pro').className = "px-3 py-1 bg-white text-slate-900 rounded-md shadow-xs transition cursor-pointer text-main";
+  document.getElementById('btn-tab-iniciales').className = "px-3 py-1 text-slate-600 hover:text-slate-900 transition cursor-pointer text-sub";
   renderPlans();
 });
 
@@ -1141,10 +1250,8 @@ function renderPlans() {
     let estaAgotado = false;
 
     if (!appState.hasDeposited) {
-      // Usuario SIN fondear: vitrina para incentivar recarga
       cuposTexto = `${p.slotsTotal} cupos libres`;
     } else {
-      // Usuario CON fondeo: se revela el mercado real
       if (p.isNew) {
         estaAgotado = true;
         cuposTexto = `Ronda 1 Culminada`;
@@ -1178,31 +1285,31 @@ function renderPlans() {
     }
 
     const card = document.createElement('div');
-    card.className = "bg-white border border-slate-200/90 rounded-lg p-3.5 meli-card space-y-3";
+    card.className = "meli-card bg-white border border-slate-200/90 rounded-lg p-3.5 space-y-3";
 
     card.innerHTML = `
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0">
+          <div class="subbox-theme w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0">
             <img src="${p.logo}" alt="${p.name}" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/888/888879.png';">
           </div>
           <div>
-            <h4 class="font-semibold text-slate-900 text-sm leading-tight">${p.name}</h4>
+            <h4 class="font-semibold text-slate-900 text-sm leading-tight text-main">${p.name}</h4>
             <span class="text-xs ${estaAgotado ? 'text-rose-600' : 'text-emerald-700'} font-medium">${cuposTexto}</span>
           </div>
         </div>
-        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded subbox-theme text-main">
           ${p.days} días
         </span>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-md border border-slate-100 text-xs font-mono-num">
+      <div class="subbox-theme grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-md border border-slate-100 text-xs font-mono-num">
         <div>
-          <span class="text-slate-400 block text-[10px] font-medium uppercase font-sans">Dividendo diario</span>
-          <strong class="text-slate-800 font-bold">+$${fmt(p.daily)} / día</strong>
+          <span class="text-slate-400 block text-[10px] font-medium uppercase font-sans text-sub">Dividendo diario</span>
+          <strong class="text-slate-800 font-bold text-main">+$${fmt(p.daily)} / día</strong>
         </div>
         <div>
-          <span class="text-slate-400 block text-[10px] font-medium uppercase font-sans">Total al cierre</span>
+          <span class="text-slate-400 block text-[10px] font-medium uppercase font-sans text-sub">Total al cierre</span>
           <strong class="text-sky-700 font-bold">$${fmt(p.total)}</strong>
         </div>
       </div>
@@ -1229,7 +1336,6 @@ window.handlePlanClick = async function(planId) {
   const now = Date.now();
   const ONE_WEEK_MS = 168 * 60 * 60 * 1000;
 
-  // Validación 168h
   if (appState.activePlans && appState.activePlans.length > 0) {
     const mismoPlan = appState.activePlans.filter(plan => 
       plan.plan_code === p.id || plan.id === p.id || plan.name === p.name
@@ -1293,9 +1399,9 @@ function renderProducts() {
 
   if (!appState.activePlans || appState.activePlans.length === 0) {
     container.innerHTML = `
-      <div class="bg-white border border-slate-200 rounded-lg p-6 text-center space-y-2 meli-card">
+      <div class="meli-card bg-white border border-slate-200 rounded-lg p-6 text-center space-y-2">
         <i class="fa-solid fa-folder-open text-slate-300 text-3xl"></i>
-        <p class="text-xs text-slate-500 font-medium">No posees contratos bursátiles activos.</p>
+        <p class="text-xs text-slate-500 font-medium text-sub">No posees contratos bursátiles activos.</p>
         <button onclick="switchTab('planes')" class="meli-btn px-4 py-2 bg-sky-600 text-white text-xs cursor-pointer">
           Explorar Mercado
         </button>
@@ -1329,31 +1435,31 @@ function renderProducts() {
       const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
       const s = Math.floor((remaining % (1000 * 60)) / 1000);
       const dText = d > 0 ? `${d}d ` : '';
-      timeDisplay = `<span class="font-mono-num font-bold text-sky-800 text-xs">${dText}${h}h ${m}m ${s}s</span>`;
+      timeDisplay = `<span class="font-mono-num font-bold text-sky-800 text-xs text-main">${dText}${h}h ${m}m ${s}s</span>`;
     }
 
     const card = document.createElement('div');
-    card.className = "bg-white border border-slate-200 rounded-lg p-3.5 meli-card space-y-2.5";
+    card.className = "meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5";
     card.innerHTML = `
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
           <img src="${plan.logo}" class="w-6 h-6 object-contain" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/888/888879.png';">
-          <h4 class="font-semibold text-xs text-slate-900">${plan.name}</h4>
+          <h4 class="font-semibold text-xs text-slate-900 text-main">${plan.name}</h4>
         </div>
         ${statusBadge}
       </div>
-      <div class="grid grid-cols-2 gap-2 text-xs font-mono-num bg-slate-50 p-2 rounded-md border border-slate-100">
+      <div class="subbox-theme grid grid-cols-2 gap-2 text-xs font-mono-num bg-slate-50 p-2 rounded-md border border-slate-100">
         <div>
-          <span class="text-slate-400 block text-[10px] font-sans">INVERSIÓN</span>
-          <strong class="text-slate-800">$${fmt(plan.cost)} ARS</strong>
+          <span class="text-slate-400 block text-[10px] font-sans text-sub">INVERSIÓN</span>
+          <strong class="text-slate-800 text-main">$${fmt(plan.cost)} ARS</strong>
         </div>
         <div>
-          <span class="text-slate-400 block text-[10px] font-sans">TOTAL AL CIERRE</span>
+          <span class="text-slate-400 block text-[10px] font-sans text-sub">TOTAL AL CIERRE</span>
           <strong class="text-sky-700 font-bold">$${fmt(plan.total)} ARS</strong>
         </div>
       </div>
       <div class="flex items-center justify-between text-xs pt-0.5">
-        <span class="text-slate-400 font-mono-num">Estado:</span>
+        <span class="text-slate-400 font-mono-num text-sub">Estado:</span>
         ${timeDisplay}
       </div>
     `;
@@ -1672,6 +1778,42 @@ document.getElementById('btn-save-profile').addEventListener('click', async () =
   alert("Datos bancarios guardados con éxito.");
 });
 
+document.getElementById('btn-change-pass').addEventListener('click', async () => {
+  const oldPass = document.getElementById('prof-old-pass').value;
+  const newPass = document.getElementById('prof-new-pass').value;
+  const confirmPass = document.getElementById('prof-new-pass-confirm').value;
+
+  if (!oldPass || !newPass || !confirmPass) {
+    alert("Por favor completa todos los campos de contraseña.");
+    return;
+  }
+  if (oldPass !== appState.pass) {
+    alert("La contraseña actual es incorrecta.");
+    return;
+  }
+  if (newPass !== confirmPass) {
+    alert("La nueva contraseña y su confirmación no coinciden.");
+    return;
+  }
+  if (newPass.length < 4) {
+    alert("La contraseña debe tener al menos 4 caracteres.");
+    return;
+  }
+
+  appState.pass = newPass;
+  saveLocal();
+
+  if (appState.phone) {
+    await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { pass: newPass });
+  }
+
+  document.getElementById('prof-old-pass').value = '';
+  document.getElementById('prof-new-pass').value = '';
+  document.getElementById('prof-new-pass-confirm').value = '';
+
+  alert("¡Contraseña actualizada con éxito en el servidor!");
+});
+
 function renderBankStatus() {
   const badge = document.getElementById('bank-status-badge');
   if (!badge) return;
@@ -1738,6 +1880,7 @@ function renderUI() {
   renderPlans();
 }
 
+applyTheme();
 checkAuth();
 renderProducts();
 </script>
