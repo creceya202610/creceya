@@ -88,44 +88,53 @@ body.dark-mode .social-ticker {
 </head>
 <body class="bg-[#e0f2fe] text-slate-800 antialiased min-h-screen p-0 sm:p-4 flex justify-center selection:bg-sky-600 selection:text-white">
 
-<!-- MODAL AVISO OFICIAL CRECE YA -->
-<div id="notice-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-  <div class="meli-card bg-white border border-slate-200 w-full max-w-sm rounded-xl p-5 shadow-2xl space-y-4 text-slate-800 relative text-main">
-    <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-      <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center text-lg shrink-0">
+<!-- MODAL AVISO OFICIAL CRECE YA (ORIGINAL RESTAURADO AL 100%) -->
+<div id="notice-modal" class="fixed inset-0 z-50 bg-[#020813]/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+  <div class="meli-card bg-white border border-sky-300 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-slate-850 relative text-main">
+    <div class="text-center space-y-2">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-100 border border-sky-200 text-sky-600 text-2xl shadow-xs">
         <i class="fa-solid fa-bullhorn"></i>
       </div>
-      <div>
-        <h3 class="text-sm font-bold text-slate-900 leading-tight text-main">COMUNICADO OFICIAL</h3>
-        <span class="text-[11px] text-slate-500 font-medium text-sub">Mercado Bursátil • Crece YA</span>
+      <h3 class="text-base font-black tracking-wide text-slate-900 text-main">AVISO OFICIAL CRECE YA</h3>
+    </div>
+
+    <div class="subbox-theme bg-slate-50 border border-sky-100 rounded-2xl p-4 space-y-2.5 text-xs font-mono">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">🔥</span>
+        <p><strong class="text-amber-500">Plan MELI:</strong> $2.250 ARS diarios ($4.500 total)</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">⏱️</span>
+        <p><strong class="text-sky-600">Duración ágil:</strong> 2 días de ciclo</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">💵</span>
+        <p><strong class="text-emerald-600">Depósito mínimo:</strong> $2.000 ARS</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">🎁</span>
+        <p><strong class="text-amber-600">Check-in diario:</strong> +$500 ARS / día</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">🛡️</span>
+        <p><strong class="text-sky-700">Seguridad:</strong> Reserva mín. $1.000 obligatoria</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">📈</span>
+        <p><strong class="text-sky-800">Tope Progresivo:</strong> 1° retiro $10k, 2° $20k... hasta $100k</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">⏳</span>
+        <p><strong class="text-sky-800">Liquidaciones:</strong> 1 retiro cada 48 hs (Día por medio)</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">🏛️</span>
+        <p><strong class="text-slate-600 text-sub">Horario bancario:</strong> Lun a Vie 07:00 a 18:00 hs</p>
       </div>
     </div>
 
-    <div class="subbox-theme bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
-      <p class="flex items-center gap-2 text-slate-700 text-sub">
-        <span class="text-emerald-600 font-bold">●</span>
-        <span><strong>Fase 1 Activa:</strong> MELI ($4.500) y contratos vigentes en curso.</span>
-      </p>
-      <p class="flex items-center gap-2 text-slate-700 text-sub">
-        <span class="text-sky-600 font-bold">●</span>
-        <span><strong>Lanzamiento Fase 2:</strong> 12 nuevas acciones institucionales.</span>
-      </p>
-      <p class="flex items-center gap-2 text-slate-700 text-sub">
-        <span class="text-amber-600 font-bold">●</span>
-        <span><strong>Asignación por Rondas:</strong> Los nuevos cupos abren de forma escalonada.</span>
-      </p>
-      <p class="flex items-center gap-2 text-slate-700 text-sub">
-        <span class="text-sky-700 font-bold">●</span>
-        <span><strong>Escala de Retiro:</strong> Mínimo desde $10.000 ARS acumulativo.</span>
-      </p>
-      <p class="flex items-center gap-2 text-slate-700 text-sub">
-        <span class="text-slate-500 font-bold">●</span>
-        <span><strong>Horario Bancario:</strong> Lunes a Viernes de 07:00 a 18:00 hs.</span>
-      </p>
-    </div>
-
-    <button onclick="closeNoticeModal()" class="w-full meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white shadow-xs cursor-pointer">
-      Entendido
+    <button onclick="closeNoticeModal()" class="w-full meli-btn py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md cursor-pointer">
+      ENTENDIDO / OK
     </button>
   </div>
 </div>
@@ -1345,7 +1354,7 @@ window.handleAgotadoNotice = function(planName) {
 };
 
 window.handleBloqueo168Notice = function(planName) {
-  alert(`⚠️ Cupo cubierto: Has cubierto tu asignación para el plan ${planName} en la presente ronda. Aguarda a la habilitación de la siguiente ronda de mercado.`);
+  alert(`⚠️️ Cupo cubierto: Has cubierto tu asignación para el plan ${planName} en la presente ronda. Aguarda a la habilitación de la siguiente ronda de mercado.`);
 };
 
 // ADQUISICIÓN DE PLANES
