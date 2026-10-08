@@ -369,7 +369,7 @@ body.dark-mode .social-ticker {
     </div>
 
     <!-- TARJETA DE FORMULACIÓN DE LIQUIDACIONES -->
-    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-calculator text-sky-600"></i>
@@ -514,7 +514,7 @@ body.dark-mode .social-ticker {
     </div>
 
     <!-- PREGUNTAS FRECUENTES (FAQ) -->
-    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5 text-xs">
+    <div class="meli-card bg-white border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
       <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
         <i class="fa-solid fa-circle-question text-sky-600"></i>
         <span class="font-bold text-slate-900 text-xs text-main">Preguntas Frecuentes</span>
@@ -1107,7 +1107,7 @@ async function cargarHistorialTransacciones() {
   }
 }
 
-// DETERMINAR ESCALA PROGRESIVA DE FONDEO Y RETIRO
+// OBTENER ESTADÍSTICAS OPERATIVAS DE CUENTA
 async function obtenerEstadisticasCuenta() {
   if (!appState.phone) return { retiros: 0, depositos: 0 };
   try {
@@ -1124,17 +1124,20 @@ async function obtenerEstadisticasCuenta() {
   }
 }
 
-// ESCALA: FONDEO 1: $2.000 | 2: $4.500 | 3: $7.000 | 4: $10.000 | 5: $18.000 | 6+: $25.000
+// ESCALA DE FONDEO:
+// 1°: $2.000 | 2°: $4.500 | 3°: $7.000 | 4°: $10.000 | 5°: $18.000 | 6°: $25.000 | 7° en adelante: $35.000 FIJO
 function calcularMinimoFondeo(depCount) {
   if (depCount <= 0) return 2000;
   if (depCount === 1) return 4500;
   if (depCount === 2) return 7000;
   if (depCount === 3) return 10000;
   if (depCount === 4) return 18000;
-  return 25000;
+  if (depCount === 5) return 25000;
+  return 35000;
 }
 
-// ESCALA: RETIRO 1: $10.000 | 2: $20.000 | 3: $30.000 ... HASTA $100.000
+// ESCALA DE RETIRO:
+// 1°: $10k | 2°: $20k | 3°: $30k | 4°: $40k | 5°: $50k | 6°: $60k | 7°: $70k | 8°: $80k | 9°: $90k | 10°+: $100k
 function calcularTopeRetiro(retCount) {
   const tope = (retCount + 1) * 10000;
   return Math.min(100000, tope);
@@ -1216,7 +1219,6 @@ window.handleAuthSubmit = async function() {
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
 
-  // Pausa deliberada de 1.2 segundos para asegurar sincronización de red
   await new Promise(r => setTimeout(r, 1200));
 
   let existingUser = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=*`);
@@ -1253,7 +1255,6 @@ window.handleAuthSubmit = async function() {
 
     submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-spin"></i> Registrando usuario en base de datos...';
 
-    // Inserción limpia a Supabase
     const payloadNuevo = {
       phone: phone,
       pass: pass,
@@ -1264,11 +1265,8 @@ window.handleAuthSubmit = async function() {
     };
 
     const regRes = await supabaseRequest('usuarios', 'POST', payloadNuevo);
-
-    // Pausa adicional para confirmación de réplica en Supabase
     await new Promise(r => setTimeout(r, 800));
 
-    // Confirmación doble de existencia en el servidor
     let confirmacion = await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(phone)}&select=phone`);
     if (!confirmacion || confirmacion.length === 0) {
       alert("Hubo una demora al asentar tu cuenta en el servidor. Presiona nuevamente 'Registrarse e Ingresar'.");
@@ -1381,7 +1379,6 @@ function renderPlans() {
   filtered.forEach(p => {
     let estaBloqueado168h = false;
 
-    // Regla de 1 compra semanal por plan (168 hs)
     if (appState.activePlans && appState.activePlans.length > 0) {
       const mismoPlan = appState.activePlans.filter(plan => 
         plan.plan_code === p.id || plan.id === p.id || plan.name === p.name
@@ -1664,7 +1661,6 @@ async function actualizarOpcionesFondeoDinamicas() {
     depHint.innerText = `Mínimo de recarga para tu etapa operativa: $${fmt(minRequired)} ARS`;
   }
 
-  // Generar botones rápidos según la etapa de fondeo del usuario
   if (quickBox) {
     let b1 = minRequired;
     let b2 = Math.round(minRequired * 1.5 / 1000) * 1000;
@@ -1893,7 +1889,7 @@ window.ejecutarRetiroFinal = async function() {
   appState.withdrawCount = (appState.withdrawCount || 0) + 1;
   appState.lastWithdraw = now;
   appState.lastWithdrawNet = netAmount;
-  appState.hasDeposited = false; // Requiere nuevo fondeo obligatorio
+  appState.hasDeposited = false;
   saveLocal();
 
   await supabaseRequest(`usuarios?phone=eq.${encodeURIComponent(appState.phone)}`, 'PATCH', { 
